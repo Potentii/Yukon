@@ -14,12 +14,17 @@ MD5:  8A:7B:35:27:53:9B:88:95:07:A8:05:06:02:8C:AB:76
 SHA1: 85:DF:DA:5C:E6:B5:A9:BB:D7:CB:89:2D:73:3A:23:5D:40:C8:ED:D0
 SHA256: 8C:36:41:C5:B8:FD:DC:B2:E5:69:DF:C0:36:2C:19:69:A0:E3:1C:C5:A4:05:AD:F6:82:DD:A0:21:F8:BE:04:8F
 Nome do algoritmo de assinatura: SHA256withRSA
-Vers�o: 3
+Versão: 3
 
 client Name: Guilherme Client
 client ID: 42841504820-igdmd8tu6ouob7i4ubigtbts0d1m4o6u.apps.googleusercontent.com
 
 SHA1 Ralf:
+ MD5:  FA:E4:52:5C:E6:B7:3A:5C:B8:5F:A9:5B:10:F2:AA:57
+ SHA1: 83:79:4E:04:24:1C:A7:A6:2B:C5:2D:E0:90:45:5B:0A:25:B6:91:E5
+ SHA256: AC:42:40:4E:4D:45:51:8B:F0:86:5D:3D:73:F0:2E:D0:29:87:1D:A0:A7:5F:AE:AF:68:A0:8E:6F:24:2F:33:D7
+ Nome do algoritmo de assinatura: SHA256withRSA
+ Versão: 3
 
-
-
+client Name: Ralf Client
+client ID: 42841504820-4p7ajvmfp4rj5mlu88un9a1o637i2qvr.apps.googleusercontent.com
