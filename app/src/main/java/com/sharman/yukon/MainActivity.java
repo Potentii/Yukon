@@ -8,7 +8,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+
 public class MainActivity extends AppCompatActivity {
+    protected GoogleApiClient googleApiClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Ola Mundo", Toast.LENGTH_SHORT).show();
             }
         });
+
 
     }
 
