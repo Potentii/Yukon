@@ -15,6 +15,7 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.drive.Drive;
+import com.google.android.gms.plus.Plus;
 
 /**
  * Created by poten on 04/10/2015.
@@ -46,6 +47,8 @@ public abstract class GoogleConnectActivity extends Activity implements GoogleAp
                 .addOnConnectionFailedListener(this)
                 .build();
 
+        this.googleApiClient.disconnect();
+        this.googleApiClient.connect();
     }
 
 
@@ -53,6 +56,12 @@ public abstract class GoogleConnectActivity extends Activity implements GoogleAp
     public void onStart(){
         super.onStart();
         this.googleApiClient.connect();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        this.googleApiClient.disconnect();
     }
 
 
