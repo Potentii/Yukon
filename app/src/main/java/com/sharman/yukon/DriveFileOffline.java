@@ -32,7 +32,7 @@ public class DriveFileOffline {
             public void onResult(DriveApi.DriveContentsResult driveContentsResult){
                 if(!driveContentsResult.getStatus().isSuccess()){
                     // TODO drive request error
-                    uploadCallback.onComplete(null, false);
+                    uploadCallback.onFail("O Google Drive negou a requisição");
                     return;
                 }
 
@@ -44,7 +44,7 @@ public class DriveFileOffline {
                     writer.close();
                 } catch(IOException e){
                     //TODO erro ao escrever no arquivo
-                    uploadCallback.onComplete(null, false);
+                    uploadCallback.onFail("Ocorreu uma falha na escrita do arquivo");
                     e.printStackTrace();
                 }
 
@@ -59,11 +59,11 @@ public class DriveFileOffline {
                     public void onResult(DriveFolder.DriveFileResult result) {
                         if (!result.getStatus().isSuccess()) {
                             // TODO drive file creation error
-                            uploadCallback.onComplete(null, false);
+                            uploadCallback.onFail("Ocorreu uma falha na criação do arquivo");
                             return;
                         }
                         DriveId driveId = result.getDriveFile().getDriveId();
-                        uploadCallback.onComplete(driveId, true);
+                        uploadCallback.onComplete(driveId);
 
                     }
                 });
