@@ -1,5 +1,5 @@
 Nome do app: Yukon
 Company domain: sharman.com
 Package name: com.sharman.yukon
-Api Level: 19 (4.4 KitKat)
+Api Level: 21 (5.0.1 Lollipop)
 JDK: 8u60

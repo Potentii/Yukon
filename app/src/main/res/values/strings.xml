@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Yukon</string>
-
-    <string name="hello_world">Hello world!</string>
+    <string name="main_activity_title">Yukon</string>
     <string name="action_settings">Settings</string>
 </resources>
