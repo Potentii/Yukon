@@ -74,13 +74,13 @@ public class Exam extends JSONObject{
     }
 
     // *DeliverDate:
-    public Date getDeliverDate() throws NullPointerException{
+    public Date getDeliverDate(){
         try {
             Date date = new SimpleDateFormat("dd/MM/yyyy").parse(super.optString(ExamJSONKeys.DELIVER_DATE.getKey()));
             return date;
         } catch (ParseException e) {
             e.printStackTrace();
-            throw new NullPointerException("Deliver date not found");
+            return null;
         }
     }
     public void setDeliverDate(Date deliverDate) throws JSONException{
@@ -113,7 +113,6 @@ public class Exam extends JSONObject{
             }catch (JSONException e){}
         }
         return questionArray;
-
     }
     public void setQuestionArray(Question[] questionArray) throws JSONException{
         super.putOpt(ExamJSONKeys.QUESTION_ARRAY.getKey(), new JSONArray(questionArray));

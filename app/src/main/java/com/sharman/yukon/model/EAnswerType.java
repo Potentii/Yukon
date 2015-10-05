@@ -3,20 +3,20 @@ package com.sharman.yukon.model;
 /**
  * Created by poten on 04/10/2015.
  */
-public enum EQuestionType {
+public enum EAnswerType {
     MULTIPLE_CHOICE("multipleChoice"),
     DISSERTATIVE("dissertative"),
     TRUE_OR_FALSE("trueOrFalse");
 
 
     private String name;
-    private EQuestionType(String name){
+    private EAnswerType(String name){
         this.name = name;
     }
-    public static EQuestionType getEQuestionType(String str){
-        for (EQuestionType eQuestionType : EQuestionType.values()) {
-            if(eQuestionType.getName().equals(str)){
-                return eQuestionType;
+    public static EAnswerType getEAnswerType(String str){
+        for (EAnswerType eAnswerType : EAnswerType.values()) {
+            if(eAnswerType.getName().equals(str)){
+                return eAnswerType;
             }
         }
         return null;

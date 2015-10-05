@@ -15,9 +15,8 @@ public class Question extends JSONObject{
      */
     protected enum QuestionJSONKeys{
         TITLE("title"),
-        EQUESTION_TYPE("eQuestionType"),
         WEIGHT("weight"),
-        ANSWER_ROW_ARRAY("answerRowArray");
+        ANSWER_BOX("answerBox");
 
         private String key;
         private QuestionJSONKeys(String key){
@@ -34,13 +33,12 @@ public class Question extends JSONObject{
      *  * Constructor:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public Question(String title, EQuestionType eQuestionType, double weight, AnswerRow[] answerRowArray){
+    public Question(String title, double weight, AnswerBox answerBox){
         super();
         try {
             this.setTitle(title);
-            this.setEQuestionType(eQuestionType);
             this.setWeight(weight);
-            this.setAnswerRowArray(answerRowArray);
+            this.setAnswerBox(answerBox);
         } catch (JSONException e){
             e.printStackTrace();
         }
@@ -63,14 +61,6 @@ public class Question extends JSONObject{
         super.putOpt(QuestionJSONKeys.TITLE.getKey(), title);
     }
 
-    // *EQuestionType:
-    public EQuestionType getEQuestionType(){
-        return EQuestionType.getEQuestionType(super.optString(QuestionJSONKeys.EQUESTION_TYPE.getKey()));
-    }
-    public void setEQuestionType(EQuestionType eQuestionType) throws JSONException{
-        super.putOpt(QuestionJSONKeys.EQUESTION_TYPE.getKey(), eQuestionType.getName());
-    }
-
     // *Weight:
     public double getWeight(){
         return super.optDouble(QuestionJSONKeys.WEIGHT.getKey());
@@ -79,18 +69,15 @@ public class Question extends JSONObject{
         super.putOpt(QuestionJSONKeys.WEIGHT.getKey(), weight);
     }
 
-    // *AnswerRowArray:
-    public AnswerRow[] getAnswerRowArray(){
-        JSONArray answerRowJSONArray = super.optJSONArray(QuestionJSONKeys.ANSWER_ROW_ARRAY.getKey());
-        AnswerRow[] answerRowArray = new AnswerRow[answerRowJSONArray.length()];
-        for(int i=0; i<answerRowJSONArray.length(); i++){
-            try {
-                answerRowArray[i] = new AnswerRow(answerRowJSONArray.getJSONObject(i).toString());
-            }catch (JSONException e){}
+    // *AnswerBox:
+    public AnswerBox getAnswerBox(){
+        try {
+            return new AnswerBox(super.optJSONObject(QuestionJSONKeys.ANSWER_BOX.getKey()).toString());
+        } catch (JSONException e){
+            return null;
         }
-        return answerRowArray;
     }
-    public void setAnswerRowArray(AnswerRow[] answerRowArray) throws JSONException{
-        super.putOpt(QuestionJSONKeys.ANSWER_ROW_ARRAY.getKey(), new JSONArray(answerRowArray));
+    public void setAnswerBox(AnswerBox answerBox) throws JSONException{
+        super.putOpt(QuestionJSONKeys.ANSWER_BOX.getKey(), answerBox.toString());
     }
 }
