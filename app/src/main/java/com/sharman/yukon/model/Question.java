@@ -72,12 +72,12 @@ public class Question extends JSONObject{
     // *AnswerBox:
     public AnswerBox getAnswerBox(){
         try {
-            return new AnswerBox(super.optJSONObject(QuestionJSONKeys.ANSWER_BOX.getKey()).toString());
+            return new AnswerBox(super.getJSONObject(QuestionJSONKeys.ANSWER_BOX.getKey()).toString());
         } catch (JSONException e){
             return null;
         }
     }
     public void setAnswerBox(AnswerBox answerBox) throws JSONException{
-        super.putOpt(QuestionJSONKeys.ANSWER_BOX.getKey(), answerBox.toString());
+        super.putOpt(QuestionJSONKeys.ANSWER_BOX.getKey(), answerBox);
     }
 }

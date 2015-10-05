@@ -15,7 +15,7 @@ public class AnswerBox extends JSONObject {
      */
     protected enum AnswerBoxJSONKeys{
         TITLE_ARRAY("titleArray"),
-        EANSWER_TYPE("eAnswerType");
+        EMULTIPLE_ANSWER_TYPE("eMultipleAnswerType");
 
         private String key;
         private AnswerBoxJSONKeys(String key){
@@ -32,14 +32,14 @@ public class AnswerBox extends JSONObject {
      *  * Constructor:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public AnswerBox(EAnswerType eAnswerType){
-        this(new String[0], eAnswerType);
+    public AnswerBox(){
+        this(new String[0], null);
     }
-    public AnswerBox(String[] titleArray, EAnswerType eAnswerType){
+    public AnswerBox(String[] titleArray, EMultipleAnswerType eMultipleAnswerType){
         super();
         try{
             this.setTitleArray(titleArray);
-            this.setEAnswerType(eAnswerType);
+            this.setEMultipleAnswerType(eMultipleAnswerType);
         } catch (JSONException e){
             e.printStackTrace();
         }
@@ -69,11 +69,15 @@ public class AnswerBox extends JSONObject {
         super.putOpt(AnswerBoxJSONKeys.TITLE_ARRAY.getKey(), new JSONArray(titleArray));
     }
 
-    // *EAnswerType:
-    public EAnswerType getEAnswerType(){
-        return EAnswerType.getEAnswerType(super.optString(AnswerBoxJSONKeys.EANSWER_TYPE.getKey()));
+    // *EMultipleAnswerType:
+    public EMultipleAnswerType getEMultipleAnswerType(){
+        return EMultipleAnswerType.getEMultipleAnswerType(super.optString(AnswerBoxJSONKeys.EMULTIPLE_ANSWER_TYPE.getKey()));
     }
-    public void setEAnswerType(EAnswerType eAnswerType) throws JSONException{
-        super.putOpt(AnswerBoxJSONKeys.EANSWER_TYPE.getKey(), eAnswerType.getName());
+    public void setEMultipleAnswerType(EMultipleAnswerType eMultipleAnswerType) throws JSONException{
+        try {
+            super.putOpt(AnswerBoxJSONKeys.EMULTIPLE_ANSWER_TYPE.getKey(), eMultipleAnswerType.getName());
+        } catch(NullPointerException e){
+            super.putOpt(AnswerBoxJSONKeys.EMULTIPLE_ANSWER_TYPE.getKey(), "");
+        }
     }
 }
