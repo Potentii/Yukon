@@ -36,6 +36,8 @@ public abstract class GoogleConnectActivity extends Activity implements GoogleAp
                 .addApi(Plus.API)
                 .addScope(new Scope(Scopes.PROFILE))
                 .addScope(new Scope(Scopes.EMAIL))
+                .addScope(Plus.SCOPE_PLUS_LOGIN)
+                .addScope(Plus.SCOPE_PLUS_PROFILE)
 
                 // *Adding the Drive API to the client:
                 .addApi(Drive.API)
