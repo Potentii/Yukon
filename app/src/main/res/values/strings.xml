@@ -2,4 +2,6 @@
     <string name="app_name">Yukon</string>
     <string name="main_activity_title">Yukon</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_exam_create">ExamCreateActivity</string>
+    <string name="title_activity_questions_create">QuestionsCreateActivity</string>
 </resources>
