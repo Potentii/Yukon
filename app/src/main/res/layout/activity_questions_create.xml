@@ -10,12 +10,13 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/questionQuestionsEdT"
+        android:id="@+id/questionQuestionsInput"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="false"
         android:editable="false"
         android:layout_alignParentEnd="true"
-        android:lines="7" />
+        android:lines="7"
+        android:inputType="textMultiLine" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -23,16 +24,16 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Peso"
         android:id="@+id/weightQuestionsTv"
-        android:layout_below="@+id/questionQuestionsEdT"
+        android:layout_below="@+id/questionQuestionsInput"
         android:layout_alignParentStart="true"
         android:layout_marginTop="57dp" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/weightQuestionsEdT"
+        android:id="@+id/weightQuestionsInput"
         android:layout_alignBottom="@+id/weightQuestionsTv"
-        android:layout_alignEnd="@+id/questionQuestionsEdT"
+        android:layout_alignEnd="@+id/questionQuestionsInput"
         android:layout_toEndOf="@+id/weightQuestionsTv" />
 
     <Button
@@ -41,7 +42,9 @@
         android:text="Próxima"
         android:id="@+id/nextQuestionsBtn"
         android:layout_above="@+id/finishQuestionsBtn"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:textSize="18dp"
+        android:onClick="callsMyself" />
 
     <Button
         android:layout_width="match_parent"
@@ -49,6 +52,7 @@
         android:text="Finalizar"
         android:id="@+id/finishQuestionsBtn"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textSize="18dp" />
 
 </RelativeLayout>

@@ -15,6 +15,8 @@
         android:text="Questionario"
         android:id="@+id/newExamBtn"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="callActivityExam"
+        android:textSize="18dp" />
 
 </RelativeLayout>

@@ -40,14 +40,14 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/nameExamEdT"
+        android:id="@+id/nameExamInput"
         android:layout_above="@+id/matterExamTv"
         android:layout_toEndOf="@+id/matterExamTv" />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/matterExamEdt"
+        android:id="@+id/subjectExamInput"
         android:layout_alignBottom="@+id/matterExamTv"
         android:layout_toEndOf="@+id/matterExamTv" />
 
@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:inputType="date"
         android:ems="10"
-        android:id="@+id/dateExamEdT"
+        android:id="@+id/dateExamInput"
         android:layout_alignBottom="@+id/dateExamTv"
         android:layout_toEndOf="@+id/matterExamTv" />
 
@@ -66,6 +66,8 @@
         android:text="Adicionar Questões"
         android:id="@+id/addQuestionsBtn"
         android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/matterExamEdt" />
+        android:layout_alignEnd="@+id/subjectExamInput"
+        android:textSize="18dp"
+        android:onClick="callQuestionsCreateActivity" />
 
 </RelativeLayout>
