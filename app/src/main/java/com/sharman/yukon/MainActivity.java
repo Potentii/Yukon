@@ -5,6 +5,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.sharman.yukon.view.activities.GoogleConnectActivity;
+
 public class MainActivity extends GoogleConnectActivity {
 
     @Override
