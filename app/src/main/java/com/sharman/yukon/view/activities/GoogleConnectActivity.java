@@ -1,4 +1,4 @@
-package com.sharman.yukon;
+package com.sharman.yukon.view.activities;
 
 import android.app.Activity;
 import android.content.IntentSender;
@@ -16,6 +16,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.plus.Plus;
+import com.sharman.yukon.R;
 
 /**
  * Created by poten on 04/10/2015.
