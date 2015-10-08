@@ -21,8 +21,17 @@
             </intent-filter>
         </activity>
         <activity
+<<<<<<< HEAD
+            android:name=".ExamCreateActivity"
+            android:label="@string/title_activity_exam_create" >
+        </activity>
+        <activity
+            android:name=".QuestionsCreateActivity"
+            android:label="@string/title_activity_questions_create" >
+=======
             android:name=".view.activities.ExamCreateConfirmActivity"
             android:label="@string/title_activity_exam_create_confirm" >
+>>>>>>> integration
         </activity>
     </application>
 

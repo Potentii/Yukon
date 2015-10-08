@@ -2,7 +2,12 @@
     <string name="app_name">Yukon</string>
     <string name="main_activity_title">Yukon</string>
     <string name="action_settings">Settings</string>
+<<<<<<< HEAD
+    <string name="title_activity_exam_create">ExamCreateActivity</string>
+    <string name="title_activity_questions_create">QuestionsCreateActivity</string>
+=======
     <string name="title_activity_exam_create_confirm">Confirmar criação</string>
 
     <string name="hello_world">Hello world!</string>
+>>>>>>> integration
 </resources>

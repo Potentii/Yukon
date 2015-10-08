@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.sharman.yukon.QuestionsCreateActivity">
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/questionQuestionsInput"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="false"
+        android:editable="false"
+        android:layout_alignParentEnd="true"
+        android:lines="7"
+        android:inputType="textMultiLine" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Peso"
+        android:id="@+id/weightQuestionsTv"
+        android:layout_below="@+id/questionQuestionsInput"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="57dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/weightQuestionsInput"
+        android:layout_alignBottom="@+id/weightQuestionsTv"
+        android:layout_alignEnd="@+id/questionQuestionsInput"
+        android:layout_toEndOf="@+id/weightQuestionsTv" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Próxima"
+        android:id="@+id/nextQuestionsBtn"
+        android:layout_above="@+id/finishQuestionsBtn"
+        android:layout_alignParentEnd="true"
+        android:textSize="18dp"
+        android:onClick="callsMyself" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Finalizar"
+        android:id="@+id/finishQuestionsBtn"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="18dp"
+        android:onClick="callExamCreateConfirmActivity" />
+
+</RelativeLayout>
