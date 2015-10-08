@@ -1,6 +1,18 @@
 package com.sharman.yukon.view.activities;
 
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.drive.Drive;
@@ -14,6 +26,10 @@ import com.sharman.yukon.io.drive.DriveFileOffline;
 import com.sharman.yukon.io.drive.DriveFolderHandler;
 import com.sharman.yukon.io.drive.UploadCallback;
 import com.sharman.yukon.model.Exam;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 public class ExamCreateConfirmActivity extends GoogleConnectActivity {
     private Exam exam;
@@ -35,6 +51,21 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exam_create_confirm);
+
+
+        // *Queries the contacts's e-mail in a new thread:
+        new Runnable(){
+            @Override
+            public void run() {
+                List<String> emailList = queryContactsEmail();
+                String[] emailArray = new String[emailList.size()];
+                for(int i=0; i<emailList.size(); i++){
+                    emailArray[i] = emailList.get(i);
+                }
+                onQueryContactResult(emailArray);
+            }
+        }.run();
+
     }
 
 
@@ -44,6 +75,11 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
         studentFoldersCreated = 0;
 
         // TODO pegar Exam da intent
+        /*
+        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(intent, 1);
+        */
+
 
         //TODO escolher alunos.
         /*
@@ -53,10 +89,78 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
         }
         */
 
+        Button shareAndCreateExamBtn = (Button) findViewById(R.id.shareAndCreateExamBtn);
+        shareAndCreateExamBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO
+            }
+        });
+
         stub();
-        createExamOnDrive();
+        //createExamOnDrive();
 
     }
+
+    // *Callback for the query thread result:
+    public void onQueryContactResult(String[] emailArray){
+        System.out.println("onQueryContactResult");
+        for(int i=0; i<emailArray.length; i++){
+            System.out.println(emailArray[i]);
+        }
+        AutoCompleteTextView studentIn = (AutoCompleteTextView) findViewById(R.id.studentIn);
+        ArrayAdapter<String> studentAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, emailArray);
+        studentIn.setAdapter(studentAdapter);
+    }
+
+    // *Queries the contact's e-mail:
+    private List<String> queryContactsEmail(){
+        List<String> emailList = new ArrayList<String>();
+        HashSet<String> emailHash = new HashSet<String>();
+        Context context = getApplicationContext();
+        ContentResolver cr = context.getContentResolver();
+
+        String[] PROJECTION = new String[] { ContactsContract.RawContacts._ID,
+                ContactsContract.Contacts.DISPLAY_NAME,
+                ContactsContract.Contacts.PHOTO_ID,
+                ContactsContract.CommonDataKinds.Email.DATA,
+                ContactsContract.CommonDataKinds.Photo.CONTACT_ID };
+
+        String order = "CASE WHEN "
+                + ContactsContract.Contacts.DISPLAY_NAME
+                + " NOT LIKE '%@%' THEN 1 ELSE 2 END, "
+                + ContactsContract.Contacts.DISPLAY_NAME
+                + ", "
+                + ContactsContract.CommonDataKinds.Email.DATA
+                + " COLLATE NOCASE";
+
+        String filter = ContactsContract.CommonDataKinds.Email.DATA + " NOT LIKE ''";
+        Cursor cur = cr.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, PROJECTION, filter, null, order);
+
+        if(cur.moveToFirst()) {
+            do{
+                //String name = cur.getString(1);
+                String email = cur.getString(3);
+
+                // *Only unique e-mails:
+                if(emailHash.add(email.toLowerCase())) {
+                    emailList.add(email);
+                }
+            } while (cur.moveToNext());
+        }
+
+        cur.close();
+        return emailList;
+    }
+
+
+
+
+
+
+
+
+
 
     private void stub(){
         studentConfigFilePairArray = new StudentConfigFilePair[5];
