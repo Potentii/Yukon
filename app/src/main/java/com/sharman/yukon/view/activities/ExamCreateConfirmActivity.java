@@ -1,14 +1,11 @@
 package com.sharman.yukon.view.activities;
 
-import android.app.Activity;
+
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -31,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+
+
 public class ExamCreateConfirmActivity extends GoogleConnectActivity {
     private Exam exam;
 
@@ -45,15 +44,13 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
     private DriveFolder studentFilesDriveFolder;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exam_create_confirm);
 
-
         // *Queries the contacts's e-mail in a new thread:
+        //TODO colocar thread pra ver se vai mais rapido
         new Runnable(){
             @Override
             public void run() {
@@ -66,14 +63,17 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
             }
         }.run();
 
+
     }
+
+
 
 
     @Override
     public void onConnected(Bundle bundle){
+
         onCreationFailOrSuccessCalled = false;
         studentFoldersCreated = 0;
-
         // TODO pegar Exam da intent
         /*
         Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
@@ -104,7 +104,6 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
 
     // *Callback for the query thread result:
     public void onQueryContactResult(String[] emailArray){
-        System.out.println("onQueryContactResult");
         for(int i=0; i<emailArray.length; i++){
             System.out.println(emailArray[i]);
         }
@@ -155,13 +154,6 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
 
 
 
-
-
-
-
-
-
-
     private void stub(){
         studentConfigFilePairArray = new StudentConfigFilePair[5];
         for(int i=0; i< studentConfigFilePairArray.length; i++){
@@ -194,7 +186,7 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
                 //.setTitle(exam.getTitle())
                 .setTitle("TituloParaAFolderDeExam") // TODO alterar para getTitle
                 .build();
-        new DriveFolderHandler(googleApiClient).create(Drive.DriveApi.getRootFolder(googleApiClient), examRootFolderMetaData, new CreateFolderCallback(){
+        new DriveFolderHandler(getGoogleApiClient()).create(Drive.DriveApi.getRootFolder(getGoogleApiClient()), examRootFolderMetaData, new CreateFolderCallback(){
             @Override
             public void onComplete(DriveFolder driveFolder) {
                 examRootDriveFolder = driveFolder;
@@ -204,14 +196,14 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
                 MetadataChangeSet teacherFilesFolderMetaData = new MetadataChangeSet.Builder()
                         .setTitle("TeacherFiles")
                         .build();
-                new DriveFolderHandler(googleApiClient).create(driveFolder, teacherFilesFolderMetaData, new CreateFolderCallback(){
+                new DriveFolderHandler(getGoogleApiClient()).create(driveFolder, teacherFilesFolderMetaData, new CreateFolderCallback(){
                     @Override
                     public void onComplete(DriveFolder driveFolder) {
                         teacherFilesDriveFolder = driveFolder;
 
                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                         // *CorrectAnswers file creation:
-                        new DriveFileOffline(googleApiClient).upload(
+                        new DriveFileOffline(getGoogleApiClient()).upload(
                                 driveFolder,
                                 "CorrectAnswers",
                                 "", // TODO generate CorrectAnswers file content
@@ -244,7 +236,7 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
 
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                 // *Exam file creation:
-                new DriveFileOffline(googleApiClient).upload(
+                new DriveFileOffline(getGoogleApiClient()).upload(
                         driveFolder,
                         "Exam",
                         //exam.toString(),
@@ -260,7 +252,7 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
                                 MetadataChangeSet studentFilesFolderMetaData = new MetadataChangeSet.Builder()
                                         .setTitle("StudentFiles")
                                         .build();
-                                new DriveFolderHandler(googleApiClient).create(examRootDriveFolder, studentFilesFolderMetaData, new CreateFolderCallback() {
+                                new DriveFolderHandler(getGoogleApiClient()).create(examRootDriveFolder, studentFilesFolderMetaData, new CreateFolderCallback() {
                                     @Override
                                     public void onComplete(DriveFolder driveFolder) {
                                         studentFilesDriveFolder = driveFolder;
@@ -311,13 +303,13 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
         MetadataChangeSet studentFolderMetaData = new MetadataChangeSet.Builder()
                 .setTitle("Student")
                 .build();
-        new DriveFolderHandler(googleApiClient).create(parentFolder, studentFolderMetaData, new CreateFolderCallback() {
+        new DriveFolderHandler(getGoogleApiClient()).create(parentFolder, studentFolderMetaData, new CreateFolderCallback() {
             @Override
             public void onComplete(final DriveFolder studentDriveFolder) {
 
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                 // *Answers file creation:
-                new DriveFileOffline(googleApiClient).upload(
+                new DriveFileOffline(getGoogleApiClient()).upload(
                         studentDriveFolder,
                         "Answers",
                         "", // TODO generate Answers file content
@@ -328,7 +320,7 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
 
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                                 // *Grade file creation:
-                                new DriveFileOffline(googleApiClient).upload(
+                                new DriveFileOffline(getGoogleApiClient()).upload(
                                         studentDriveFolder,
                                         "Grade",
                                         "", // TODO generate Grade file content
@@ -339,7 +331,7 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
 
                                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                                                 // *Configs file creation:
-                                                new DriveFileOffline(googleApiClient).upload(
+                                                new DriveFileOffline(getGoogleApiClient()).upload(
                                                         studentDriveFolder,
                                                         "Configs",
                                                         "", // TODO generate Configs file content
@@ -410,7 +402,7 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
     private void generateTeacherConfigFile(){
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
         // *Teacher Configs file creation:
-        new DriveFileOffline(googleApiClient).upload(
+        new DriveFileOffline(getGoogleApiClient()).upload(
                 teacherFilesDriveFolder,
                 "Configs",
                 "", // TODO generate Teacher Configs file content
