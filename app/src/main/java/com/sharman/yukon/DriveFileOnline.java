@@ -3,6 +3,7 @@ package com.sharman.yukon;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -29,6 +30,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.model.Permission;
+import com.sharman.yukon.io.drive.util.PermissionStruct;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -43,52 +45,55 @@ public class DriveFileOnline {
 
 
 
-    public void share(GoogleAccountCredential credential, DriveId driveId){
-        HttpTransport transport = AndroidHttp.newCompatibleTransport();
-        JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-        com.google.api.services.drive.Drive service = new com.google.api.services.drive.Drive.Builder(transport, jsonFactory, credential).build();
-
-
-        String fileId = driveId.encodeToString();
-
-        JsonBatchCallback<Permission> callback = new JsonBatchCallback<Permission>() {
+    public void share(final GoogleAccountCredential credential, final DriveId driveId, final PermissionStruct[] permissionStruct){
+        new Thread(new Runnable() {
             @Override
-            public void onSuccess(Permission permission, HttpHeaders responseHeaders) {
-                System.out.println("Success!*****");
+            public void run() {
+                HttpTransport transport = AndroidHttp.newCompatibleTransport();
+                JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+                com.google.api.services.drive.Drive service = new com.google.api.services.drive.Drive.Builder(transport, jsonFactory, credential).build();
+
+                String fileId = driveId.encodeToString();
+
+                JsonBatchCallback<Permission> callback = new JsonBatchCallback<Permission>() {
+                    @Override
+                    public void onSuccess(Permission permission, HttpHeaders responseHeaders) {
+                        System.out.println("Permission added to file");
+                    }
+
+                    @Override
+                    public void onFailure(GoogleJsonError e, HttpHeaders responseHeaders) {
+                        System.out.println("Error Message: " + e.getMessage());
+                    }
+                };
+
+                BatchRequest batch = service.batch();
+
+                for(int i=0; i<permissionStruct.length; i++) {
+                    Permission permission = new Permission();
+                    permission.setValue(permissionStruct[i].getValue());
+                    permission.setType(permissionStruct[i].getType());
+                    permission.setRole(permissionStruct[i].getRole());
+                    try {
+                        service.permissions().insert(fileId, permission).queue(batch, callback);
+                    } catch(IOException e){
+                        e.printStackTrace();
+                    }
+                }
+
+                try {
+                    batch.execute();
+                } catch(IOException e){
+                    e.printStackTrace();
+                }
             }
-
-            @Override
-            public void onFailure(GoogleJsonError e, HttpHeaders responseHeaders) {
-                System.out.println("Error Message: " + e.getMessage());
-            }
-        };
-
-        BatchRequest batch = service.batch();
-        try {
-            service.permissions().insert(fileId, insertPermission(service, fileId, "tony@acmecorp.com", "user", "writer")).queue(batch, callback);
-            batch.execute();
-        } catch(IOException e){
-            e.printStackTrace();
-        }
-
+        }).run();
     }
 
 
 
 
 
-    private static Permission insertPermission(com.google.api.services.drive.Drive service, String fileId, String value, String type, String role) {
-        Permission newPermission = new Permission();
 
-        newPermission.setValue(value);
-        newPermission.setType(type);
-        newPermission.setRole(role);
-        try {
-            return service.permissions().insert(fileId, newPermission).execute();
-        } catch (IOException e) {
-            System.out.println("An error occurred: " + e);
-        }
-        return null;
-    }
 
 }

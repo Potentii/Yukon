@@ -4,6 +4,7 @@ package com.sharman.yukon.view.activities;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.View;
@@ -12,18 +13,33 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.MetadataChangeSet;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.batch.BatchRequest;
+import com.google.api.client.googleapis.batch.json.JsonBatchCallback;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.json.GoogleJsonError;
+import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.drive.model.Permission;
+import com.sharman.yukon.DriveFileOnline;
 import com.sharman.yukon.EMimeType;
 import com.sharman.yukon.R;
 import com.sharman.yukon.io.drive.CreateFolderCallback;
 import com.sharman.yukon.io.drive.DriveFileOffline;
 import com.sharman.yukon.io.drive.DriveFolderHandler;
 import com.sharman.yukon.io.drive.UploadCallback;
+import com.sharman.yukon.io.drive.util.PermissionStruct;
 import com.sharman.yukon.model.Exam;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -94,6 +110,7 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
             @Override
             public void onClick(View view) {
                 //TODO
+                createExamOnDrive();
             }
         });
 
@@ -103,10 +120,10 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
     }
 
     // *Callback for the query thread result:
-    public void onQueryContactResult(String[] emailArray){
+    public void onQueryContactResult(String[] emailArray){/*
         for(int i=0; i<emailArray.length; i++){
             System.out.println(emailArray[i]);
-        }
+        }*/
         AutoCompleteTextView studentIn = (AutoCompleteTextView) findViewById(R.id.studentIn);
         ArrayAdapter<String> studentAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, emailArray);
         studentIn.setAdapter(studentAdapter);
@@ -259,7 +276,7 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
 
                                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                                         // *Students folders creation:
-                                        for(int i=0; i< studentConfigFilePairArray.length; i++){
+                                        for (int i = 0; i < studentConfigFilePairArray.length; i++) {
                                             createEachStudentFolder(driveFolder, studentConfigFilePairArray[i]);
                                         }
                                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
@@ -316,7 +333,7 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
                         EMimeType.JSON.getMimeType(),
                         new UploadCallback(){
                             @Override
-                            public void onComplete(DriveId driveId) {
+                            public void onComplete(final DriveId answersDriveId) {
 
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                                 // *Grade file creation:
@@ -327,7 +344,7 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
                                         EMimeType.JSON.getMimeType(),
                                         new UploadCallback() {
                                             @Override
-                                            public void onComplete(DriveId driveId) {
+                                            public void onComplete(final DriveId gradeDriveId) {
 
                                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                                                 // *Configs file creation:
@@ -338,8 +355,37 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
                                                         EMimeType.JSON.getMimeType(),
                                                         new UploadCallback() {
                                                             @Override
-                                                            public void onComplete(DriveId driveId) {
-                                                                studentConfigFilePair.setConfigFile(driveId);
+                                                            public void onComplete(final DriveId configsDriveId) {
+                                                                studentConfigFilePair.setConfigFile(configsDriveId);
+
+                                                                Drive.DriveApi.requestSync(getGoogleApiClient()).setResultCallback(new ResultCallback<Status>() {
+                                                                    @Override
+                                                                    public void onResult(Status status) {
+                                                                        new Share(
+                                                                                getCredential(),
+                                                                                answersDriveId,
+                                                                                new PermissionStruct[]{
+                                                                                        new PermissionStruct("potentii@gmail.com", "user", "reader")
+                                                                                }).execute();
+
+                                                                        new Share(
+                                                                                getCredential(),
+                                                                                gradeDriveId,
+                                                                                new PermissionStruct[]{
+                                                                                        new PermissionStruct("potentii@gmail.com", "user", "reader")
+                                                                                }).execute();
+
+                                                                        new Share(
+                                                                                getCredential(),
+                                                                                configsDriveId,
+                                                                                new PermissionStruct[]{
+                                                                                        new PermissionStruct("potentii@gmail.com", "user", "reader")
+                                                                                }).execute();
+                                                                    }
+                                                                });
+
+
+
                                                                 addStudentFolderCreationFlag(true);
                                                             }
 
@@ -423,4 +469,70 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
 
     }
+
+
+
+
+
+
+    private class Share extends AsyncTask<Void, Void, Void> {
+        private com.google.api.services.drive.Drive service = null;
+        private DriveId driveId;
+        private PermissionStruct[] permissionStruct;
+
+        public Share(GoogleAccountCredential credential, DriveId driveId, PermissionStruct[] permissionStruct) {
+            this.driveId = driveId;
+            this.permissionStruct = permissionStruct;
+            HttpTransport transport = AndroidHttp.newCompatibleTransport();
+            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+            service = new com.google.api.services.drive.Drive.Builder(
+                    transport, jsonFactory, credential)
+                    .setApplicationName("Yukon")
+                    .build();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            if(driveId == null){
+                System.out.println("NULL");
+            }
+            String fileId = driveId.getResourceId();
+
+            JsonBatchCallback<Permission> callback = new JsonBatchCallback<Permission>() {
+                @Override
+                public void onSuccess(Permission permission, HttpHeaders responseHeaders) {
+                    System.out.println("Permission added to file");
+                }
+
+                @Override
+                public void onFailure(GoogleJsonError e, HttpHeaders responseHeaders) {
+                    System.out.println("Error Message: " + e.getMessage());
+                }
+            };
+
+            BatchRequest batch = service.batch();
+            for(int i=0; i<permissionStruct.length; i++) {
+                Permission permission = new Permission();
+                permission.setValue(permissionStruct[i].getValue());
+                permission.setType(permissionStruct[i].getType());
+                permission.setRole(permissionStruct[i].getRole());
+                try {
+                    System.out.println("1");
+                    service.permissions().insert(fileId, permission).queue(batch, callback);
+                    System.out.println("2");
+                } catch(IOException e){
+                    e.printStackTrace();
+                }
+            }
+
+            try {
+                System.out.println("3");
+                batch.execute();
+            } catch(IOException e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
 }

@@ -27,6 +27,9 @@
         <activity
             android:name=".view.activities.ExamCreateConfirmActivity"
             android:label="@string/title_activity_exam_create_confirm" >
+
+            <meta-data android:name="com.google.android.apps.drive.APP_ID" android:value="id=yukon-1085" />
+
         </activity>
 
     </application>
