@@ -38,6 +38,7 @@ import java.util.Arrays;
 /**
  * Created by poten on 02/10/2015.
  */
+@Deprecated
 public class DriveFileOnline {
 
     public void download(GoogleApiClient googleApiClient, DriveId driveId, final DownloadCallback downloadCallback){
