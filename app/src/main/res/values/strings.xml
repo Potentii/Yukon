@@ -9,5 +9,9 @@
     <string name="title_activity_exam_create_confirm">Confirmar criação</string>
 
     <string name="hello_world">Hello world!</string>
+<<<<<<< HEAD
+    <string name="title_activity_test">TestActivity</string>
+=======
 >>>>>>> integration
+>>>>>>> refs/remotes/origin/integration
 </resources>
