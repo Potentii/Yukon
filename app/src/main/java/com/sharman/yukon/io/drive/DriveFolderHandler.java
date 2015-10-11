@@ -9,6 +9,7 @@ import com.google.android.gms.drive.MetadataChangeSet;
 /**
  * Created by poten on 06/10/2015.
  */
+@Deprecated
 public class DriveFolderHandler {
     private GoogleApiClient googleApiClient;
 

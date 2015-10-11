@@ -1,10 +1,8 @@
 package com.sharman.yukon.view.activities;
 
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.View;
@@ -13,60 +11,47 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.drive.DriveFolder;
-import com.google.android.gms.drive.DriveId;
-import com.google.android.gms.drive.MetadataChangeSet;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.batch.BatchRequest;
-import com.google.api.client.googleapis.batch.json.JsonBatchCallback;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.json.GoogleJsonError;
-import com.google.api.client.http.HttpHeaders;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.drive.model.Permission;
-import com.sharman.yukon.DriveFileOnline;
 import com.sharman.yukon.EMimeType;
 import com.sharman.yukon.R;
-import com.sharman.yukon.io.drive.CreateFolderCallback;
-import com.sharman.yukon.io.drive.DriveFileOffline;
-import com.sharman.yukon.io.drive.DriveFolderHandler;
-import com.sharman.yukon.io.drive.UploadCallback;
+
+import com.sharman.yukon.io.drive.DriveIOHandler;
+import com.sharman.yukon.io.drive.callback.FileCreateCallback;
+import com.sharman.yukon.io.drive.callback.FileShareCallback;
+import com.sharman.yukon.io.drive.callback.FolderCreateCallback;
 import com.sharman.yukon.io.drive.util.PermissionStruct;
 import com.sharman.yukon.model.Exam;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 
 
-public class ExamCreateConfirmActivity extends GoogleConnectActivity {
+public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
     private Exam exam;
 
     private StudentConfigFilePair[] studentConfigFilePairArray;
     private boolean onCreationFailOrSuccessCalled;
     private int studentFoldersCreated;
 
-    private DriveId examDriveId;
-    private DriveId correctAnswersDriveId;
-    private DriveFolder examRootDriveFolder;
-    private DriveFolder teacherFilesDriveFolder;
-    private DriveFolder studentFilesDriveFolder;
+    private String examFileId;
+    private String correctAnswersFileId;
+    private String examRootFolderId;
+    private String teacherFilesFolderId;
+    private String studentFilesFolderId;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exam_create_confirm);
+        // TODO pegar Exam da intent
 
-        // *Queries the contacts's e-mail in a new thread:
-        //TODO colocar thread pra ver se vai mais rapido
+        //TODO escolher alunos.
+        onCreationFailOrSuccessCalled = false;
+        studentFoldersCreated = 0;
+
+        // *Queries the contacts's e-mail:
         new Runnable(){
             @Override
             public void run() {
@@ -80,54 +65,29 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
         }.run();
 
 
-    }
-
-
-
-
-    @Override
-    public void onConnected(Bundle bundle){
-
-        onCreationFailOrSuccessCalled = false;
-        studentFoldersCreated = 0;
-        // TODO pegar Exam da intent
-        /*
-        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-        startActivityForResult(intent, 1);
-        */
-
-
-        //TODO escolher alunos.
-        /*
-        studentConfigFilePairArray = new StudentConfigFilePair[0]; // TODO alterar para a quantidade de alunos selecionados pelo "user picker"
-        for(int i=0; i< studentConfigFilePairArray.length; i++){
-            studentConfigFilePairArray[i] = new StudentConfigFilePair("" , null);// TODO get from "user picker"
-        }
-        */
 
         Button shareAndCreateExamBtn = (Button) findViewById(R.id.shareAndCreateExamBtn);
         shareAndCreateExamBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO
+                studentConfigFilePairArray = new StudentConfigFilePair[3];
+                for (int i = 0; i < studentConfigFilePairArray.length; i++) {
+                    studentConfigFilePairArray[i] = new StudentConfigFilePair("potentii@gmail.com", "");
+                }
+
                 createExamOnDrive();
             }
         });
-
-        stub();
-        //createExamOnDrive();
-
     }
 
+
     // *Callback for the query thread result:
-    public void onQueryContactResult(String[] emailArray){/*
-        for(int i=0; i<emailArray.length; i++){
-            System.out.println(emailArray[i]);
-        }*/
+    public void onQueryContactResult(String[] emailArray){
         AutoCompleteTextView studentIn = (AutoCompleteTextView) findViewById(R.id.studentIn);
         ArrayAdapter<String> studentAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, emailArray);
         studentIn.setAdapter(studentAdapter);
     }
+
 
     // *Queries the contact's e-mail:
     private List<String> queryContactsEmail(){
@@ -170,259 +130,232 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
     }
 
 
-
-    private void stub(){
-        studentConfigFilePairArray = new StudentConfigFilePair[5];
-        for(int i=0; i< studentConfigFilePairArray.length; i++){
-            studentConfigFilePairArray[i] = new StudentConfigFilePair("userIdPlaceholder", null);
-        }
-    }
-
-
     private synchronized void onCreationSuccess(){
-        if(!onCreationFailOrSuccessCalled) {
+        System.out.println("Creation Success CALLED");
+        if (!onCreationFailOrSuccessCalled) {
             onCreationFailOrSuccessCalled = true;
-            Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
+
     private synchronized void onCreationFail(){
-        if(!onCreationFailOrSuccessCalled) {
+        System.out.println("Creation Fail CALLED");
+        if (!onCreationFailOrSuccessCalled) {
             onCreationFailOrSuccessCalled = true;
-            Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show();
+
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), "Fail", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
-
-
-
 
 
     private void createExamOnDrive(){
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
         // *ExamRoot folder creation:
-        MetadataChangeSet examRootFolderMetaData = new MetadataChangeSet.Builder()
-                //.setTitle(exam.getTitle())
-                .setTitle("TituloParaAFolderDeExam") // TODO alterar para getTitle
-                .build();
-        new DriveFolderHandler(getGoogleApiClient()).create(Drive.DriveApi.getRootFolder(getGoogleApiClient()), examRootFolderMetaData, new CreateFolderCallback(){
+        new DriveIOHandler(getCredential()).createFolder("", "EXAMTITLE" /*TODO*/, "", new FolderCreateCallback() {
             @Override
-            public void onComplete(DriveFolder driveFolder) {
-                examRootDriveFolder = driveFolder;
+            public void onSuccess(String folderId) {
+                examRootFolderId = folderId;
 
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                 // *TeacherFiles folder creation:
-                MetadataChangeSet teacherFilesFolderMetaData = new MetadataChangeSet.Builder()
-                        .setTitle("TeacherFiles")
-                        .build();
-                new DriveFolderHandler(getGoogleApiClient()).create(driveFolder, teacherFilesFolderMetaData, new CreateFolderCallback(){
+                new DriveIOHandler(getCredential()).createFolder(folderId, "TeacherFiles", "", new FolderCreateCallback() {
                     @Override
-                    public void onComplete(DriveFolder driveFolder) {
-                        teacherFilesDriveFolder = driveFolder;
+                    public void onSuccess(String folderId) {
+                        teacherFilesFolderId = folderId;
 
                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                         // *CorrectAnswers file creation:
-                        new DriveFileOffline(getGoogleApiClient()).upload(
-                                driveFolder,
-                                "CorrectAnswers",
-                                "", // TODO generate CorrectAnswers file content
-                                EMimeType.JSON.getMimeType(),
-                                new UploadCallback() {
-                                    @Override
-                                    public void onComplete(DriveId driveId) {
-                                        correctAnswersDriveId = driveId;
-                                    }
+                        new DriveIOHandler(getCredential()).createFile(folderId, "CorrectAnswers", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
+                            @Override
+                            public void onSuccess(String fileId) {
+                                correctAnswersFileId = fileId;
+                            }
 
-                                    @Override
-                                    public void onFail(String errorMessage) {
-                                        // TODO error CorrectAnswers file
-                                        onCreationFail();
-                                    }
-                                });
+                            @Override
+                            public void onFailure(String errorMessage) {
+                                // TODO Error: CorrectAnswers file
+                                onCreationFail();
+                            }
+                        });
                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+
                     }
 
                     @Override
-                    public void onFail(String errorMessage) {
-                        // TODO error TeacherFiles folder
+                    public void onFailure(String errorMessage) {
+                        // TODO Error: TeacherFiles folder
                         onCreationFail();
                     }
                 });
-
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
-
 
 
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                 // *Exam file creation:
-                new DriveFileOffline(getGoogleApiClient()).upload(
-                        driveFolder,
-                        "Exam",
-                        //exam.toString(),
-                        "", // TODO generate Exam file content
-                        EMimeType.JSON.getMimeType(),
-                        new UploadCallback() {
+                new DriveIOHandler(getCredential()).createFile(folderId, "Exam", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
+                    @Override
+                    public void onSuccess(String fileId) {
+                        examFileId = fileId;
+
+                        // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+                        // *StudentFiles folder creation:
+                        new DriveIOHandler(getCredential()).createFolder(examRootFolderId, "StudentFiles", "", new FolderCreateCallback() {
                             @Override
-                            public void onComplete(DriveId driveId) {
-                                examDriveId = driveId;
+                            public void onSuccess(String folderId) {
+                                studentFilesFolderId = folderId;
 
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
-                                // *StudentFiles folder creation:
-                                MetadataChangeSet studentFilesFolderMetaData = new MetadataChangeSet.Builder()
-                                        .setTitle("StudentFiles")
-                                        .build();
-                                new DriveFolderHandler(getGoogleApiClient()).create(examRootDriveFolder, studentFilesFolderMetaData, new CreateFolderCallback() {
-                                    @Override
-                                    public void onComplete(DriveFolder driveFolder) {
-                                        studentFilesDriveFolder = driveFolder;
-
-                                        // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
-                                        // *Students folders creation:
-                                        for (int i = 0; i < studentConfigFilePairArray.length; i++) {
-                                            createEachStudentFolder(driveFolder, studentConfigFilePairArray[i]);
-                                        }
-                                        // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+                                // *Students folders creation:
+                                    for (int i = 0; i < studentConfigFilePairArray.length; i++) {
+                                        createEachStudentFolder(folderId, studentConfigFilePairArray[i]);
                                     }
-
-                                    @Override
-                                    public void onFail(String errorMessage) {
-                                        // TODO error StudentFiles folder
-                                        onCreationFail();
-                                    }
-                                });
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+
                             }
 
                             @Override
-                            public void onFail(String errorMessage) {
-                                // TODO error Exam file
+                            public void onFailure(String errorMessage) {
+                                // TODO Error: StudentFiles folder
                                 onCreationFail();
                             }
                         });
+                        // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        // TODO Error: Exam file
+                        onCreationFail();
+                    }
+                });
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+
             }
 
             @Override
-            public void onFail(String errorMessage) {
-                // TODO error ExamRoot folder
+            public void onFailure(String errorMessage) {
+                // TODO Error: ExamRoot folder
                 onCreationFail();
             }
         });
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
-
 
     }
 
 
 
 
-    private void createEachStudentFolder(DriveFolder parentFolder, final StudentConfigFilePair studentConfigFilePair){
+    private void createEachStudentFolder(String parentFolderId, final StudentConfigFilePair studentConfigFilePair){
+        final String type = "user";
+
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
         // *Student folder creation:
-        MetadataChangeSet studentFolderMetaData = new MetadataChangeSet.Builder()
-                .setTitle("Student")
-                .build();
-        new DriveFolderHandler(getGoogleApiClient()).create(parentFolder, studentFolderMetaData, new CreateFolderCallback() {
+        new DriveIOHandler(getCredential()).createFolder(parentFolderId, "Student", "", new FolderCreateCallback() {
             @Override
-            public void onComplete(final DriveFolder studentDriveFolder) {
+            public void onSuccess(final String studentFolderId) {
 
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                 // *Answers file creation:
-                new DriveFileOffline(getGoogleApiClient()).upload(
-                        studentDriveFolder,
-                        "Answers",
-                        "", // TODO generate Answers file content
-                        EMimeType.JSON.getMimeType(),
-                        new UploadCallback(){
+                new DriveIOHandler(getCredential()).createFile(studentFolderId, "Answers", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
+                    @Override
+                    public void onSuccess(final String answersFileId) {
+
+                        // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+                        // *Grade file creation:
+                        new DriveIOHandler(getCredential()).createFile(studentFolderId, "Grade", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
                             @Override
-                            public void onComplete(final DriveId answersDriveId) {
+                            public void onSuccess(final String gradeFileId) {
 
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
-                                // *Grade file creation:
-                                new DriveFileOffline(getGoogleApiClient()).upload(
-                                        studentDriveFolder,
-                                        "Grade",
-                                        "", // TODO generate Grade file content
-                                        EMimeType.JSON.getMimeType(),
-                                        new UploadCallback() {
+                                // *Configs file creation:
+                                new DriveIOHandler(getCredential()).createFile(studentFolderId, "Configs", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
+                                    @Override
+                                    public void onSuccess(final String configsFileId) {
+                                        studentConfigFilePair.setConfigFileId(configsFileId);
+
+                                        new DriveIOHandler(getCredential()).shareFile(answersFileId, null, new PermissionStruct(studentConfigFilePair.getUserId(), type, "reader"), new FileShareCallback() {
                                             @Override
-                                            public void onComplete(final DriveId gradeDriveId) {
-
-                                                // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
-                                                // *Configs file creation:
-                                                new DriveFileOffline(getGoogleApiClient()).upload(
-                                                        studentDriveFolder,
-                                                        "Configs",
-                                                        "", // TODO generate Configs file content
-                                                        EMimeType.JSON.getMimeType(),
-                                                        new UploadCallback() {
-                                                            @Override
-                                                            public void onComplete(final DriveId configsDriveId) {
-                                                                studentConfigFilePair.setConfigFile(configsDriveId);
-
-                                                                Drive.DriveApi.requestSync(getGoogleApiClient()).setResultCallback(new ResultCallback<Status>() {
-                                                                    @Override
-                                                                    public void onResult(Status status) {
-                                                                        new Share(
-                                                                                getCredential(),
-                                                                                answersDriveId,
-                                                                                new PermissionStruct[]{
-                                                                                        new PermissionStruct("potentii@gmail.com", "user", "reader")
-                                                                                }).execute();
-
-                                                                        new Share(
-                                                                                getCredential(),
-                                                                                gradeDriveId,
-                                                                                new PermissionStruct[]{
-                                                                                        new PermissionStruct("potentii@gmail.com", "user", "reader")
-                                                                                }).execute();
-
-                                                                        new Share(
-                                                                                getCredential(),
-                                                                                configsDriveId,
-                                                                                new PermissionStruct[]{
-                                                                                        new PermissionStruct("potentii@gmail.com", "user", "reader")
-                                                                                }).execute();
-                                                                    }
-                                                                });
-
-
-
-                                                                addStudentFolderCreationFlag(true);
-                                                            }
-
-                                                            @Override
-                                                            public void onFail(String errorMessage) {
-                                                                // TODO error Configs file
-                                                                addStudentFolderCreationFlag(false);
-                                                            }
-                                                        });
-                                                // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
-                                            }
+                                            public void onSuccess() {}
 
                                             @Override
-                                            public void onFail(String errorMessage) {
-                                                // TODO error Grade file
-                                                addStudentFolderCreationFlag(false);
+                                            public void onFailure(String errorMessage) {
+                                                onCreationFail();
                                             }
                                         });
+
+                                        new DriveIOHandler(getCredential()).shareFile(gradeFileId, null, new PermissionStruct(studentConfigFilePair.getUserId(), type, "reader"), new FileShareCallback() {
+                                            @Override
+                                            public void onSuccess() {}
+
+                                            @Override
+                                            public void onFailure(String errorMessage) {
+                                                onCreationFail();
+                                            }
+                                        });
+
+                                        new DriveIOHandler(getCredential()).shareFile(configsFileId, null, new PermissionStruct(studentConfigFilePair.getUserId(), type, "reader"), new FileShareCallback() {
+                                            @Override
+                                            public void onSuccess() {}
+
+                                            @Override
+                                            public void onFailure(String errorMessage) {
+                                                onCreationFail();
+                                            }
+                                        });
+
+                                        addStudentFolderCreationFlag(true);
+                                    }
+
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        // TODO Error: Student Configs file
+                                        addStudentFolderCreationFlag(false);
+                                    }
+                                });
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+
                             }
 
                             @Override
-                            public void onFail(String errorMessage) {
-                                // TODO error Answers file
+                            public void onFailure(String errorMessage) {
+                                // TODO Error: Grade file
                                 addStudentFolderCreationFlag(false);
                             }
                         });
+                        // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        // TODO Error: Answers file
+                        addStudentFolderCreationFlag(false);
+                    }
+                });
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+
             }
 
             @Override
-            public void onFail(String errorMessage) {
-                // TODO error Student folder
+            public void onFailure(String errorMessage) {
+                // TODO Error: Student folder
                 addStudentFolderCreationFlag(false);
             }
         });
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+
     }
 
 
@@ -446,26 +379,22 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
 
 
     private void generateTeacherConfigFile(){
+
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
         // *Teacher Configs file creation:
-        new DriveFileOffline(getGoogleApiClient()).upload(
-                teacherFilesDriveFolder,
-                "Configs",
-                "", // TODO generate Teacher Configs file content
-                EMimeType.JSON.getMimeType(),
-                new UploadCallback() {
-                    @Override
-                    public void onComplete(DriveId driveId) {
-                        // *If this last file has been created, then call the onCreationSuccess():
-                        onCreationSuccess();
-                    }
+        new DriveIOHandler(getCredential()).createFile(teacherFilesFolderId, "Configs", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
+            @Override
+            public void onSuccess(String fileId) {
+                // *If this last file has been created, then call the onCreationSuccess():
+                onCreationSuccess();
+            }
 
-                    @Override
-                    public void onFail(String errorMessage) {
-                        // TODO error Teacher Configs file
-                        onCreationFail();
-                    }
-                });
+            @Override
+            public void onFailure(String errorMessage) {
+                // TODO Error: Teacher Configs file
+                onCreationFail();
+            }
+        });
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
 
     }
@@ -474,7 +403,7 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
 
 
 
-
+    /*
     private class Share extends AsyncTask<Void, Void, Void> {
         private com.google.api.services.drive.Drive service = null;
         private DriveId driveId;
@@ -534,5 +463,5 @@ public class ExamCreateConfirmActivity extends GoogleConnectActivity {
             return null;
         }
     }
-
+    */
 }

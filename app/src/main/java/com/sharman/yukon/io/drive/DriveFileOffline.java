@@ -17,6 +17,7 @@ import java.io.Writer;
 /**
  * Created by poten on 03/10/2015.
  */
+@Deprecated
 public class DriveFileOffline {
     private final GoogleApiClient googleApiClient;
 

@@ -8,11 +8,11 @@ import com.google.android.gms.drive.DriveId;
  */
 public class StudentConfigFilePair {
     private String userId;
-    private DriveId configFile;
+    private String configFileId;
 
-    public StudentConfigFilePair(String userId, DriveId configFile) {
+    public StudentConfigFilePair(String userId, String configFileId) {
         this.userId = userId;
-        this.configFile = configFile;
+        this.configFileId = configFileId;
     }
 
     public String getUserId() {
@@ -21,10 +21,10 @@ public class StudentConfigFilePair {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-    public DriveId getConfigFile() {
-        return configFile;
+    public String getConfigFileId() {
+        return configFileId;
     }
-    public void setConfigFile(DriveId configFile) {
-        this.configFile = configFile;
+    public void setConfigFileId(String configFileId) {
+        this.configFileId = configFileId;
     }
 }
