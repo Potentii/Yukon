@@ -1,4 +1,4 @@
-package com.sharman.yukon.model;
+package com.sharman.yukon.model.util;
 
 /**
  * Created by poten on 04/10/2015.

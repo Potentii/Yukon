@@ -1,22 +1,13 @@
-package com.sharman.yukon;
+package com.sharman.yukon.view.activities;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
-<<<<<<< HEAD
-import com.sharman.yukon.model.Exam;
-=======
-import com.sharman.yukon.view.activities.ExamCreateConfirmActivity;
-import com.sharman.yukon.view.activities.GoogleConnectActivity;
-<<<<<<< HEAD
-import com.sharman.yukon.view.activities.TestActivity;
-=======
->>>>>>> integration
->>>>>>> refs/remotes/origin/integration
+import com.sharman.yukon.R;
+
 
 public class MainActivity extends Activity {
 
@@ -28,13 +19,11 @@ public class MainActivity extends Activity {
     }
 
     public void callActivityExam(View view) {
-
-<<<<<<< HEAD
         Intent iCallActivityExam = new Intent(this, ExamCreateActivity.class);
         startActivity(iCallActivityExam);
         finish();
-=======
-        Button btn = (Button)findViewById(R.id.btVerProva);
+
+        Button btn = (Button)findViewById(R.id.newExamBtn);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,6 +33,5 @@ public class MainActivity extends Activity {
                 finish();
             }
         });
->>>>>>> integration
     }
 }

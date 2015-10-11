@@ -1,5 +1,7 @@
 package com.sharman.yukon.model;
 
+import com.sharman.yukon.model.util.EMultipleAnswerType;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
