@@ -153,7 +153,7 @@ public final class DriveIOHandler {
      *  * Shares a file on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void shareFile(final String fileId, final String emailMessage, final PermissionStruct permissionStruct, final FileShareCallback fileShareCallback){
+    public void shareFile(final String fileId, final String emailMessage, final PermissionStruct[] permissionStructArray, final FileShareCallback fileShareCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -175,21 +175,32 @@ public final class DriveIOHandler {
 
                 BatchRequest batch = service.batch();
 
-                Permission permission = new Permission();
-                permission.setValue(permissionStruct.getValue());
-                permission.setType(permissionStruct.getType());
-                permission.setRole(permissionStruct.getRole());
-                try {
-                    if(emailMessage != null) {
-                        service.permissions().insert(fileId, permission)
-                                .setSendNotificationEmails(true)
-                                .setEmailMessage(emailMessage)
-                                .queue(batch, callback);
-                    } else{
-                        service.permissions().insert(fileId, permission)
-                                .setSendNotificationEmails(false)
-                                .queue(batch, callback);
+                // *Inserting permissions:
+                for(int i=0; i<permissionStructArray.length; i++) {
+                    Permission permission = new Permission();
+                    permission.setValue(permissionStructArray[i].getValue());
+                    permission.setType(permissionStructArray[i].getType());
+                    permission.setRole(permissionStructArray[i].getRole());
+                    try {
+                        if (emailMessage != null) {
+                            service.permissions().insert(fileId, permission)
+                                    .setSendNotificationEmails(true)
+                                    .setEmailMessage(emailMessage)
+                                    .queue(batch, callback);
+                        } else {
+                            service.permissions().insert(fileId, permission)
+                                    .setSendNotificationEmails(false)
+                                    .queue(batch, callback);
+                        }
+                    } catch(IOException e){
+                        e.printStackTrace();
+                        fileShareCallback.onFailure(e.getMessage());
+                        return;
                     }
+                }
+
+
+                try {
                     batch.execute();
                 } catch(IOException e){
                     e.printStackTrace();

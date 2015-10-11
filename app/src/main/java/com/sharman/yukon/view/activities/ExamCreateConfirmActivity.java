@@ -87,8 +87,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
             shareAndCreateExamBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    studentConfigFilePairArray = new StudentConfigFilePair[studentPickerList.size()];
+                    studentConfigFilePairArray = new StudentConfigFilePair[studentPickerList.size()-1];
                     for (int i = 0; i < studentConfigFilePairArray.length; i++) {
                         AutoCompleteTextView studentPicker = (AutoCompleteTextView) studentPickerList.get(i).findViewById(R.id.studentPickerIn);
                         studentConfigFilePairArray[i] = new StudentConfigFilePair(studentPicker.getText().toString(), "");
@@ -297,11 +296,31 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
                             public void onSuccess(String folderId) {
                                 studentFilesFolderId = folderId;
 
+                                PermissionStruct[] permissionStructArray = new PermissionStruct[studentConfigFilePairArray.length];
+
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                                 // *Students folders creation:
-                                    for (int i = 0; i < studentConfigFilePairArray.length; i++) {
-                                        createEachStudentFolder(folderId, studentConfigFilePairArray[i]);
+                                for (int i = 0; i < studentConfigFilePairArray.length; i++) {
+                                    permissionStructArray[i] = new PermissionStruct(studentConfigFilePairArray[i].getUserId(), "user", "reader");
+                                    createEachStudentFolder(folderId, studentConfigFilePairArray[i]);
+                                }
+                                // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+
+
+                                // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+                                // *Exam file share:
+                                new DriveIOHandler(getCredential()).shareFile(examFileId, null, permissionStructArray, new FileShareCallback() {
+                                    @Override
+                                    public void onSuccess() {
+
                                     }
+
+                                    @Override
+                                    public void onFailure(String errorMessage) {
+                                        // TODO Error: Exam file share
+                                        onCreationFail();
+                                    }
+                                });
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
 
                             }
@@ -367,7 +386,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
                                     public void onSuccess(final String configsFileId) {
                                         studentConfigFilePair.setConfigFileId(configsFileId);
 
-                                        new DriveIOHandler(getCredential()).shareFile(answersFileId, null, new PermissionStruct(studentConfigFilePair.getUserId(), type, "reader"), new FileShareCallback() {
+                                        new DriveIOHandler(getCredential()).shareFile(answersFileId, null, new PermissionStruct[]{new PermissionStruct(studentConfigFilePair.getUserId(), type, "writer")}, new FileShareCallback() {
                                             @Override
                                             public void onSuccess() {}
 
@@ -377,7 +396,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
                                             }
                                         });
 
-                                        new DriveIOHandler(getCredential()).shareFile(gradeFileId, null, new PermissionStruct(studentConfigFilePair.getUserId(), type, "reader"), new FileShareCallback() {
+                                        new DriveIOHandler(getCredential()).shareFile(gradeFileId, null, new PermissionStruct[]{new PermissionStruct(studentConfigFilePair.getUserId(), type, "reader")}, new FileShareCallback() {
                                             @Override
                                             public void onSuccess() {}
 
@@ -387,7 +406,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
                                             }
                                         });
 
-                                        new DriveIOHandler(getCredential()).shareFile(configsFileId, null, new PermissionStruct(studentConfigFilePair.getUserId(), type, "reader"), new FileShareCallback() {
+                                        new DriveIOHandler(getCredential()).shareFile(configsFileId, null, new PermissionStruct[]{new PermissionStruct(studentConfigFilePair.getUserId(), type, "reader")}, new FileShareCallback() {
                                             @Override
                                             public void onSuccess() {}
 
