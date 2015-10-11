@@ -12,9 +12,11 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Listar questionarios"
-        android:id="@+id/btVerProva"
+        android:text="Questionario"
+        android:id="@+id/newExamBtn"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="callActivityExam"
+        android:textSize="18dp" />
 
 </RelativeLayout>
