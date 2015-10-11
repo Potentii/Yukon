@@ -79,9 +79,9 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
         }.run();
 
 
-        try {
+        try {/*
             String examStr = getIntent().getExtras().getString("exam");
-            exam = new Exam(examStr);
+            exam = new Exam(examStr);*/
 
             // *Execute the creation and share of the Exam:
             Button shareAndCreateExamBtn = (Button) findViewById(R.id.shareAndCreateExamBtn);
@@ -98,7 +98,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
                 }
             });
 
-        } catch (NullPointerException | JSONException e){
+        } catch (NullPointerException /*| JSONException*/ e){
             // TODO error
             e.printStackTrace();
             System.out.println("Erro ao tentar recuperar 'Exam'");
@@ -382,7 +382,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                                 // *Configs file creation:
-                                new DriveIOHandler(getCredential()).createFile(studentFolderId, "Configs", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
+                                new DriveIOHandler(getCredential()).createFile(studentFolderId, "Configs", "", EMimeType.STUDENT_CONFIG.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
                                     @Override
                                     public void onSuccess(final String configsFileId) {
                                         studentConfigFilePair.setConfigFileId(configsFileId);
@@ -484,7 +484,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
         // *Teacher Configs file creation:
-        new DriveIOHandler(getCredential()).createFile(teacherFilesFolderId, "Configs", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
+        new DriveIOHandler(getCredential()).createFile(teacherFilesFolderId, "Configs", "", EMimeType.TEACHER_CONFIG.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
             @Override
             public void onSuccess(String fileId) {
                 // *If this last file has been created, then call the onCreationSuccess():

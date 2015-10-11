@@ -10,13 +10,16 @@ import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.ParentReference;
 import com.google.api.services.drive.model.Permission;
 import com.sharman.yukon.EMimeType;
 import com.sharman.yukon.io.drive.callback.FileCreateCallback;
 import com.sharman.yukon.io.drive.callback.FileDeleteCallback;
 import com.sharman.yukon.io.drive.callback.FileEditCallback;
+import com.sharman.yukon.io.drive.callback.FileQueryCallback;
 import com.sharman.yukon.io.drive.callback.FileReadCallback;
 import com.sharman.yukon.io.drive.callback.FileShareCallback;
 import com.sharman.yukon.io.drive.callback.FolderCreateCallback;
@@ -25,7 +28,9 @@ import com.sharman.yukon.io.drive.callback.FolderShareCallback;
 import com.sharman.yukon.io.drive.util.PermissionStruct;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by poten on 10/10/2015.
@@ -112,6 +117,40 @@ public final class DriveIOHandler {
             @Override
             public void run() {
 
+            }
+        }).start();
+    }
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Query for files on Drive:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    public void queryFiles(final String query, final FileQueryCallback fileQueryCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // *Get the Drive service instance:
+                com.google.api.services.drive.Drive service = getDriveService();
+                List<File> driveFileList = new ArrayList<File>();
+
+                try {
+                    Drive.Files.List request = service.files().list().setQ(query);
+
+                    do {
+                        FileList files = request.execute();
+
+                        driveFileList.addAll(files.getItems());
+                        request.setPageToken(files.getNextPageToken());
+                    } while (request.getPageToken() != null && request.getPageToken().length() > 0);
+
+                    fileQueryCallback.onResult(driveFileList);
+                } catch (IOException e){
+                    e.printStackTrace();
+                    fileQueryCallback.onResult(driveFileList);
+                    return;
+                }
             }
         }).start();
     }
