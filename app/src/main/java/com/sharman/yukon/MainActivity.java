@@ -23,7 +23,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //Toast.makeText(getApplicationContext(), "Hello world", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplicationContext(), TestActivity.class);
+                Intent intent = new Intent(getApplicationContext(), ExamCreateConfirmActivity.class);
                 startActivity(intent);
                 finish();
             }

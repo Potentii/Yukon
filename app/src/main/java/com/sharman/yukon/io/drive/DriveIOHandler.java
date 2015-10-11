@@ -55,6 +55,7 @@ public final class DriveIOHandler {
 
 
 
+
     /*
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      *  * Creates a file on Drive:
@@ -152,7 +153,7 @@ public final class DriveIOHandler {
      *  * Shares a file on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void shareFile(final String fileId, final PermissionStruct permissionStruct, final FileShareCallback fileShareCallback){
+    public void shareFile(final String fileId, final String emailMessage, final PermissionStruct permissionStruct, final FileShareCallback fileShareCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -179,7 +180,16 @@ public final class DriveIOHandler {
                 permission.setType(permissionStruct.getType());
                 permission.setRole(permissionStruct.getRole());
                 try {
-                    service.permissions().insert(fileId, permission).queue(batch, callback);
+                    if(emailMessage != null) {
+                        service.permissions().insert(fileId, permission)
+                                .setSendNotificationEmails(true)
+                                .setEmailMessage(emailMessage)
+                                .queue(batch, callback);
+                    } else{
+                        service.permissions().insert(fileId, permission)
+                                .setSendNotificationEmails(false)
+                                .queue(batch, callback);
+                    }
                     batch.execute();
                 } catch(IOException e){
                     e.printStackTrace();
