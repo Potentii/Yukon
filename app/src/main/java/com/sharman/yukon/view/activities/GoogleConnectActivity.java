@@ -48,6 +48,7 @@ import java.util.List;
 /**
  * Created by poten on 04/10/2015.
  */
+@Deprecated
 public abstract class GoogleConnectActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
     private GoogleApiClient googleApiClient;
     private static final int REQUEST_CODE_RESOLUTION = 3;

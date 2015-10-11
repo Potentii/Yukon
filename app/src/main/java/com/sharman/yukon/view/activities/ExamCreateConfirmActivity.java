@@ -5,10 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.sharman.yukon.EMimeType;
@@ -21,6 +25,8 @@ import com.sharman.yukon.io.drive.callback.FolderCreateCallback;
 import com.sharman.yukon.io.drive.util.PermissionStruct;
 import com.sharman.yukon.model.Exam;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,26 +36,33 @@ import java.util.List;
 public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
     private Exam exam;
 
+    // *StudentPicker variables:
+    private LayoutInflater layoutInflater;
+    private LinearLayout studentPickerDiv;
+    private List<View> studentPickerList = new ArrayList<>();
+    private ArrayAdapter<String> emailsAdapter;
     private StudentConfigFilePair[] studentConfigFilePairArray;
-    private boolean onCreationFailOrSuccessCalled;
-    private int studentFoldersCreated;
 
+    // *Exam creation variables:
     private String examFileId;
     private String correctAnswersFileId;
     private String examRootFolderId;
     private String teacherFilesFolderId;
     private String studentFilesFolderId;
+    private boolean onCreationFailOrSuccessCalled;
+    private int studentFoldersCreated;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exam_create_confirm);
-        // TODO pegar Exam da intent
 
-        //TODO escolher alunos.
         onCreationFailOrSuccessCalled = false;
         studentFoldersCreated = 0;
+        layoutInflater = LayoutInflater.from(this);
+        studentPickerDiv = (LinearLayout) findViewById(R.id.studentPickerDiv);
+
 
         // *Queries the contacts's e-mail:
         new Runnable(){
@@ -65,30 +78,41 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
         }.run();
 
 
+        try {
+            String examStr = getIntent().getExtras().getString("exam");
+            exam = new Exam(examStr);
 
-        Button shareAndCreateExamBtn = (Button) findViewById(R.id.shareAndCreateExamBtn);
-        shareAndCreateExamBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                studentConfigFilePairArray = new StudentConfigFilePair[3];
-                for (int i = 0; i < studentConfigFilePairArray.length; i++) {
-                    studentConfigFilePairArray[i] = new StudentConfigFilePair("potentii@gmail.com", "");
+            // *Execute the creation and share of the Exam:
+            Button shareAndCreateExamBtn = (Button) findViewById(R.id.shareAndCreateExamBtn);
+            shareAndCreateExamBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    studentConfigFilePairArray = new StudentConfigFilePair[studentPickerList.size()];
+                    for (int i = 0; i < studentConfigFilePairArray.length; i++) {
+                        AutoCompleteTextView studentPicker = (AutoCompleteTextView) studentPickerList.get(i).findViewById(R.id.studentPickerIn);
+                        studentConfigFilePairArray[i] = new StudentConfigFilePair(studentPicker.getText().toString(), "");
+                    }
+
+                    createExamOnDrive();
                 }
+            });
 
-                createExamOnDrive();
-            }
-        });
+        } catch (NullPointerException | JSONException e){
+            // TODO error
+            e.printStackTrace();
+            System.out.println("Erro ao tentar recuperar 'Exam'");
+        }
     }
 
 
-    // *Callback for the query thread result:
-    public void onQueryContactResult(String[] emailArray){
-        AutoCompleteTextView studentIn = (AutoCompleteTextView) findViewById(R.id.studentIn);
-        ArrayAdapter<String> studentAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, emailArray);
-        studentIn.setAdapter(studentAdapter);
-    }
 
 
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Contacts query methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     // *Queries the contact's e-mail:
     private List<String> queryContactsEmail(){
         List<String> emailList = new ArrayList<String>();
@@ -130,6 +154,64 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
     }
 
 
+    // *Callback for the query thread result:
+    public void onQueryContactResult(String[] emailArray){
+        emailsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, emailArray);
+        addStudentPicker();
+    }
+
+
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * StudentPicker methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    // *Creates a new "studentPicker", adds to the list, and sets to it the properly listener:
+    private void addStudentPicker(){
+        final View studentPicker = layoutInflater.inflate(R.layout.student_picker, null);
+        AutoCompleteTextView studentPickerIn = (AutoCompleteTextView) studentPicker.findViewById(R.id.studentPickerIn);
+        studentPickerIn.setAdapter(emailsAdapter);
+        studentPickerIn.addTextChangedListener(new TextWatcher(){
+            private boolean hasCreatedView = false;
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int count) {
+                if(!hasCreatedView && charSequence.length()>0){
+                    addStudentPicker();
+                    hasCreatedView = true;
+                } else if(hasCreatedView && charSequence.length()==0){
+                    hasCreatedView = false;
+                    removeStudentPicker(studentPicker);
+                }
+            }
+        });
+        studentPickerDiv.addView(studentPicker);
+        studentPickerList.add(studentPicker);
+    }
+
+
+    // *Remove the last "studentPicker" from the list and from the interface:
+    private void removeStudentPicker(View studentPicker){
+        studentPickerDiv.removeView(studentPicker);
+        studentPickerList.remove(studentPicker);
+    }
+
+
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Exam creation methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     private synchronized void onCreationSuccess(){
         System.out.println("Creation Success CALLED");
         if (!onCreationFailOrSuccessCalled) {

@@ -14,12 +14,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/alunosShareInDiv">
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -27,13 +21,12 @@
                 android:text="E-mails dos alunos"
                 android:id="@+id/textView" />
 
-            <AutoCompleteTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress|textPersonName"
-                android:ems="10"
-                android:id="@+id/studentIn"
-                android:singleLine="true" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/studentPickerDiv">
+
         </LinearLayout>
     </LinearLayout>
 
