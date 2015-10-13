@@ -1,24 +1,38 @@
 package com.sharman.yukon.view.activities.util;
 
+import com.sharman.yukon.model.Exam;
+
 /**
  * Created by poten on 11/10/2015.
  */
 public class ExamRVInfo {
-    private int teacherImgId;
+    private String teacherId;
     private String examTitle;
     private String fileId;
+    private Exam exam;
 
-    public ExamRVInfo(int teacherImgId, String examTitle, String fileId) {
-        this.teacherImgId = teacherImgId;
+    public ExamRVInfo(String teacherId, String examTitle, String fileId) {
+        this.teacherId = teacherId;
         this.examTitle = examTitle;
         this.fileId = fileId;
     }
 
-    public int getTeacherImgId() {
-        return teacherImgId;
+    public ExamRVInfo(Exam exam){
+        this.exam = exam;
     }
-    public void setTeacherImgId(int teacherImgId) {
-        this.teacherImgId = teacherImgId;
+
+    public Exam getExam() {
+        return exam;
+    }
+    public void setExam(Exam exam) {
+        this.exam = exam;
+    }
+
+    public String getTeacherId() {
+        return teacherId;
+    }
+    public void setTeacherId(String teacherId) {
+        this.teacherId = teacherId;
     }
     public String getExamTitle() {
         return examTitle;

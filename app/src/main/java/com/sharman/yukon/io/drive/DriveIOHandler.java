@@ -6,7 +6,9 @@ import com.google.api.client.googleapis.batch.json.JsonBatchCallback;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.http.ByteArrayContent;
+import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -27,7 +29,10 @@ import com.sharman.yukon.io.drive.callback.FolderDeleteCallback;
 import com.sharman.yukon.io.drive.callback.FolderShareCallback;
 import com.sharman.yukon.io.drive.util.PermissionStruct;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -112,11 +117,39 @@ public final class DriveIOHandler {
      *  * Reads a file on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void readFile(final FileReadCallback fileReadCallback){
+    public void readFile(final String fileId, final FileReadCallback fileReadCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
+                // *Get the Drive service instance:
+                com.google.api.services.drive.Drive service = getDriveService();
 
+                try {
+                    File file = service.files().get(fileId).execute();
+                    String content = readFile(service, file);
+                    fileReadCallback.onSuccess(content);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    fileReadCallback.onFailure(e.getMessage());
+                }
+            }
+        }).start();
+    }
+
+    public void readFile(final File file, final FileReadCallback fileReadCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // *Get the Drive service instance:
+                com.google.api.services.drive.Drive service = getDriveService();
+
+                try {
+                    String content = readFile(service, file);
+                    fileReadCallback.onSuccess(content);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    fileReadCallback.onFailure(e.getMessage());
+                }
             }
         }).start();
     }
@@ -323,5 +356,40 @@ public final class DriveIOHandler {
 
             }
         }).start();
+    }
+
+
+
+
+
+
+
+
+
+    private String readFile(com.google.api.services.drive.Drive service, File file) throws IOException{
+        StringBuilder sb = new StringBuilder();
+        String line;
+        try {
+            InputStream inputStream = downloadFile(service, file);
+            BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream));
+            while ((line = buffer.readLine()) != null) {
+                sb.append(line);
+            }
+            buffer.close();
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+
+        return sb.toString();
+    }
+
+
+    private InputStream downloadFile(com.google.api.services.drive.Drive service, File file) throws IOException{
+        if (file.getDownloadUrl() != null && file.getDownloadUrl().length() > 0){
+            HttpResponse response = service.getRequestFactory().buildGetRequest(new GenericUrl(file.getDownloadUrl())).execute();
+            return response.getContent();
+        } else{
+            return null;
+        }
     }
 }
