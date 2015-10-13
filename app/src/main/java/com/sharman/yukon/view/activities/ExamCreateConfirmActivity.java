@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.api.services.plus.model.Person;
 import com.sharman.yukon.EMimeType;
 import com.sharman.yukon.R;
 
@@ -23,12 +24,21 @@ import com.sharman.yukon.io.drive.callback.FileCreateCallback;
 import com.sharman.yukon.io.drive.callback.FileShareCallback;
 import com.sharman.yukon.io.drive.callback.FolderCreateCallback;
 import com.sharman.yukon.io.drive.util.PermissionStruct;
+import com.sharman.yukon.io.plus.PlusIOHandler;
+import com.sharman.yukon.io.plus.callback.PersonReadCallback;
 import com.sharman.yukon.model.Exam;
+import com.sharman.yukon.model.Grade;
+import com.sharman.yukon.model.Question;
+import com.sharman.yukon.model.StudentAnswers;
+import com.sharman.yukon.model.StudentConfigs;
+import com.sharman.yukon.model.TeacherAnswers;
+import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.view.activities.util.StudentConfigFilePair;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -80,8 +90,12 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
 
         try {
+            // TODO substituir pelo real:
+            this.exam = new Exam("Título para o exame", new Date(), "", "Matemática", new Question[]{});
+            /*
             String examStr = getIntent().getExtras().getString("exam");
             exam = new Exam(examStr);
+            */
 
             // *Execute the creation and share of the Exam:
             Button shareAndCreateExamBtn = (Button) findViewById(R.id.shareAndCreateExamBtn);
@@ -94,11 +108,28 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
                         studentConfigFilePairArray[i] = new StudentConfigFilePair(studentPicker.getText().toString(), "");
                     }
 
-                    createExamOnDrive();
+                    new PlusIOHandler(getCredential()).ReadPerson("me", new PersonReadCallback() {
+                        @Override
+                        public void onSuccess(Person person) {
+                            try {
+                                exam.setTeacherId(person.getId());
+                                createExamOnDrive();
+                            }catch (JSONException e){
+                                e.printStackTrace();
+                                onFailure(e.getMessage());
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            onCreationFail();
+                        }
+                    });
+
                 }
             });
 
-        } catch (NullPointerException | JSONException e){
+        } catch (NullPointerException /*| JSONException*/ e){
             // TODO error
             e.printStackTrace();
             System.out.println("Erro ao tentar recuperar 'Exam'");
@@ -244,7 +275,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
     private void createExamOnDrive(){
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
         // *ExamRoot folder creation:
-        new DriveIOHandler(getCredential()).createFolder("", "EXAMTITLE" /*TODO*/, "", new FolderCreateCallback() {
+        new DriveIOHandler(getCredential()).createFolder("", exam.getTitle(), "Yukon exam folder", new FolderCreateCallback() {
             @Override
             public void onSuccess(String folderId) {
                 examRootFolderId = folderId;
@@ -255,10 +286,11 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
                     @Override
                     public void onSuccess(String folderId) {
                         teacherFilesFolderId = folderId;
+                        TeacherAnswers teacherAnswers = new TeacherAnswers();
 
                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                         // *CorrectAnswers file creation:
-                        new DriveIOHandler(getCredential()).createFile(folderId, "CorrectAnswers", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
+                        new DriveIOHandler(getCredential()).createFile(folderId, "CorrectAnswers", "", EMimeType.JSON.getMimeType(), teacherAnswers.toString(), new FileCreateCallback() {
                             @Override
                             public void onSuccess(String fileId) {
                                 correctAnswersFileId = fileId;
@@ -285,7 +317,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                 // *Exam file creation:
-                new DriveIOHandler(getCredential()).createFile(folderId, "Exam", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
+                new DriveIOHandler(getCredential()).createFile(folderId, "Exam", "Exam file", EMimeType.JSON.getMimeType(), exam.toString(), new FileCreateCallback() {
                     @Override
                     public void onSuccess(String fileId) {
                         examFileId = fileId;
@@ -367,22 +399,25 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
         new DriveIOHandler(getCredential()).createFolder(parentFolderId, "Student", "", new FolderCreateCallback() {
             @Override
             public void onSuccess(final String studentFolderId) {
+                StudentAnswers studentAnswers = new StudentAnswers();
 
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                 // *Answers file creation:
-                new DriveIOHandler(getCredential()).createFile(studentFolderId, "Answers", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
+                new DriveIOHandler(getCredential()).createFile(studentFolderId, "Answers", "", EMimeType.JSON.getMimeType(), studentAnswers.toString(), new FileCreateCallback() {
                     @Override
                     public void onSuccess(final String answersFileId) {
+                        Grade grade = new Grade(0.0);
 
                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                         // *Grade file creation:
-                        new DriveIOHandler(getCredential()).createFile(studentFolderId, "Grade", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
+                        new DriveIOHandler(getCredential()).createFile(studentFolderId, "Grade", "", EMimeType.JSON.getMimeType(), grade.toString(), new FileCreateCallback() {
                             @Override
                             public void onSuccess(final String gradeFileId) {
+                                StudentConfigs studentConfigs = new StudentConfigs(gradeFileId, answersFileId, examFileId);
 
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                                 // *Configs file creation:
-                                new DriveIOHandler(getCredential()).createFile(studentFolderId, "Configs", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
+                                new DriveIOHandler(getCredential()).createFile(studentFolderId, "Configs", "Student's configuration file", EMimeType.STUDENT_CONFIG.getMimeType(), studentConfigs.toString(), new FileCreateCallback() {
                                     @Override
                                     public void onSuccess(final String configsFileId) {
                                         studentConfigFilePair.setConfigFileId(configsFileId);
@@ -482,9 +517,16 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
     private void generateTeacherConfigFile(){
 
+        String[] studentConfigsFileIdArray = new String[studentConfigFilePairArray.length];
+        for(int i=0; i<studentConfigsFileIdArray.length; i++){
+            studentConfigsFileIdArray[i] = studentConfigFilePairArray[i].getConfigFileId();
+        }
+
+        TeacherConfigs teacherConfigs = new TeacherConfigs(studentConfigsFileIdArray, correctAnswersFileId, examFileId);
+
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
         // *Teacher Configs file creation:
-        new DriveIOHandler(getCredential()).createFile(teacherFilesFolderId, "Configs", "", EMimeType.JSON.getMimeType(), ""/*TODO*/, new FileCreateCallback() {
+        new DriveIOHandler(getCredential()).createFile(teacherFilesFolderId, "Configs", "Teacher's configuration file", EMimeType.TEACHER_CONFIG.getMimeType(), teacherConfigs.toString(), new FileCreateCallback() {
             @Override
             public void onSuccess(String fileId) {
                 // *If this last file has been created, then call the onCreationSuccess():

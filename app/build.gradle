@@ -24,6 +24,7 @@ dependencies {
 
     // *Android Dependencies:
     compile 'com.android.support:appcompat-v7:22.0.+'
+    compile 'com.android.support:recyclerview-v7:22.0.+'
 
     // *Google Drive Android API Dependencies:
     compile 'com.google.android.gms:play-services-drive:8.1.0'
@@ -33,16 +34,17 @@ dependencies {
     compile 'com.google.android.gms:play-services-plus:8.1.0'
 
     // *Google Drive REST API Dependencies:
-    compile('com.google.apis:google-api-services-drive:v2-rev170-1.20.0') {
+    compile('com.google.apis:google-api-services-drive:v2-rev188-1.20.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+
     compile('com.google.api-client:google-api-client-android:1.20.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-    compile ('com.google.apis:google-api-services-tasks:v1-rev35-1.19.0') {
-        exclude module: 'httpclient'
-    }
+
     compile ('com.google.http-client:google-http-client-gson:1.20.0') {
         exclude module: 'httpclient'
     }
+
+    compile 'com.google.apis:google-api-services-plus:v1-rev278-1.20.0'
 }

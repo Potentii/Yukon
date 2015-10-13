@@ -6,7 +6,9 @@ package com.sharman.yukon;
 public enum EMimeType {
     JSON("application/json"),
     TEXT("text/plain"),
-    FOLDER("application/vnd.google-apps.folder");
+    FOLDER("application/vnd.google-apps.folder"),
+    STUDENT_CONFIG("application/vnd.yukon.config.student"),
+    TEACHER_CONFIG("application/vnd.yukon.config.teacher");
 
 
     private String mimeType;
