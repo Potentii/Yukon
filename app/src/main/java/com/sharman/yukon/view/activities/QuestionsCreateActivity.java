@@ -1,21 +1,19 @@
-package com.sharman.yukon;
+package com.sharman.yukon.view.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 
+import com.sharman.yukon.R;
 import com.sharman.yukon.model.AnswerBox;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.Question;
 
 import org.json.JSONException;
 
-import java.util.Date;
 
-public class QuestionsCreateActivity extends GoogleConnectActivity {
+public class QuestionsCreateActivity extends GoogleRestConnectActivity {
     private Exam exam;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

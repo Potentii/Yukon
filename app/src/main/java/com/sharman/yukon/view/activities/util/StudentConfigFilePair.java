@@ -1,7 +1,5 @@
-package com.sharman.yukon.view.activities;
+package com.sharman.yukon.view.activities.util;
 
-import com.google.android.gms.drive.DriveFolder;
-import com.google.android.gms.drive.DriveId;
 
 /**
  * Created by poten on 07/10/2015.

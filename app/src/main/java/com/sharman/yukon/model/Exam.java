@@ -1,9 +1,5 @@
 package com.sharman.yukon.model;
 
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.plus.People;
-import com.google.android.gms.plus.Plus;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
