@@ -14,6 +14,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.plus.PlusScopes;
 import com.sharman.yukon.R;
 
 import java.util.Arrays;
@@ -24,12 +25,21 @@ public abstract class GoogleRestConnectActivity extends Activity {
     private static final int REQUEST_AUTHORIZATION = 1001;
     private static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { DriveScopes.DRIVE };
+    private static final String[] SCOPES = {
+            DriveScopes.DRIVE,
+            PlusScopes.USERINFO_PROFILE,
+            PlusScopes.PLUS_ME,
+            PlusScopes.PLUS_LOGIN,
+            PlusScopes.USERINFO_EMAIL
+    };
+    private boolean connected;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setConnected(false);
 
         // *Initialize Google REST API credential:
         SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
@@ -39,22 +49,22 @@ public abstract class GoogleRestConnectActivity extends Activity {
                 .setSelectedAccountName(settings.getString(PREF_ACCOUNT_NAME, null));
     }
 
-
+    protected void onConnect(){}
 
 
     @Override
     protected void onResume() {
         super.onResume();
-
         // *Verifies if google play services are available:
         isGooglePlayServicesAvailable();
 
         // *Verifies if the user has logged in:
-        if(credential.getSelectedAccountName() == null) {
+        if(credential.getSelectedAccountName() == null){
             chooseAccount();
-        }/* else{
-            new MakeRequestTask(credential).execute();
-        }*/
+        } else if(!credential.getSelectedAccountName().equals("")){
+            setConnected(true);
+            onConnect();
+        }
     }
 
 
@@ -75,20 +85,22 @@ public abstract class GoogleRestConnectActivity extends Activity {
                 }
                 break;
             case REQUEST_ACCOUNT_PICKER:
-                if (resultCode == RESULT_OK && data != null &&
-                        data.getExtras() != null) {
-                    String accountName =
-                            data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
+                    String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
+                        // *If the user authorize:
                         credential.setSelectedAccountName(accountName);
-                        SharedPreferences settings =
-                                getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences settings = getPreferences(Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putString(PREF_ACCOUNT_NAME, accountName);
                         editor.apply();
+                        setConnected(true);
+                        onConnect();
                     }
                 } else if (resultCode == RESULT_CANCELED) {
+                    // *If the user don't authorize:
                     System.out.println("Account unspecified.");
+                    setConnected(false);
                 }
                 break;
             case REQUEST_AUTHORIZATION:
@@ -110,9 +122,11 @@ public abstract class GoogleRestConnectActivity extends Activity {
         final int connectionStatusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 
         if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
+            setConnected(false);
             showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
             return false;
         } else if (connectionStatusCode != ConnectionResult.SUCCESS ) {
+            setConnected(false);
             return false;
         }
         return true;
@@ -132,6 +146,13 @@ public abstract class GoogleRestConnectActivity extends Activity {
         return (networkInfo != null && networkInfo.isConnected());
     }
     */
+
+    public boolean isConnected() {
+        return connected;
+    }
+    public void setConnected(boolean connected) {
+        this.connected = connected;
+    }
 
 
 
