@@ -30,7 +30,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Meus exames"
+                    android:text="@string/listLabel.main.my"
                     android:id="@+id/textView2" />
             </RelativeLayout>
 
@@ -54,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Compartilhados comigo"
+                    android:text="@string/listLabel.main.shared"
                     android:id="@+id/textView3" />
             </RelativeLayout>
 
@@ -67,14 +67,27 @@
         </LinearLayout>
     </ScrollView>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Questionario"
-        android:id="@+id/newExamBtn"
+
+    <RelativeLayout
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="16dp"
+        android:minHeight="80dp"
+        android:minWidth="80dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="callActivityExam"
-        android:textSize="18dp" />
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/circle"
+        android:elevation="8dp">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="addExamBtn_onClick"
+            android:background="@color/transparent"
+            android:text="+"
+            android:textColor="#ffffff"
+            android:textSize="24sp" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

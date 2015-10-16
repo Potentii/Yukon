@@ -2,6 +2,8 @@ package com.sharman.yukon.view.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
@@ -15,50 +17,54 @@ import org.json.JSONException;
 
 public class QuestionsCreateActivity extends GoogleRestConnectActivity {
     private Exam exam;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questions_create);
 
-        // Criando pacote de dados da Name Exam "pegando da intent
         String examStr = getIntent().getExtras().getString("exam");
         try{
             exam = new Exam(examStr);
         }catch (JSONException e){
+            e.printStackTrace();
         }
-
-
     }
 
-    public void callMyself(View view){
 
-        Intent iCallsMyself = new Intent(this, QuestionsCreateActivity.class);
-        updateVectorQuestion();
+    public void addQuestionBtn_onClick(View view){
+        updateExamQuestionArray();
 
-        iCallsMyself.putExtra("exam", exam.toString());
-        startActivity(iCallsMyself);
-        finish();
-    }
-    public void callExamCreateConfirmActivity(View view){
-
-        Intent iCallsMyself = new Intent(this, ExamCreateConfirmActivity.class);
-        updateVectorQuestion();
-
-        iCallsMyself.putExtra("exam", exam.toString());
-        startActivity(iCallsMyself);
+        Intent addQuestionIntent = new Intent(this, QuestionsCreateActivity.class);
+        addQuestionIntent.putExtra("exam", exam.toString());
+        startActivity(addQuestionIntent);
         finish();
     }
 
-    public void updateVectorQuestion(){
 
-        final EditText edtquestionQuestionInput = (EditText) findViewById(R.id.questionQuestionsInput);
-        String questionQuestion = edtquestionQuestionInput.getText().toString();
-        final EditText edtweightQuestionsInput = (EditText) findViewById(R.id.weightQuestionsInput);
-        //Lembrando o Peso é Bundle ou float.
-        String weightQuestionsInput = edtweightQuestionsInput.getText().toString();
-        //instanciei a classe AnswerBox para poder usa-la.
+    public void examCreateConfirmBtn_onClick(View view){
+        updateExamQuestionArray();
+
+        Intent examCreateConfirmIntent = new Intent(this, ExamCreateConfirmActivity.class);
+        examCreateConfirmIntent.putExtra("exam", exam.toString());
+        startActivity(examCreateConfirmIntent);
+        finish();
+    }
+
+
+    /*
+     * *Updates the exam object, adding the question to its question array:
+     */
+    public void updateExamQuestionArray(){
+        EditText questionTitleIn = (EditText) findViewById(R.id.questionTitleIn);
+        EditText questionWeightIn = (EditText) findViewById(R.id.questionWeightIn);
         AnswerBox answerBox = new AnswerBox();
-        Question question = new Question(questionQuestion, Double.parseDouble(weightQuestionsInput), answerBox);
+
+        Question question = new Question(
+                questionTitleIn.getText().toString(),
+                Double.parseDouble(questionWeightIn.getText().toString()),
+                answerBox);
 
         Question[] questionArrayOLD = exam.getQuestionArray();
         Question[] questionArrayNEW = new Question[questionArrayOLD.length + 1];
@@ -72,5 +78,24 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity {
         try {
             exam.setQuestionArray(questionArrayNEW);
         } catch (JSONException e){}
+    }
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_question_create, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.questionCreateShareActionButton:
+                System.out.println("fdsfdfsdfs");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

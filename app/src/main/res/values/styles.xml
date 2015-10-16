@@ -1,14 +1,23 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-
+    <!--
     <style name="YukonMainTheme" parent="android:Theme.Material.Light.DarkActionBar">
+    parent="@style/Widget.AppCompat.Light.ActionBar"
+    -->
+    <style name="YukonMainTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:actionBarStyle" tools:ignore="NewApi">@style/ActionBar</item>
+        <item name="actionBarStyle">@style/ActionBar</item>
+
         <item name="android:colorPrimary">@color/primary</item>
         <item name="android:colorPrimaryDark">@color/primary_dark</item>
         <item name="android:colorBackground">@color/primary_grey</item>
         <item name="android:colorForeground">#ff00ff</item>
         <item name="android:colorForegroundInverse">#ff00ff</item>
-
     </style>
 
+    <style name="ActionBar" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background" tools:ignore="NewApi">@color/primary</item>
+        <item name="background">@color/primary</item>
+    </style>
 
 </resources>

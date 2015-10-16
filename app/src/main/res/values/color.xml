@@ -1,12 +1,10 @@
 <resources>
 
-    <color name="primary">#78DCFF</color>
-    <color name="primary_dark">#67BDDB</color>
+    <color name="primary">#277a55</color>
+    <color name="primary_dark">#195038</color>
 
-    <color name="primary_grey">#F3FCFF</color>
-    <color name="primary_grey_dark">#FF657D7F</color>
+    <color name="primary_grey">#ffffff</color>
+    <color name="primary_grey_dark">#454d49</color>
 
     <color name="transparent">#00000000</color>
-
-    <color name="accent">#FF00FF</color>
 </resources>

@@ -7,53 +7,122 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.sharman.yukon.view.activities.QuestionsCreateActivity">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/questionQuestionsInput"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="false"
-        android:editable="false"
-        android:layout_alignParentEnd="true"
-        android:lines="7"
-        android:inputType="textMultiLine" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Peso"
-        android:id="@+id/weightQuestionsTv"
-        android:layout_below="@+id/questionQuestionsInput"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="57dp" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/weightQuestionsInput"
-        android:layout_alignBottom="@+id/weightQuestionsTv"
-        android:layout_alignEnd="@+id/questionQuestionsInput"
-        android:layout_toEndOf="@+id/weightQuestionsTv" />
-
-    <Button
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Próxima"
-        android:id="@+id/nextQuestionsBtn"
-        android:layout_above="@+id/finishQuestionsBtn"
-        android:layout_alignParentEnd="true"
-        android:textSize="18dp"
-        android:onClick="callsMyself" />
+        android:id="@+id/scrollView3" >
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Finalizar"
-        android:id="@+id/finishQuestionsBtn"
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:baselineAligned="false" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/inputLineBottomMargin" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/questionTitleImg"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/common_ic_googleplayservices"
+                    android:scaleType="fitStart" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/questionTitleIn"
+                    android:hint="@string/inputHint.questionCreate.title"
+                    android:inputType="textMultiLine"
+                    android:lines="4"
+                    android:maxLines="8"
+                    android:layout_gravity="top" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/inputLineBottomMargin" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/questionWeightImg"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/common_ic_googleplayservices" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/questionWeightIn"
+                    android:hint="@string/inputHint.questionCreate.weight" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/inputLineBottomMargin" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/imageView"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/common_ic_googleplayservices" />
+
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/spinner2" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/inputLineBottomMargin" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/imageView3"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/common_ic_googleplayservices" />
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"></LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <RelativeLayout
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:minHeight="80dp"
+        android:minWidth="80dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:textSize="18dp"
-        android:onClick="callExamCreateConfirmActivity" />
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/circle"
+        android:elevation="8dp">
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="addQuestionBtn_onClick"
+            android:background="@color/transparent"
+            android:text="+"
+            android:textColor="#ffffff"
+            android:textSize="24sp" />
+
+    </RelativeLayout>
 </RelativeLayout>

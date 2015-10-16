@@ -8,6 +8,8 @@ import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -424,7 +426,8 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
                                         new DriveIOHandler(getCredential()).shareFile(answersFileId, null, new PermissionStruct[]{new PermissionStruct(studentConfigFilePair.getUserId(), type, "writer")}, new FileShareCallback() {
                                             @Override
-                                            public void onSuccess() {}
+                                            public void onSuccess() {
+                                            }
 
                                             @Override
                                             public void onFailure(String errorMessage) {
@@ -434,7 +437,8 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
                                         new DriveIOHandler(getCredential()).shareFile(gradeFileId, null, new PermissionStruct[]{new PermissionStruct(studentConfigFilePair.getUserId(), type, "reader")}, new FileShareCallback() {
                                             @Override
-                                            public void onSuccess() {}
+                                            public void onSuccess() {
+                                            }
 
                                             @Override
                                             public void onFailure(String errorMessage) {
@@ -444,7 +448,8 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
                                         new DriveIOHandler(getCredential()).shareFile(configsFileId, null, new PermissionStruct[]{new PermissionStruct(studentConfigFilePair.getUserId(), type, "reader")}, new FileShareCallback() {
                                             @Override
-                                            public void onSuccess() {}
+                                            public void onSuccess() {
+                                            }
 
                                             @Override
                                             public void onFailure(String errorMessage) {
@@ -545,67 +550,20 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_exam_create_confirm, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-
-    /*
-    private class Share extends AsyncTask<Void, Void, Void> {
-        private com.google.api.services.drive.Drive service = null;
-        private DriveId driveId;
-        private PermissionStruct[] permissionStruct;
-
-        public Share(GoogleAccountCredential credential, DriveId driveId, PermissionStruct[] permissionStruct) {
-            this.driveId = driveId;
-            this.permissionStruct = permissionStruct;
-            HttpTransport transport = AndroidHttp.newCompatibleTransport();
-            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            service = new com.google.api.services.drive.Drive.Builder(
-                    transport, jsonFactory, credential)
-                    .setApplicationName("Yukon")
-                    .build();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            if(driveId == null){
-                System.out.println("NULL");
-            }
-            String fileId = driveId.getResourceId();
-
-            JsonBatchCallback<Permission> callback = new JsonBatchCallback<Permission>() {
-                @Override
-                public void onSuccess(Permission permission, HttpHeaders responseHeaders) {
-                    System.out.println("Permission added to file");
-                }
-
-                @Override
-                public void onFailure(GoogleJsonError e, HttpHeaders responseHeaders) {
-                    System.out.println("Error Message: " + e.getMessage());
-                }
-            };
-
-            BatchRequest batch = service.batch();
-            for(int i=0; i<permissionStruct.length; i++) {
-                Permission permission = new Permission();
-                permission.setValue(permissionStruct[i].getValue());
-                permission.setType(permissionStruct[i].getType());
-                permission.setRole(permissionStruct[i].getRole());
-                try {
-                    System.out.println("1");
-                    service.permissions().insert(fileId, permission).queue(batch, callback);
-                    System.out.println("2");
-                } catch(IOException e){
-                    e.printStackTrace();
-                }
-            }
-
-            try {
-                System.out.println("3");
-                batch.execute();
-            } catch(IOException e){
-                e.printStackTrace();
-            }
-            return null;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.examCreateConfirmFinishActionButton:
+                System.out.println("fdsfdfsdfs");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
-    */
 }

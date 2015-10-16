@@ -83,9 +83,9 @@ public class MainActivity extends GoogleRestConnectActivity {
     protected void onConnect(){}
 
 
-    public void callActivityExam(View view) {
-        Intent iCallActivityExam = new Intent(this, ExamCreateActivity.class);
-        startActivity(iCallActivityExam);
+    public void addExamBtn_onClick(View view) {
+        Intent addExamIntent = new Intent(this, ExamCreateActivity.class);
+        startActivity(addExamIntent);
         finish();
     }
 
