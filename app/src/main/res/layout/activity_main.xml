@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context=".MainActivity">
+    tools:context="com.sharman.yukon.view.activities.MainActivity">
 
 
     <ScrollView
@@ -30,7 +30,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Meus exames"
+                    android:text="@string/listLabel.main.my"
                     android:id="@+id/textView2" />
             </RelativeLayout>
 
@@ -54,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Compartilhados comigo"
+                    android:text="@string/listLabel.main.shared"
                     android:id="@+id/textView3" />
             </RelativeLayout>
 
@@ -67,14 +67,25 @@
         </LinearLayout>
     </ScrollView>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Questionario"
-        android:id="@+id/newExamBtn"
+
+    <RelativeLayout
+        android:layout_width="@dimen/addCircularButtonSize"
+        android:layout_height="@dimen/addCircularButtonSize"
+        android:layout_margin="@dimen/activityMargin"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="callActivityExam"
-        android:textSize="18dp" />
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/circle"
+        android:elevation="@dimen/addCircularButtonElevation">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="addExamBtn_onClick"
+            android:background="@color/transparent"
+            android:text="+"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/addCircularButtonTextSize" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

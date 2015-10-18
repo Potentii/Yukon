@@ -8,6 +8,8 @@ import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -16,7 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.api.services.plus.model.Person;
-import com.sharman.yukon.EMimeType;
+import com.sharman.yukon.io.drive.util.EMimeType;
 import com.sharman.yukon.R;
 
 import com.sharman.yukon.io.drive.DriveIOHandler;
@@ -90,46 +92,9 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
 
         try {
-            // TODO substituir pelo real:
-            this.exam = new Exam("Título para o exame", new Date(), "", "Matemática", new Question[]{});
-            /*
             String examStr = getIntent().getExtras().getString("exam");
             exam = new Exam(examStr);
-            */
-
-            // *Execute the creation and share of the Exam:
-            Button shareAndCreateExamBtn = (Button) findViewById(R.id.shareAndCreateExamBtn);
-            shareAndCreateExamBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    studentConfigFilePairArray = new StudentConfigFilePair[studentPickerList.size()-1];
-                    for (int i = 0; i < studentConfigFilePairArray.length; i++) {
-                        AutoCompleteTextView studentPicker = (AutoCompleteTextView) studentPickerList.get(i).findViewById(R.id.studentPickerIn);
-                        studentConfigFilePairArray[i] = new StudentConfigFilePair(studentPicker.getText().toString(), "");
-                    }
-
-                    new PlusIOHandler(getCredential()).ReadPerson("me", new PersonReadCallback() {
-                        @Override
-                        public void onSuccess(Person person) {
-                            try {
-                                exam.setTeacherId(person.getId());
-                                createExamOnDrive();
-                            }catch (JSONException e){
-                                e.printStackTrace();
-                                onFailure(e.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(String errorMessage) {
-                            onCreationFail();
-                        }
-                    });
-
-                }
-            });
-
-        } catch (NullPointerException /*| JSONException*/ e){
+        } catch (NullPointerException | JSONException e){
             // TODO error
             e.printStackTrace();
             System.out.println("Erro ao tentar recuperar 'Exam'");
@@ -243,6 +208,39 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
      *  * Exam creation methods:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
+    // *Execute the creation and share of the Exam:
+    private void examCreateConfirmFinishActionButton_onClick(){
+
+        studentConfigFilePairArray = new StudentConfigFilePair[studentPickerList.size()-1];
+        for (int i = 0; i < studentConfigFilePairArray.length; i++) {
+            AutoCompleteTextView studentPicker = (AutoCompleteTextView) studentPickerList.get(i).findViewById(R.id.studentPickerIn);
+            studentConfigFilePairArray[i] = new StudentConfigFilePair(studentPicker.getText().toString(), "");
+        }
+
+        new PlusIOHandler(getCredential()).ReadPerson("me", new PersonReadCallback() {
+            @Override
+            public void onSuccess(Person person) {
+                try {
+                    exam.setTeacherId(person.getId());
+
+                    // *Create:
+                    createExamOnDrive();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    onFailure(e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                onCreationFail();
+            }
+        });
+    }
+
+
+
     private synchronized void onCreationSuccess(){
         System.out.println("Creation Success CALLED");
         if (!onCreationFailOrSuccessCalled) {
@@ -424,7 +422,8 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
                                         new DriveIOHandler(getCredential()).shareFile(answersFileId, null, new PermissionStruct[]{new PermissionStruct(studentConfigFilePair.getUserId(), type, "writer")}, new FileShareCallback() {
                                             @Override
-                                            public void onSuccess() {}
+                                            public void onSuccess() {
+                                            }
 
                                             @Override
                                             public void onFailure(String errorMessage) {
@@ -434,7 +433,8 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
                                         new DriveIOHandler(getCredential()).shareFile(gradeFileId, null, new PermissionStruct[]{new PermissionStruct(studentConfigFilePair.getUserId(), type, "reader")}, new FileShareCallback() {
                                             @Override
-                                            public void onSuccess() {}
+                                            public void onSuccess() {
+                                            }
 
                                             @Override
                                             public void onFailure(String errorMessage) {
@@ -444,7 +444,8 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
                                         new DriveIOHandler(getCredential()).shareFile(configsFileId, null, new PermissionStruct[]{new PermissionStruct(studentConfigFilePair.getUserId(), type, "reader")}, new FileShareCallback() {
                                             @Override
-                                            public void onSuccess() {}
+                                            public void onSuccess() {
+                                            }
 
                                             @Override
                                             public void onFailure(String errorMessage) {
@@ -545,67 +546,20 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_exam_create_confirm, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-
-    /*
-    private class Share extends AsyncTask<Void, Void, Void> {
-        private com.google.api.services.drive.Drive service = null;
-        private DriveId driveId;
-        private PermissionStruct[] permissionStruct;
-
-        public Share(GoogleAccountCredential credential, DriveId driveId, PermissionStruct[] permissionStruct) {
-            this.driveId = driveId;
-            this.permissionStruct = permissionStruct;
-            HttpTransport transport = AndroidHttp.newCompatibleTransport();
-            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            service = new com.google.api.services.drive.Drive.Builder(
-                    transport, jsonFactory, credential)
-                    .setApplicationName("Yukon")
-                    .build();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            if(driveId == null){
-                System.out.println("NULL");
-            }
-            String fileId = driveId.getResourceId();
-
-            JsonBatchCallback<Permission> callback = new JsonBatchCallback<Permission>() {
-                @Override
-                public void onSuccess(Permission permission, HttpHeaders responseHeaders) {
-                    System.out.println("Permission added to file");
-                }
-
-                @Override
-                public void onFailure(GoogleJsonError e, HttpHeaders responseHeaders) {
-                    System.out.println("Error Message: " + e.getMessage());
-                }
-            };
-
-            BatchRequest batch = service.batch();
-            for(int i=0; i<permissionStruct.length; i++) {
-                Permission permission = new Permission();
-                permission.setValue(permissionStruct[i].getValue());
-                permission.setType(permissionStruct[i].getType());
-                permission.setRole(permissionStruct[i].getRole());
-                try {
-                    System.out.println("1");
-                    service.permissions().insert(fileId, permission).queue(batch, callback);
-                    System.out.println("2");
-                } catch(IOException e){
-                    e.printStackTrace();
-                }
-            }
-
-            try {
-                System.out.println("3");
-                batch.execute();
-            } catch(IOException e){
-                e.printStackTrace();
-            }
-            return null;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.examCreateConfirmFinishActionButton:
+                examCreateConfirmFinishActionButton_onClick();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
-    */
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/answerIn"
+        android:checked="false"
+        android:background="#99555555" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/alternativeIn"
+        android:padding="8dp"
+        android:background="#44555555"
+        android:hint="@string/inputHint.questionCreate.alternativeDialog.answerRow"
+        android:singleLine="true" />
+</LinearLayout>

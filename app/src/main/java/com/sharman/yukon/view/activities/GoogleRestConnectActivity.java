@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -19,7 +20,7 @@ import com.sharman.yukon.R;
 
 import java.util.Arrays;
 
-public abstract class GoogleRestConnectActivity extends Activity {
+public abstract class GoogleRestConnectActivity extends ActionBarActivity {
     private GoogleAccountCredential credential;
     private static final int REQUEST_ACCOUNT_PICKER = 1000;
     private static final int REQUEST_AUTHORIZATION = 1001;
@@ -166,7 +167,7 @@ public abstract class GoogleRestConnectActivity extends Activity {
         return credential;
     }
 
-
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -188,4 +189,5 @@ public abstract class GoogleRestConnectActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+    */
 }
