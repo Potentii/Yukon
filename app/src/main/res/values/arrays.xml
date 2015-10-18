@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinner_answerType">
+        <item>@string/spinner.answerType.dissertative</item>
+        <item>@string/spinner.answerType.singleChoice</item>
+        <item>@string/spinner.answerType.multipleChoice</item>
+    </string-array>
+</resources>

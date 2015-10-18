@@ -10,5 +10,6 @@
         android:inputType="textEmailAddress"
         android:ems="10"
         android:id="@+id/studentPickerIn"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:layout_marginBottom="@dimen/inputLineBottomMargin" />
 </RelativeLayout>

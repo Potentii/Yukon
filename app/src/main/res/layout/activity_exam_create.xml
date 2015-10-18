@@ -7,67 +7,93 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.sharman.yukon.view.activities.ExamCreateActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Nome"
-        android:id="@+id/nameExamTv"
-        android:layout_marginTop="42dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Matéria"
-        android:id="@+id/matterExamTv"
-        android:layout_marginTop="30dp"
-        android:layout_below="@+id/nameExamTv"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Data"
-        android:id="@+id/dateExamTv"
-        android:layout_below="@+id/matterExamTv"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="32dp" />
-
-    <EditText
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/nameExamInput"
-        android:layout_above="@+id/matterExamTv"
-        android:layout_toEndOf="@+id/matterExamTv" />
+        android:id="@+id/scrollView2" >
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/subjectExamInput"
-        android:layout_alignBottom="@+id/matterExamTv"
-        android:layout_toEndOf="@+id/matterExamTv" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:baselineAligned="false">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="date"
-        android:ems="10"
-        android:id="@+id/dateExamInput"
-        android:layout_alignBottom="@+id/dateExamTv"
-        android:layout_toEndOf="@+id/matterExamTv" />
+            <!-- Exam title -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/inputLineBottomMargin">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Adicionar Questões"
-        android:id="@+id/addQuestionsBtn"
-        android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/subjectExamInput"
-        android:textSize="18dp"
-        android:onClick="callQuestionsCreateActivity" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/examTitleImg"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/common_ic_googleplayservices" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/examTitleIn"
+                    android:hint="@string/inputHint.examCreate.title"
+                    android:layout_marginLeft="@dimen/inputLeftMargin"
+                    android:inputType="text"
+                    android:singleLine="true" />
+            </LinearLayout>
+
+
+            <!-- Exam subject -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/inputLineBottomMargin">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/examSubjectImg"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/common_ic_googleplayservices" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/examSubjectIn"
+                    android:hint="@string/inputHint.examCreate.subject"
+                    android:layout_marginLeft="@dimen/inputLeftMargin"
+                    android:singleLine="true"
+                    android:inputType="text" />
+            </LinearLayout>
+
+
+            <!-- Exam deliver date -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="@dimen/inputLineBottomMargin">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/examDeliverDateImg"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/common_ic_googleplayservices" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/examDeliverDateIn"
+                    android:hint="@string/inputHint.examCreate.deliveryDate"
+                    android:layout_marginLeft="@dimen/inputLeftMargin"
+                    android:editable="false"
+                    android:onClick="examDeliverDateIn_onCLick" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

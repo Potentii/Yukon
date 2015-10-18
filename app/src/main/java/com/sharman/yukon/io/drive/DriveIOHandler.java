@@ -17,7 +17,6 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.ParentReference;
 import com.google.api.services.drive.model.Permission;
-import com.sharman.yukon.EMimeType;
 import com.sharman.yukon.io.drive.callback.FileCreateCallback;
 import com.sharman.yukon.io.drive.callback.FileDeleteCallback;
 import com.sharman.yukon.io.drive.callback.FileEditCallback;
@@ -27,6 +26,7 @@ import com.sharman.yukon.io.drive.callback.FileShareCallback;
 import com.sharman.yukon.io.drive.callback.FolderCreateCallback;
 import com.sharman.yukon.io.drive.callback.FolderDeleteCallback;
 import com.sharman.yukon.io.drive.callback.FolderShareCallback;
+import com.sharman.yukon.io.drive.util.EMimeType;
 import com.sharman.yukon.io.drive.util.PermissionStruct;
 
 import java.io.BufferedReader;
