@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sharman.yukon" >
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -15,26 +14,23 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/appName"
         android:theme="@style/YukonMainTheme" >
-
         <activity
             android:name=".view.activities.MainActivity"
             android:label="@string/activityTitle.main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".view.activities.ExamCreateActivity"
             android:label="@string/activityTitle.examCreate" >
         </activity>
-
         <activity
             android:name=".view.activities.QuestionsCreateActivity"
             android:label="@string/activityTitle.questionCreate" >
         </activity>
-
         <activity
             android:name=".view.activities.ExamCreateConfirmActivity"
             android:label="@string/activityTitle.examCreateConfirm" >
@@ -44,5 +40,18 @@
             android:name="com.google.android.apps.drive.APP_ID"
             android:value="id=yukon-1085" />
 
+        <activity
+            android:name=".view.activities.ExamAnsweringActivity"
+            android:label="@string/title_activity_exam_answering" >
+        </activity>
+        <activity
+            android:name=".view.activities.QuestionAnsweringActivity"
+            android:label="@string/title_activity_question_answering" >
+        </activity>
+        <activity
+            android:name=".view.activities.ExamAnsweringConfirmActivity"
+            android:label="@string/title_activity_exam_answering_confirm" >
+        </activity>
     </application>
+
 </manifest>

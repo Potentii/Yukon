@@ -15,8 +15,10 @@
     <string name="actionButton.examCreateConfirm.finish">Finish</string>
 
 
+    <!-- * List labels * -->
     <string name="listLabel.main.my">My</string>
     <string name="listLabel.main.shared">Shared with me</string>
+
 
     <!-- * Input hints * -->
     <string name="inputHint.examCreate.title">Title</string>
@@ -25,7 +27,26 @@
 
     <string name="inputHint.questionCreate.title">Question</string>
     <string name="inputHint.questionCreate.weight">Weight</string>
+    <string name="inputHint.questionCreate.alternatives">Alternatives</string>
+
+    <string name="inputHint.questionCreate.alternativeDialog.answerRow">Type a possible answer</string>
+
+
+    <!-- * Dialog Buttons * -->
+    <string name="dialog.confirm">Confirm</string>
+    <string name="dialog.cancel">Cancel</string>
+
+
+    <!-- * Spinner options * -->
+    <string name="spinner.answerType.dissertative">Dissertative</string>
+    <string name="spinner.answerType.singleChoice">Single choice</string>
+    <string name="spinner.answerType.multipleChoice">Multiple choice</string>
 
 
     <string name="action_settings">Settings</string>
+    <string name="title_activity_exam_answering">ExamAnsweringActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_question_answering">QuestionAnsweringActivity</string>
+    <string name="title_activity_exam_answering_confirm">ExamAnsweringConfirmActivity</string>
 </resources>

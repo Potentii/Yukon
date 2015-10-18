@@ -18,7 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.api.services.plus.model.Person;
-import com.sharman.yukon.EMimeType;
+import com.sharman.yukon.io.drive.util.EMimeType;
 import com.sharman.yukon.R;
 
 import com.sharman.yukon.io.drive.DriveIOHandler;
@@ -92,46 +92,9 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
 
         try {
-            // TODO substituir pelo real:
-            this.exam = new Exam("Título para o exame", new Date(), "", "Matemática", new Question[]{});
-            /*
             String examStr = getIntent().getExtras().getString("exam");
             exam = new Exam(examStr);
-            */
-
-            // *Execute the creation and share of the Exam:
-            Button shareAndCreateExamBtn = (Button) findViewById(R.id.shareAndCreateExamBtn);
-            shareAndCreateExamBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    studentConfigFilePairArray = new StudentConfigFilePair[studentPickerList.size()-1];
-                    for (int i = 0; i < studentConfigFilePairArray.length; i++) {
-                        AutoCompleteTextView studentPicker = (AutoCompleteTextView) studentPickerList.get(i).findViewById(R.id.studentPickerIn);
-                        studentConfigFilePairArray[i] = new StudentConfigFilePair(studentPicker.getText().toString(), "");
-                    }
-
-                    new PlusIOHandler(getCredential()).ReadPerson("me", new PersonReadCallback() {
-                        @Override
-                        public void onSuccess(Person person) {
-                            try {
-                                exam.setTeacherId(person.getId());
-                                createExamOnDrive();
-                            }catch (JSONException e){
-                                e.printStackTrace();
-                                onFailure(e.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(String errorMessage) {
-                            onCreationFail();
-                        }
-                    });
-
-                }
-            });
-
-        } catch (NullPointerException /*| JSONException*/ e){
+        } catch (NullPointerException | JSONException e){
             // TODO error
             e.printStackTrace();
             System.out.println("Erro ao tentar recuperar 'Exam'");
@@ -245,6 +208,39 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
      *  * Exam creation methods:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
+    // *Execute the creation and share of the Exam:
+    private void examCreateConfirmFinishActionButton_onClick(){
+
+        studentConfigFilePairArray = new StudentConfigFilePair[studentPickerList.size()-1];
+        for (int i = 0; i < studentConfigFilePairArray.length; i++) {
+            AutoCompleteTextView studentPicker = (AutoCompleteTextView) studentPickerList.get(i).findViewById(R.id.studentPickerIn);
+            studentConfigFilePairArray[i] = new StudentConfigFilePair(studentPicker.getText().toString(), "");
+        }
+
+        new PlusIOHandler(getCredential()).ReadPerson("me", new PersonReadCallback() {
+            @Override
+            public void onSuccess(Person person) {
+                try {
+                    exam.setTeacherId(person.getId());
+
+                    // *Create:
+                    createExamOnDrive();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    onFailure(e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                onCreationFail();
+            }
+        });
+    }
+
+
+
     private synchronized void onCreationSuccess(){
         System.out.println("Creation Success CALLED");
         if (!onCreationFailOrSuccessCalled) {
@@ -560,7 +556,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.examCreateConfirmFinishActionButton:
-                System.out.println("fdsfdfsdfs");
+                examCreateConfirmFinishActionButton_onClick();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

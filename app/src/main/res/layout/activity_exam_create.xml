@@ -36,7 +36,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/examTitleIn"
-                    android:hint="@string/inputHint.examCreate.title" />
+                    android:hint="@string/inputHint.examCreate.title"
+                    android:layout_marginLeft="@dimen/inputLeftMargin"
+                    android:inputType="text"
+                    android:singleLine="true" />
             </LinearLayout>
 
 
@@ -58,7 +61,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/examSubjectIn"
-                    android:hint="@string/inputHint.examCreate.subject" />
+                    android:hint="@string/inputHint.examCreate.subject"
+                    android:layout_marginLeft="@dimen/inputLeftMargin"
+                    android:singleLine="true"
+                    android:inputType="text" />
             </LinearLayout>
 
 
@@ -80,19 +86,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/examDeliverDateIn"
-                    android:hint="@string/inputHint.examCreate.deliveryDate" />
+                    android:hint="@string/inputHint.examCreate.deliveryDate"
+                    android:layout_marginLeft="@dimen/inputLeftMargin"
+                    android:editable="false"
+                    android:onClick="examDeliverDateIn_onCLick" />
             </LinearLayout>
 
 
         </LinearLayout>
     </ScrollView>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Criar"
-        android:id="@+id/examCreateBtn"
-        android:layout_alignParentBottom="true"
-        android:onClick="examCreateBtn_onClick" />
 
 </RelativeLayout>

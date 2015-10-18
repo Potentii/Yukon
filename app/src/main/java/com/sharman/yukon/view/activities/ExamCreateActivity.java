@@ -12,36 +12,43 @@ import android.widget.EditText;
 import com.sharman.yukon.R;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.Question;
+import com.sharman.yukon.view.activities.dialog.DeliveryDateDialog;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ExamCreateActivity extends GoogleRestConnectActivity {
+
+    private DeliveryDateDialog deliveryDateDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exam_create);
-        //Button btn = (Button) findViewById(R.id.addQuestionsBtn);
-
+        deliveryDateDialog = new DeliveryDateDialog();
     }
 
 
-    public void examCreateBtn_onClick(View view){
+    public void examDeliverDateIn_onCLick(View view){
+        deliveryDateDialog.show(getSupportFragmentManager(), "delivery_date_dialog");
+    }
+
+
+    public void examCreateNextActionButton_onClick(){
         EditText examTitleIn = (EditText) findViewById(R.id.examTitleIn);
         EditText examSubjectIn = (EditText) findViewById(R.id.examSubjectIn);
         EditText examDeliverDateIn = (EditText) findViewById(R.id.examDeliverDateIn);
 
-        // TODO adicionar date
         Exam exam = new Exam(
                 examTitleIn.getText().toString(),
-                new Date(),
+                deliveryDateDialog.getDate(),
                 "",
                 examSubjectIn.getText().toString(),
                 new Question[]{});
 
-        Intent examCreateIntent = new Intent(this, QuestionsCreateActivity.class);
-        examCreateIntent.putExtra("exam", exam.toString());
-        startActivity(examCreateIntent);
+        Intent questionCreateIntent = new Intent(this, QuestionsCreateActivity.class);
+        questionCreateIntent.putExtra("exam", exam.toString());
+        startActivity(questionCreateIntent);
         finish();
     }
 
@@ -56,7 +63,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.examCreateNextActionButton:
-                System.out.println("fdsfdfsdfs");
+                examCreateNextActionButton_onClick();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

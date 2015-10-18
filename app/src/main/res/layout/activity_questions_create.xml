@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/activityMargin"
     tools:context="com.sharman.yukon.view.activities.QuestionsCreateActivity">
 
 
@@ -41,7 +40,8 @@
                     android:inputType="textMultiLine"
                     android:lines="4"
                     android:maxLines="8"
-                    android:layout_gravity="top" />
+                    android:layout_gravity="top"
+                    android:layout_marginLeft="@dimen/inputLeftMargin" />
             </LinearLayout>
 
             <LinearLayout
@@ -61,7 +61,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/questionWeightIn"
-                    android:hint="@string/inputHint.questionCreate.weight" />
+                    android:hint="@string/inputHint.questionCreate.weight"
+                    android:layout_marginLeft="@dimen/inputLeftMargin"
+                    android:inputType="numberDecimal"
+                    android:numeric="integer|decimal"
+                    android:singleLine="true" />
             </LinearLayout>
 
             <LinearLayout
@@ -80,14 +84,18 @@
                 <Spinner
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/spinner2" />
+                    android:id="@+id/answerTypeSpinner"
+                    android:layout_marginLeft="@dimen/inputLeftMargin"
+                    android:entries="@array/spinner_answerType"
+                    android:spinnerMode="dialog" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/inputLineBottomMargin" >
+                android:layout_marginBottom="@dimen/inputLineBottomMargin"
+                android:id="@+id/alternativesRow">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -96,24 +104,26 @@
                     android:layout_alignParentStart="true"
                     android:src="@drawable/common_ic_googleplayservices" />
 
-                <LinearLayout
-                    android:orientation="vertical"
+                <EditText
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"></LinearLayout>
+                    android:layout_height="match_parent"
+                    android:id="@+id/questionAlternativesIn"
+                    android:hint="@string/inputHint.questionCreate.alternatives"
+                    android:layout_marginLeft="@dimen/inputLeftMargin"
+                    android:editable="false"
+                    android:onClick="questionAlternativesIn_onCLick" />
 
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
     <RelativeLayout
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:minHeight="80dp"
-        android:minWidth="80dp"
+        android:layout_width="@dimen/addCircularButtonSize"
+        android:layout_height="@dimen/addCircularButtonSize"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:background="@drawable/circle"
-        android:elevation="8dp">
+        android:elevation="@dimen/addCircularButtonElevation">
 
         <Button
             android:layout_width="match_parent"
@@ -122,7 +132,7 @@
             android:background="@color/transparent"
             android:text="+"
             android:textColor="#ffffff"
-            android:textSize="24sp" />
+            android:textSize="@dimen/addCircularButtonTextSize" />
 
     </RelativeLayout>
 </RelativeLayout>

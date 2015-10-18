@@ -46,14 +46,4 @@
         </LinearLayout>
     </ScrollView>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Salvar questionário"
-        android:id="@+id/shareAndCreateExamBtn"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true" />
 </RelativeLayout>

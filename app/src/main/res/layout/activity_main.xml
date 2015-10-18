@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context=".MainActivity">
+    tools:context="com.sharman.yukon.view.activities.MainActivity">
 
 
     <ScrollView
@@ -69,15 +69,13 @@
 
 
     <RelativeLayout
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_margin="16dp"
-        android:minHeight="80dp"
-        android:minWidth="80dp"
+        android:layout_width="@dimen/addCircularButtonSize"
+        android:layout_height="@dimen/addCircularButtonSize"
+        android:layout_margin="@dimen/activityMargin"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:background="@drawable/circle"
-        android:elevation="8dp">
+        android:elevation="@dimen/addCircularButtonElevation">
 
         <Button
             android:layout_width="match_parent"
@@ -86,7 +84,7 @@
             android:background="@color/transparent"
             android:text="+"
             android:textColor="#ffffff"
-            android:textSize="24sp" />
+            android:textSize="@dimen/addCircularButtonTextSize" />
 
     </RelativeLayout>
 
