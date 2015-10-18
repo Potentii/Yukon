@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/examCreateConfirmFinishActionButton"
-        android:title="@string/actionButton.examCreateConfirm.finish"
+        android:id="@+id/questionCreateShareActionButton"
+        android:title="@string/actionButton.questionCreate.share"
         app:showAsAction="always" />
 
 </menu>

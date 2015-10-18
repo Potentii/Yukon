@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/examCreateConfirmFinishActionButton"
-        android:title="@string/actionButton.examCreateConfirm.finish"
+        android:id="@+id/examCreateNextActionButton"
+        android:title="@string/actionButton.examCreate.next"
         app:showAsAction="always" />
 
 </menu>

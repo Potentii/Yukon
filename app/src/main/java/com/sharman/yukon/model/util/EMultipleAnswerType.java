@@ -5,7 +5,7 @@ package com.sharman.yukon.model.util;
  */
 public enum EMultipleAnswerType {
     MULTIPLE_CHOICE("multipleChoice"),
-    TRUE_OR_FALSE("trueOrFalse");
+    SINGLE_CHOICE("singleChoice");
 
 
     private String name;
