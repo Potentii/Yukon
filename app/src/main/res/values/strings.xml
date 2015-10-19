@@ -8,12 +8,18 @@
     <string name="activityTitle.questionCreate">Question</string>
     <string name="activityTitle.examCreateConfirm">Share</string>
 
+    <string name="activityTitle.examAnswering"></string>
+    <string name="activityTitle.questionAnswering">Question</string>
+    <string name="activityTitle.examAnsweringConfirm">Review</string>
+
 
     <!-- * Action buttons * -->
-    <string name="actionButton.examCreate.next">Next</string>
-    <string name="actionButton.questionCreate.share">Share</string>
-    <string name="actionButton.examCreateConfirm.finish">Finish</string>
+    <string name="actionButton.examCreate.next">Add questions</string>
+    <string name="actionButton.questionCreate.share">Finish</string>
+    <string name="actionButton.examCreateConfirm.finish">Share exam</string>
 
+    <string name="actionButton.examAnswering.start">Start the exam</string>
+    <string name="actionButton.examAnsweringConfirm.send">Send to teacher</string>
 
     <!-- * List labels * -->
     <string name="listLabel.main.my">My</string>
@@ -44,9 +50,4 @@
 
 
     <string name="action_settings">Settings</string>
-    <string name="title_activity_exam_answering">ExamAnsweringActivity</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_question_answering">QuestionAnsweringActivity</string>
-    <string name="title_activity_exam_answering_confirm">ExamAnsweringConfirmActivity</string>
 </resources>

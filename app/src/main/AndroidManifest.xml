@@ -13,11 +13,19 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/appName"
+
         android:theme="@style/YukonMainTheme" >
+
+        <meta-data
+            android:name="com.google.android.apps.drive.APP_ID"
+            android:value="id=yukon-1085" />
+
+
         <activity
             android:name=".view.activities.MainActivity"
             android:label="@string/activityTitle.main" >
-            <intent-filter>
+            <intent-filter
+                android:label="@string/appName">
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -35,23 +43,20 @@
             android:name=".view.activities.ExamCreateConfirmActivity"
             android:label="@string/activityTitle.examCreateConfirm" >
         </activity>
-
-        <meta-data
-            android:name="com.google.android.apps.drive.APP_ID"
-            android:value="id=yukon-1085" />
-
         <activity
             android:name=".view.activities.ExamAnsweringActivity"
-            android:label="@string/title_activity_exam_answering" >
+            android:label="@string/activityTitle.examAnswering" >
         </activity>
         <activity
             android:name=".view.activities.QuestionAnsweringActivity"
-            android:label="@string/title_activity_question_answering" >
+            android:label="@string/activityTitle.questionAnswering" >
         </activity>
         <activity
             android:name=".view.activities.ExamAnsweringConfirmActivity"
-            android:label="@string/title_activity_exam_answering_confirm" >
+            android:label="@string/activityTitle.examAnsweringConfirm" >
         </activity>
+
+
     </application>
 
 </manifest>

@@ -6,34 +6,48 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.sharman.yukon.R;
+import com.sharman.yukon.model.Exam;
 
-public class ExamAnsweringConfirmActivity extends ActionBarActivity {
+import org.json.JSONException;
+
+public class ExamAnsweringConfirmActivity extends GoogleRestConnectActivity {
+    private Exam exam;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exam_answering_confirm);
+
+        try {
+            exam = new Exam(getIntent().getExtras().getString("exam"));
+        } catch (NullPointerException | JSONException e){
+            // TODO error
+            e.printStackTrace();
+        }
+    }
+
+
+    // *Action of the "Send" button:
+    private void examAnsweringConfirmSendActionButton_onClick(){
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_exam_answering_confirm, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.examAnsweringConfirmSendActionButton:
+                examAnsweringConfirmSendActionButton_onClick();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 }

@@ -89,7 +89,8 @@
                     android:hint="@string/inputHint.examCreate.deliveryDate"
                     android:layout_marginLeft="@dimen/inputLeftMargin"
                     android:editable="false"
-                    android:onClick="examDeliverDateIn_onCLick" />
+                    android:onClick="examDeliverDateIn_onCLick"
+                    android:focusable="false" />
             </LinearLayout>
 
 

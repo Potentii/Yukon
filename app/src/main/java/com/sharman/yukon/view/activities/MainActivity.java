@@ -53,8 +53,11 @@ public class MainActivity extends GoogleRestConnectActivity {
         myExamRVAdapter = new ExamRVAdapter(this, getCredential(), myExamRVInfoVector, new OnExamRVItemClickListener() {
             @Override
             public void onClick(Exam exam) {
-                // TODO open Exam
-                System.out.println(exam.getTitle());
+                //TODO mudar para o shared:
+                Intent examAnsweringIntent = new Intent(getApplicationContext(), ExamAnsweringActivity.class);
+                examAnsweringIntent.putExtra("exam", exam.toString());
+                startActivity(examAnsweringIntent);
+                finish();
             }
         });
 
