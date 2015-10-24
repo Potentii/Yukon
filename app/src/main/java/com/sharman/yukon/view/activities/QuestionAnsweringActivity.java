@@ -196,7 +196,7 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
             examAnsweringIntent.putExtra("studentAnswerFileId", studentAnswerFileId);
             examAnsweringIntent.putExtra("exam", exam.toString());
             startActivity(examAnsweringIntent);
-            finish();
+            //finish();
         } else {
             updateStudentAnswers();
             Intent questionAnsweringIntent = new Intent(this, QuestionAnsweringActivity.class);
@@ -205,7 +205,7 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
             questionAnsweringIntent.putExtra("studentAnswerFileId", studentAnswerFileId);
             questionAnsweringIntent.putExtra("exam", exam.toString());
             startActivity(questionAnsweringIntent);
-            finish();
+            //finish();
         }
     }
 

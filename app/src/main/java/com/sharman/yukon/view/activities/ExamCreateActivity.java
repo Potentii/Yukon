@@ -51,7 +51,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity implements Dia
         Intent questionCreateIntent = new Intent(this, QuestionsCreateActivity.class);
         questionCreateIntent.putExtra("exam", exam.toString());
         startActivity(questionCreateIntent);
-        finish();
+        //finish();
     }
 
 

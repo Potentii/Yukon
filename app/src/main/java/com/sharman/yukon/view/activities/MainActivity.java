@@ -78,7 +78,7 @@ public class MainActivity extends GoogleRestConnectActivity {
 
                 examAnsweringIntent.putExtra("examTitleCache", examRVInfo.getExamTitle());
                 startActivity(examAnsweringIntent);
-                finish();
+                //finish();
             }
         });
 
@@ -105,7 +105,7 @@ public class MainActivity extends GoogleRestConnectActivity {
     public void addExamBtn_onClick(View view) {
         Intent addExamIntent = new Intent(this, ExamCreateActivity.class);
         startActivity(addExamIntent);
-        finish();
+        //finish();
     }
 
 
@@ -180,7 +180,7 @@ public class MainActivity extends GoogleRestConnectActivity {
                         public void onSuccess(String content) {
                             try {
                                 StudentConfigs studentConfigs = new StudentConfigs(content);
-                                
+
                                 sharedExamRVInfoVector.add(new ExamRVInfo(
                                         studentConfigs.getTeacherIdCache(),
                                         studentConfigs.getExamTitleCache(),

@@ -256,7 +256,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
         addQuestionIntent.putExtra("exam", exam.toString());
         addQuestionIntent.putExtra("teacherAnswers", teacherAnswers.toString());
         startActivity(addQuestionIntent);
-        finish();
+        //finish();
     }
 
 
@@ -268,7 +268,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
         examCreateConfirmIntent.putExtra("exam", exam.toString());
         examCreateConfirmIntent.putExtra("teacherAnswers", teacherAnswers.toString());
         startActivity(examCreateConfirmIntent);
-        finish();
+        //finish();
     }
 
 

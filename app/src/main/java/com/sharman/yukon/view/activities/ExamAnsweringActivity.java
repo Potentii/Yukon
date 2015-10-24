@@ -122,7 +122,7 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
             questionAnsweringIntent.putExtra("exam", exam.toString());
             questionAnsweringIntent.putExtra("studentAnswerFileId", studentAnswerFileId);
             startActivity(questionAnsweringIntent);
-            finish();
+            //finish();
         }
     }
 
