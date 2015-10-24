@@ -28,6 +28,7 @@ import com.sharman.yukon.io.drive.callback.FolderCreateCallback;
 import com.sharman.yukon.io.drive.util.PermissionStruct;
 import com.sharman.yukon.io.plus.PlusIOHandler;
 import com.sharman.yukon.io.plus.callback.PersonReadCallback;
+import com.sharman.yukon.model.Answer;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.Grade;
 import com.sharman.yukon.model.Question;
@@ -38,6 +39,7 @@ import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.view.activities.util.StudentConfigFilePair;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,6 +50,7 @@ import java.util.List;
 
 public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
     private Exam exam;
+    private TeacherAnswers teacherAnswers;
 
     // *StudentPicker variables:
     private LayoutInflater layoutInflater;
@@ -92,13 +95,17 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
 
         try {
-            String examStr = getIntent().getExtras().getString("exam");
-            exam = new Exam(examStr);
+            exam = new Exam(getIntent().getExtras().getString("exam"));
+            teacherAnswers = new TeacherAnswers(getIntent().getExtras().getString("teacherAnswers"));
         } catch (NullPointerException | JSONException e){
             // TODO error
             e.printStackTrace();
             System.out.println("Erro ao tentar recuperar 'Exam'");
         }
+
+        //TODO System.out.println();
+        System.out.println(">> EXAM: " + exam.toString());
+        System.out.println(">> TEACHER_ANSWERS: " + teacherAnswers.toString());
     }
 
 
@@ -210,7 +217,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
      */
     // *Execute the creation and share of the Exam:
     private void examCreateConfirmFinishActionButton_onClick(){
-
+        // TODO move to onConnectOnce()
         studentConfigFilePairArray = new StudentConfigFilePair[studentPickerList.size()-1];
         for (int i = 0; i < studentConfigFilePairArray.length; i++) {
             AutoCompleteTextView studentPicker = (AutoCompleteTextView) studentPickerList.get(i).findViewById(R.id.studentPickerIn);
@@ -228,12 +235,12 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    onFailure(e.getMessage());
+                    onFailure(e);
                 }
             }
 
             @Override
-            public void onFailure(String errorMessage) {
+            public void onFailure(Exception exception) {
                 onCreationFail();
             }
         });
@@ -271,6 +278,13 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
 
     private void createExamOnDrive(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), "Working...", Toast.LENGTH_LONG);
+            }
+        });
+
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
         // *ExamRoot folder creation:
         new DriveIOHandler(getCredential()).createFolder("", exam.getTitle(), "Yukon exam folder", new FolderCreateCallback() {
@@ -284,7 +298,6 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
                     @Override
                     public void onSuccess(String folderId) {
                         teacherFilesFolderId = folderId;
-                        TeacherAnswers teacherAnswers = new TeacherAnswers();
 
                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                         // *CorrectAnswers file creation:
@@ -397,7 +410,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
         new DriveIOHandler(getCredential()).createFolder(parentFolderId, "Student", "", new FolderCreateCallback() {
             @Override
             public void onSuccess(final String studentFolderId) {
-                StudentAnswers studentAnswers = new StudentAnswers();
+                StudentAnswers studentAnswers = new StudentAnswers(new Answer[]{});
 
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                 // *Answers file creation:
@@ -411,7 +424,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
                         new DriveIOHandler(getCredential()).createFile(studentFolderId, "Grade", "", EMimeType.JSON.getMimeType(), grade.toString(), new FileCreateCallback() {
                             @Override
                             public void onSuccess(final String gradeFileId) {
-                                StudentConfigs studentConfigs = new StudentConfigs(gradeFileId, answersFileId, examFileId);
+                                StudentConfigs studentConfigs = new StudentConfigs(gradeFileId, answersFileId, examFileId, exam.getTitle(), exam.getDeliverDate(), exam.getSubject(), exam.getTeacherId());
 
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                                 // *Configs file creation:
@@ -523,7 +536,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
             studentConfigsFileIdArray[i] = studentConfigFilePairArray[i].getConfigFileId();
         }
 
-        TeacherConfigs teacherConfigs = new TeacherConfigs(studentConfigsFileIdArray, correctAnswersFileId, examFileId);
+        TeacherConfigs teacherConfigs = new TeacherConfigs(studentConfigsFileIdArray, correctAnswersFileId, examFileId, exam.getTitle(), exam.getDeliverDate(), exam.getSubject(), exam.getTeacherId());
 
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
         // *Teacher Configs file creation:

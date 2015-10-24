@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -18,7 +20,12 @@ public class TeacherConfigs extends JSONObject{
     protected enum TeacherConfigsJSONKeys{
         STUDENT_CONFIGS_FILE_ID_ARRAY("studentConfigsFileIdArray"),
         CORRECT_ANSWERS_FILE_ID("correctAnswersFileId"),
-        EXAM_FILE_ID("examFileId");
+        EXAM_FILE_ID("examFileId"),
+
+        EXAM_TITLE_CACHE("examTitleCache"),
+        EXAM_DELIVERY_DATE_CACHE("examDeliveryDateCache"),
+        EXAM_SUBJECT_CACHE("examSubjectCache"),
+        TEACHER_ID_CACHE("teacherIdCache");
 
         private String key;
         private TeacherConfigsJSONKeys(String key){
@@ -35,12 +42,17 @@ public class TeacherConfigs extends JSONObject{
      *  * Constructor:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public TeacherConfigs(String[] studentConfigsFileIdArray, String correctAnswersFileId, String examFileId){
+    public TeacherConfigs(String[] studentConfigsFileIdArray, String correctAnswersFileId, String examFileId, String examTitleCache, Date examDeliveryDateCache, String examSubjectCache, String teacherIdCache){
         super();
         try {
             this.setStudentConfigsFileIdArray(studentConfigsFileIdArray);
             this.setCorrectAnswersFileId(correctAnswersFileId);
             this.setExamFileId(examFileId);
+
+            this.setExamTitleCache(examTitleCache);
+            this.setExamDeliveryDateCache(examDeliveryDateCache);
+            this.setExamSubjectCache(examSubjectCache);
+            this.setTeacherIdCache(teacherIdCache);
         } catch (JSONException e){
             e.printStackTrace();
         }
@@ -84,5 +96,45 @@ public class TeacherConfigs extends JSONObject{
     }
     public void setExamFileId(String examFileId) throws JSONException{
         super.putOpt(TeacherConfigsJSONKeys.EXAM_FILE_ID.getKey(), examFileId);
+    }
+
+
+
+    // *ExamTitleCache
+    public String getExamTitleCache(){
+        return super.optString(TeacherConfigsJSONKeys.EXAM_TITLE_CACHE.getKey());
+    }
+    public void setExamTitleCache(String examTitleCache) throws JSONException{
+        super.putOpt(TeacherConfigsJSONKeys.EXAM_TITLE_CACHE.getKey(), examTitleCache);
+    }
+
+    // *ExamDeliveryDateCache
+    public Date getExamDeliveryDateCache(){
+        try {
+            Date date = new SimpleDateFormat("dd/MM/yyyy").parse(super.optString(TeacherConfigsJSONKeys.EXAM_DELIVERY_DATE_CACHE.getKey()));
+            return date;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public void setExamDeliveryDateCache(Date examDeliveryDateCache) throws JSONException{
+        super.putOpt(TeacherConfigsJSONKeys.EXAM_DELIVERY_DATE_CACHE.getKey(), new SimpleDateFormat("dd/MM/yyyy").format(examDeliveryDateCache));
+    }
+
+    // *ExamSubjectCache
+    public String getExamSubjectCache(){
+        return super.optString(TeacherConfigsJSONKeys.EXAM_SUBJECT_CACHE.getKey());
+    }
+    public void setExamSubjectCache(String examSubjectCache) throws JSONException{
+        super.putOpt(TeacherConfigsJSONKeys.EXAM_SUBJECT_CACHE.getKey(), examSubjectCache);
+    }
+
+    // *TeacherIdCache
+    public String getTeacherIdCache(){
+        return super.optString(TeacherConfigsJSONKeys.TEACHER_ID_CACHE.getKey());
+    }
+    public void setTeacherIdCache(String teacherIdCache) throws JSONException{
+        super.putOpt(TeacherConfigsJSONKeys.TEACHER_ID_CACHE.getKey(), teacherIdCache);
     }
 }

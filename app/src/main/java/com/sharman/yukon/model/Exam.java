@@ -106,7 +106,9 @@ public class Exam extends JSONObject{
         for(int i=0; i<questionJSONArray.length(); i++){
             try {
                 questionArray[i] = new Question(questionJSONArray.getJSONObject(i).toString());
-            }catch (JSONException e){}
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
         }
         return questionArray;
     }

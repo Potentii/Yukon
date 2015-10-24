@@ -13,11 +13,12 @@ import com.sharman.yukon.R;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.Question;
 import com.sharman.yukon.view.activities.dialog.DeliveryDateDialog;
+import com.sharman.yukon.view.activities.util.DialogCallback;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ExamCreateActivity extends GoogleRestConnectActivity {
+public class ExamCreateActivity extends GoogleRestConnectActivity implements DialogCallback {
 
     private DeliveryDateDialog deliveryDateDialog;
 
@@ -26,6 +27,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exam_create);
         deliveryDateDialog = new DeliveryDateDialog();
+        deliveryDateDialog.setDialogCallback(this);
     }
 
 
@@ -49,7 +51,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
         Intent questionCreateIntent = new Intent(this, QuestionsCreateActivity.class);
         questionCreateIntent.putExtra("exam", exam.toString());
         startActivity(questionCreateIntent);
-        finish();
+        //finish();
     }
 
 
@@ -69,4 +71,17 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
+
+    @Override
+    public void onPositive() {
+        ((EditText) findViewById(R.id.examDeliverDateIn)).setText(new SimpleDateFormat("dd/MM/yyyy").format(deliveryDateDialog.getDate()));
+    }
+
+    @Override
+    public void onNegative() {}
+
+    @Override
+    public void onNeutral() {}
 }

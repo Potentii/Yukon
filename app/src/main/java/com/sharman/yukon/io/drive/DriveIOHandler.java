@@ -4,8 +4,10 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.batch.BatchRequest;
 import com.google.api.client.googleapis.batch.json.JsonBatchCallback;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.http.ByteArrayContent;
+import com.google.api.client.http.FileContent;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpResponse;
@@ -17,17 +19,20 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.ParentReference;
 import com.google.api.services.drive.model.Permission;
+import com.google.api.services.drive.model.PermissionList;
 import com.sharman.yukon.io.drive.callback.FileCreateCallback;
 import com.sharman.yukon.io.drive.callback.FileDeleteCallback;
 import com.sharman.yukon.io.drive.callback.FileEditCallback;
 import com.sharman.yukon.io.drive.callback.FileQueryCallback;
 import com.sharman.yukon.io.drive.callback.FileReadCallback;
 import com.sharman.yukon.io.drive.callback.FileShareCallback;
+import com.sharman.yukon.io.drive.callback.FileShareEditCallback;
 import com.sharman.yukon.io.drive.callback.FolderCreateCallback;
 import com.sharman.yukon.io.drive.callback.FolderDeleteCallback;
 import com.sharman.yukon.io.drive.callback.FolderShareCallback;
 import com.sharman.yukon.io.drive.util.EMimeType;
 import com.sharman.yukon.io.drive.util.PermissionStruct;
+import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -130,7 +135,10 @@ public final class DriveIOHandler {
                     fileReadCallback.onSuccess(content);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    fileReadCallback.onFailure(e.getMessage());
+                    fileReadCallback.onFailure(e);
+                    if(e instanceof UserRecoverableAuthIOException){
+                        //GoogleRestConnectActivity.requestAuthorization((UserRecoverableAuthIOException) e);
+                    }
                 }
             }
         }).start();
@@ -148,7 +156,7 @@ public final class DriveIOHandler {
                     fileReadCallback.onSuccess(content);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    fileReadCallback.onFailure(e.getMessage());
+                    fileReadCallback.onFailure(e);
                 }
             }
         }).start();
@@ -194,11 +202,34 @@ public final class DriveIOHandler {
      *  * Edits a file on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void editFile(final FileEditCallback fileEditCallback){
+    public void editFile(final String fileId, final String newTitle, final String newMimeType, final String newContent, final FileEditCallback fileEditCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
+                // *Get the Drive service instance:
+                com.google.api.services.drive.Drive service = getDriveService();
 
+                try {
+                    File file = service.files().get(fileId).execute();
+
+                    if(newTitle != null){
+                        file.setTitle(newTitle);
+                    }
+
+                    if(newMimeType != null){
+                        file.setMimeType(newMimeType);
+                    }
+
+                    // *Write to the file:
+                    ByteArrayContent fileContent = ByteArrayContent.fromString(file.getMimeType(), newContent);
+
+                    File updatedFile = service.files().update(fileId, file, fileContent).execute();
+
+                    fileEditCallback.onSuccess();
+                } catch (IOException e){
+                    e.printStackTrace();
+                    fileEditCallback.onFailure(e.getMessage());
+                }
             }
         }).start();
     }
@@ -282,6 +313,64 @@ public final class DriveIOHandler {
     }
 
 
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Shares a file on Drive:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    // Doesn't work for ownership transferring:
+    public void editFileShare(final String fileId, final String userEMail, final String newRole, final FileShareEditCallback fileShareEditCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                // *Get the Drive service instance:
+                com.google.api.services.drive.Drive service = getDriveService();
+
+
+                try {
+                    // *Retrieve the permission list for this file:
+                    List<Permission> permissionList = service.permissions().list(fileId).execute().getItems();
+
+
+                    // *Set the "permission edited" callback:
+                    JsonBatchCallback<Permission> callback = new JsonBatchCallback<Permission>() {
+                        @Override
+                        public void onSuccess(Permission permission, HttpHeaders responseHeaders) {
+                            fileShareEditCallback.onSuccess();
+                        }
+
+                        @Override
+                        public void onFailure(GoogleJsonError e, HttpHeaders responseHeaders) {
+                            fileShareEditCallback.onFailure(e.getMessage());
+                        }
+                    };
+
+                    BatchRequest batch = service.batch();
+
+                    // *Searches for permissions with the user "userEMail":
+                    for(int i=0; i<permissionList.size(); i++){
+                        if(permissionList.get(i).getEmailAddress().equals(userEMail)){
+                            Permission newPermission = new Permission();
+                            newPermission.setValue(permissionList.get(i).getValue());
+                            newPermission.setType(permissionList.get(i).getType());
+                            newPermission.setRole(newRole);
+
+                            service.permissions()
+                                    .update(fileId, permissionList.get(i).getId(), newPermission)
+                                    .queue(batch, callback);;
+                        }
+                    }
+
+                    batch.execute();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    fileShareEditCallback.onFailure(e.getMessage());
+                }
+            }
+        }).start();
+    }
 
 
 
