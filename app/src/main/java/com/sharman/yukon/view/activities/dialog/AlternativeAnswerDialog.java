@@ -98,13 +98,13 @@ public class AlternativeAnswerDialog extends DialogFragment {
 
         switch (eMultipleAnswerType){
         case MULTIPLE_CHOICE:
-            answerRow = layoutInflater.inflate(R.layout.row_multiple_choice_answer, null);
+            answerRow = layoutInflater.inflate(R.layout.row_multiple_choice_answer_create, null);
             break;
         case SINGLE_CHOICE:
-            answerRow = layoutInflater.inflate(R.layout.row_single_choice_answer, null);
+            answerRow = layoutInflater.inflate(R.layout.row_single_choice_answer_create, null);
             break;
         default:
-            answerRow = layoutInflater.inflate(R.layout.row_single_choice_answer, null);
+            answerRow = layoutInflater.inflate(R.layout.row_single_choice_answer_create, null);
             break;
         }
 

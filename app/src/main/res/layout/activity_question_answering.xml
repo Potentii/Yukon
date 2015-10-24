@@ -6,4 +6,67 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.sharman.yukon.view.activities.QuestionAnsweringActivity">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView6" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text=""
+                    android:id="@+id/weightOut"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text=""
+                    android:id="@+id/titleOut"
+                    android:inputType="textMultiLine"
+                    android:minLines="4" />
+
+            </LinearLayout>
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/answerDiv"
+                android:orientation="vertical">
+
+            </RadioGroup>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <RelativeLayout
+        android:layout_width="@dimen/addCircularButtonSize"
+        android:layout_height="@dimen/addCircularButtonSize"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/circle"
+        android:elevation="@dimen/addCircularButtonElevation" >
+
+        <ImageButton
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="questionAnsweringNextButton_onClick"
+            android:id="@+id/nextBtn"
+            android:background="@color/transparent"
+            android:src="@drawable/common_ic_googleplayservices"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/addCircularButtonTextSize" />
+    </RelativeLayout>
 </RelativeLayout>

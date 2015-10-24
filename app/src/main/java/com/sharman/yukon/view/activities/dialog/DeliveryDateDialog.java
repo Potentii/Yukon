@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.DatePicker;
 
 import com.sharman.yukon.R;
+import com.sharman.yukon.view.activities.util.DialogCallback;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,6 +21,7 @@ import java.util.Date;
  */
 public class DeliveryDateDialog extends DialogFragment {
     private Date date = new Date();
+    private DialogCallback dialogCallback;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -43,12 +45,22 @@ public class DeliveryDateDialog extends DialogFragment {
                     e.printStackTrace();
                 }
 
+                try{
+                    dialogCallback.onPositive();
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+
             }
         });
 
         builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-
+                try{
+                    dialogCallback.onNegative();
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -62,5 +74,9 @@ public class DeliveryDateDialog extends DialogFragment {
     }
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public void setDialogCallback(DialogCallback dialogCallback) {
+        this.dialogCallback = dialogCallback;
     }
 }

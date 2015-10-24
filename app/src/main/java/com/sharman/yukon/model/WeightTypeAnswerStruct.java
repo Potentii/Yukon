@@ -7,20 +7,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by poten on 05/10/2015.
+ * Created by poten on 20/10/2015.
  */
-public class AnswerBox extends JSONObject {
+public class WeightTypeAnswerStruct extends JSONObject {
     /*
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      *  * Keys enum:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    protected enum AnswerBoxJSONKeys{
-        TITLE_ARRAY("titleArray"),
-        EMULTIPLE_ANSWER_TYPE("eMultipleAnswerType");
+    protected enum WeightTypeAnswerStructJSONKeys{
+        WEIGHT("weight"),
+        EMULTIPLE_ANSWER_TYPE("eMultipleAnswerType"),
+        ANSWER("answer");
 
         private String key;
-        private AnswerBoxJSONKeys(String key){
+        private WeightTypeAnswerStructJSONKeys(String key){
             this.key = key;
         }
         public String getKey(){
@@ -34,19 +35,17 @@ public class AnswerBox extends JSONObject {
      *  * Constructor:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public AnswerBox(){
-        this(new String[0], null);
-    }
-    public AnswerBox(String[] titleArray, EMultipleAnswerType eMultipleAnswerType){
+    public WeightTypeAnswerStruct(double weight, EMultipleAnswerType eMultipleAnswerType, Answer answer){
         super();
-        try{
-            this.setTitleArray(titleArray);
+        try {
+            this.setWeight(weight);
             this.setEMultipleAnswerType(eMultipleAnswerType);
+            this.setAnswer(answer);
         } catch (JSONException e){
             e.printStackTrace();
         }
     }
-    public AnswerBox(String jsonStr) throws JSONException {
+    public WeightTypeAnswerStruct(String jsonStr) throws JSONException{
         super(jsonStr);
     }
 
@@ -56,32 +55,35 @@ public class AnswerBox extends JSONObject {
      *  * Getters and Setters:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    // *TitleArray:
-    public String[] getTitleArray(){
-        JSONArray titleJSONArray = super.optJSONArray(AnswerBoxJSONKeys.TITLE_ARRAY.getKey());
-        String[] titleArray = new String[titleJSONArray.length()];
-        for(int i=0; i<titleJSONArray.length(); i++){
-            try {
-                titleArray[i] = titleJSONArray.getString(i);
-            }catch (JSONException e){
-                e.printStackTrace();
-            }
-        }
-        return titleArray;
+    // *Weight:
+    public double getWeight(){
+        return super.optDouble(WeightTypeAnswerStructJSONKeys.WEIGHT.getKey());
     }
-    public void setTitleArray(String[] titleArray) throws JSONException{
-        super.putOpt(AnswerBoxJSONKeys.TITLE_ARRAY.getKey(), new JSONArray(titleArray));
+    public void setWeight(double weight) throws JSONException{
+        super.putOpt(WeightTypeAnswerStructJSONKeys.WEIGHT.getKey(), weight);
     }
 
     // *EMultipleAnswerType:
     public EMultipleAnswerType getEMultipleAnswerType(){
-        return EMultipleAnswerType.getEMultipleAnswerType(super.optString(AnswerBoxJSONKeys.EMULTIPLE_ANSWER_TYPE.getKey()));
+        return EMultipleAnswerType.getEMultipleAnswerType(super.optString(WeightTypeAnswerStructJSONKeys.EMULTIPLE_ANSWER_TYPE.getKey()));
     }
     public void setEMultipleAnswerType(EMultipleAnswerType eMultipleAnswerType) throws JSONException{
         try {
-            super.putOpt(AnswerBoxJSONKeys.EMULTIPLE_ANSWER_TYPE.getKey(), eMultipleAnswerType.getName());
+            super.putOpt(WeightTypeAnswerStructJSONKeys.EMULTIPLE_ANSWER_TYPE.getKey(), eMultipleAnswerType.getName());
         } catch(NullPointerException e){
-            super.putOpt(AnswerBoxJSONKeys.EMULTIPLE_ANSWER_TYPE.getKey(), "");
+            super.putOpt(WeightTypeAnswerStructJSONKeys.EMULTIPLE_ANSWER_TYPE.getKey(), "");
         }
+    }
+
+    // *Answer:
+    public Answer getAnswer(){
+        try {
+            return new Answer(super.optJSONObject(WeightTypeAnswerStructJSONKeys.ANSWER.getKey()).toString());
+        }catch (JSONException e){
+            return null;
+        }
+    }
+    public void setAnswer(Answer answer) throws JSONException{
+        super.putOpt(WeightTypeAnswerStructJSONKeys.ANSWER.getKey(), answer);
     }
 }

@@ -111,7 +111,8 @@
                     android:hint="@string/inputHint.questionCreate.alternatives"
                     android:layout_marginLeft="@dimen/inputLeftMargin"
                     android:editable="false"
-                    android:onClick="questionAlternativesIn_onCLick" />
+                    android:onClick="questionAlternativesIn_onCLick"
+                    android:focusable="false" />
 
             </LinearLayout>
         </LinearLayout>

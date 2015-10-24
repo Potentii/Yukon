@@ -1,91 +1,97 @@
-<RelativeLayout
+<android.support.v4.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-
-    tools:context="com.sharman.yukon.view.activities.MainActivity">
-
-
-    <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/scrollView" >
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <!-- First recyclerView -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#d4d4d4"
-                android:paddingStart="16dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/listLabel.main.my"
-                    android:id="@+id/textView2" />
-            </RelativeLayout>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/myExamRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#ff00ff">
-            </android.support.v7.widget.RecyclerView>
-
-            <!-- Second recyclerView -->
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#d4d4d4"
-                android:paddingStart="16dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/listLabel.main.shared"
-                    android:id="@+id/textView3" />
-            </RelativeLayout>
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/sharedExamRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            </android.support.v7.widget.RecyclerView>
-
-        </LinearLayout>
-    </ScrollView>
-
+    android:layout_height="match_parent">
 
     <RelativeLayout
-        android:layout_width="@dimen/addCircularButtonSize"
-        android:layout_height="@dimen/addCircularButtonSize"
-        android:layout_margin="@dimen/activityMargin"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:background="@drawable/circle"
-        android:elevation="@dimen/addCircularButtonElevation">
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:onClick="addExamBtn_onClick"
-            android:background="@color/transparent"
-            android:text="+"
-            android:textColor="#ffffff"
-            android:textSize="@dimen/addCircularButtonTextSize" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        tools:context="com.sharman.yukon.view.activities.MainActivity">
+
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/scrollView" >
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- First recyclerView -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#d4d4d4"
+                    android:paddingStart="16dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="@string/listLabel.main.my"
+                        android:id="@+id/textView2" />
+                </RelativeLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/myExamRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#ff00ff">
+                </android.support.v7.widget.RecyclerView>
+
+                <!-- Second recyclerView -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#d4d4d4"
+                    android:paddingStart="16dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="@string/listLabel.main.shared"
+                        android:id="@+id/textView3" />
+                </RelativeLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/sharedExamRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </android.support.v7.widget.RecyclerView>
+
+            </LinearLayout>
+        </ScrollView>
+
+
+        <RelativeLayout
+            android:layout_width="@dimen/addCircularButtonSize"
+            android:layout_height="@dimen/addCircularButtonSize"
+            android:layout_margin="@dimen/activityMargin"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/circle"
+            android:elevation="@dimen/addCircularButtonElevation">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:onClick="addExamBtn_onClick"
+                android:background="@color/transparent"
+                android:text="+"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/addCircularButtonTextSize" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
-
-</RelativeLayout>
+</android.support.v4.widget.DrawerLayout>

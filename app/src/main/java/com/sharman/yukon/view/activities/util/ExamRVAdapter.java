@@ -53,15 +53,15 @@ public class ExamRVAdapter extends RecyclerView.Adapter<ExamRVAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int i) {
-        Exam currentExam = examRVInfoVector.get(i).getExam();
+        ExamRVInfo currentExamRVInfo = examRVInfoVector.get(i);
 
-        viewHolder.examTitleSpan.setText(currentExam.getTitle());
-        viewHolder.examSubjectSpan.setText(currentExam.getSubject());
-        viewHolder.examDeliverDateSpan.setText(new SimpleDateFormat("dd/MM/yyyy").format(currentExam.getDeliverDate()));
-        viewHolder.exam = currentExam;
+        viewHolder.examTitleSpan.setText(currentExamRVInfo.getExamTitle());
+        viewHolder.examSubjectSpan.setText(currentExamRVInfo.getExamSubject());
+        viewHolder.examDeliverDateSpan.setText(new SimpleDateFormat("dd/MM/yyyy").format(currentExamRVInfo.getExamDeliveryDate()));
+        viewHolder.examRVInfo = currentExamRVInfo;
 
         final PlusIOHandler plusIOHandler = new PlusIOHandler(credential);
-        plusIOHandler.ReadPerson(currentExam.getTeacherId(), new PersonReadCallback() {
+        plusIOHandler.ReadPerson(currentExamRVInfo.getTeacherId(), new PersonReadCallback() {
             @Override
             public void onSuccess(Person person) {
                 plusIOHandler.ReadPersonImg(person, new PersonImgReadCallback() {
@@ -78,15 +78,15 @@ public class ExamRVAdapter extends RecyclerView.Adapter<ExamRVAdapter.ViewHolder
                     @Override
                     public void onFailure(String errorMessage) {
                         //TODO
-                        onFailure(errorMessage);
+                        //onFailure(errorMessage);
                     }
                 });
             }
 
             @Override
-            public void onFailure(String errorMessage) {
+            public void onFailure(Exception exception) {
                 // TODO
-                System.out.println(errorMessage);
+                System.out.println(exception.getMessage());
             }
         });
     }
@@ -103,7 +103,7 @@ public class ExamRVAdapter extends RecyclerView.Adapter<ExamRVAdapter.ViewHolder
         private TextView examTitleSpan;
         private TextView examSubjectSpan;
         private TextView examDeliverDateSpan;
-        private Exam exam;
+        private ExamRVInfo examRVInfo;
 
         public ViewHolder(View itemView, final OnExamRVItemClickListener onExamRVItemClickListener) {
             super(itemView);
@@ -115,7 +115,7 @@ public class ExamRVAdapter extends RecyclerView.Adapter<ExamRVAdapter.ViewHolder
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onExamRVItemClickListener.onClick(exam);
+                    onExamRVItemClickListener.onClick(examRVInfo);
                 }
             });
         }
