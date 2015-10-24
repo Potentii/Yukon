@@ -6,5 +6,5 @@ import com.sharman.yukon.model.Exam;
  * Created by poten on 11/10/2015.
  */
 public interface OnExamRVItemClickListener {
-    public void onClick(Exam exam);
+    public void onClick(ExamRVInfo examRVInfo);
 }

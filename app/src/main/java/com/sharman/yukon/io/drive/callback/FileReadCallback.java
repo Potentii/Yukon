@@ -5,5 +5,5 @@ package com.sharman.yukon.io.drive.callback;
  */
 public interface FileReadCallback {
     public void onSuccess(String content);
-    public void onFailure(String errorMessage);
+    public void onFailure(Exception exception);
 }

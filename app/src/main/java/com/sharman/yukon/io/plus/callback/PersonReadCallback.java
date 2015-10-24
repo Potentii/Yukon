@@ -7,5 +7,5 @@ import com.google.api.services.plus.model.Person;
  */
 public interface PersonReadCallback {
     public void onSuccess(Person person);
-    public void onFailure(String errorMessage);
+    public void onFailure(Exception exception);
 }

@@ -65,7 +65,7 @@
             android:onClick="questionAnsweringNextButton_onClick"
             android:id="@+id/nextBtn"
             android:background="@color/transparent"
-            android:src="@drawable/common_signin_btn_icon_light"
+            android:src="@drawable/common_ic_googleplayservices"
             android:textColor="#ffffff"
             android:textSize="@dimen/addCircularButtonTextSize" />
     </RelativeLayout>

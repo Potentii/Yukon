@@ -217,7 +217,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
      */
     // *Execute the creation and share of the Exam:
     private void examCreateConfirmFinishActionButton_onClick(){
-
+        // TODO move to onConnectOnce()
         studentConfigFilePairArray = new StudentConfigFilePair[studentPickerList.size()-1];
         for (int i = 0; i < studentConfigFilePairArray.length; i++) {
             AutoCompleteTextView studentPicker = (AutoCompleteTextView) studentPickerList.get(i).findViewById(R.id.studentPickerIn);
@@ -235,12 +235,12 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    onFailure(e.getMessage());
+                    onFailure(e);
                 }
             }
 
             @Override
-            public void onFailure(String errorMessage) {
+            public void onFailure(Exception exception) {
                 onCreationFail();
             }
         });
@@ -278,6 +278,13 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
 
     private void createExamOnDrive(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), "Working...", Toast.LENGTH_LONG);
+            }
+        });
+
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
         // *ExamRoot folder creation:
         new DriveIOHandler(getCredential()).createFolder("", exam.getTitle(), "Yukon exam folder", new FolderCreateCallback() {
@@ -417,7 +424,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
                         new DriveIOHandler(getCredential()).createFile(studentFolderId, "Grade", "", EMimeType.JSON.getMimeType(), grade.toString(), new FileCreateCallback() {
                             @Override
                             public void onSuccess(final String gradeFileId) {
-                                StudentConfigs studentConfigs = new StudentConfigs(gradeFileId, answersFileId, examFileId);
+                                StudentConfigs studentConfigs = new StudentConfigs(gradeFileId, answersFileId, examFileId, exam.getTitle(), exam.getDeliverDate(), exam.getSubject(), exam.getTeacherId());
 
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                                 // *Configs file creation:
@@ -529,7 +536,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
             studentConfigsFileIdArray[i] = studentConfigFilePairArray[i].getConfigFileId();
         }
 
-        TeacherConfigs teacherConfigs = new TeacherConfigs(studentConfigsFileIdArray, correctAnswersFileId, examFileId);
+        TeacherConfigs teacherConfigs = new TeacherConfigs(studentConfigsFileIdArray, correctAnswersFileId, examFileId, exam.getTitle(), exam.getDeliverDate(), exam.getSubject(), exam.getTeacherId());
 
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
         // *Teacher Configs file creation:

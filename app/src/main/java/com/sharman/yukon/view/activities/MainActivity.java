@@ -7,12 +7,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.plus.model.Person;
 import com.sharman.yukon.io.drive.util.EMimeType;
 import com.sharman.yukon.R;
 import com.sharman.yukon.io.drive.DriveIOHandler;
 import com.sharman.yukon.io.drive.callback.FileQueryCallback;
 import com.sharman.yukon.io.drive.callback.FileReadCallback;
+import com.sharman.yukon.io.plus.PlusIOHandler;
+import com.sharman.yukon.io.plus.callback.PersonReadCallback;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.StudentConfigs;
 import com.sharman.yukon.model.TeacherConfigs;
@@ -52,20 +56,29 @@ public class MainActivity extends GoogleRestConnectActivity {
 
         myExamRVAdapter = new ExamRVAdapter(this, getCredential(), myExamRVInfoVector, new OnExamRVItemClickListener() {
             @Override
-            public void onClick(Exam exam) {
+            public void onClick(ExamRVInfo examRVInfo) {
                 //TODO mudar para o shared:
+                /*
                 Intent examAnsweringIntent = new Intent(getApplicationContext(), ExamAnsweringActivity.class);
                 examAnsweringIntent.putExtra("exam", exam.toString());
                 startActivity(examAnsweringIntent);
                 finish();
+                */
             }
         });
 
         sharedExamRVAdapter = new ExamRVAdapter(this, getCredential(), sharedExamRVInfoVector, new OnExamRVItemClickListener() {
             @Override
-            public void onClick(Exam exam) {
+            public void onClick(ExamRVInfo examRVInfo) {
                 // TODO open Exam
-                System.out.println(exam.getTitle());
+                Intent examAnsweringIntent = new Intent(getApplicationContext(), ExamAnsweringActivity.class);
+                examAnsweringIntent.putExtra("studentAnswerFileId", examRVInfo.getStudentAnswerFileId());
+                examAnsweringIntent.putExtra("examFileId", examRVInfo.getExamFileId());
+                examAnsweringIntent.putExtra("gradeFileId", examRVInfo.getGradeFileId());
+
+                examAnsweringIntent.putExtra("examTitleCache", examRVInfo.getExamTitle());
+                startActivity(examAnsweringIntent);
+                finish();
             }
         });
 
@@ -77,13 +90,16 @@ public class MainActivity extends GoogleRestConnectActivity {
         sharedExamRecyclerView.setAdapter(sharedExamRVAdapter);
         sharedExamRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        updateMyExamList();
-        updateSharedExamList();
     }
 
 
     @Override
-    protected void onConnect(){}
+    protected void onConnectOnce(){
+        super.onConnectOnce();
+
+        updateMyExamList();
+        updateSharedExamList();
+    }
 
 
     public void addExamBtn_onClick(View view) {
@@ -98,7 +114,6 @@ public class MainActivity extends GoogleRestConnectActivity {
      *  * Update List:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    // *My:
     private void updateMyExamList(){
         myExamLoaded = 0;
         onMyUpdateCalled = false;
@@ -108,47 +123,36 @@ public class MainActivity extends GoogleRestConnectActivity {
         driveIOHandler.queryFiles("mimeType = '" + EMimeType.TEACHER_CONFIG.getMimeType() + "'", new FileQueryCallback() {
             @Override
             public void onResult(final List<File> driveFileList) {
-                System.out.println("RESULT SIZE: " + driveFileList.size());
 
-                for(int i=0; i<driveFileList.size(); i++) {
+                for (int i = 0; i < driveFileList.size(); i++) {
+
                     driveIOHandler.readFile(driveFileList.get(i), new FileReadCallback() {
                         @Override
                         public void onSuccess(String content) {
                             try {
                                 TeacherConfigs teacherConfigs = new TeacherConfigs(content);
-                                String examFileId = teacherConfigs.getExamFileId();
-                                if(!examFileId.equals("")){
-                                    driveIOHandler.readFile(examFileId, new FileReadCallback() {
-                                        @Override
-                                        public void onSuccess(String content) {
-                                            try {
-                                                Exam exam  =  new Exam(content);
-                                                myExamRVInfoVector.add(new ExamRVInfo(exam));
-                                                myExamLoaded++;
-                                                if(myExamLoaded == driveFileList.size()){
-                                                    onMyExamUpdateSuccess();
-                                                }
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                                onFailure(e.getMessage());
-                                            }
-                                        }
 
-                                        @Override
-                                        public void onFailure(String errorMessage) {
-                                            // TODO Error Exam file
-                                            onMyExamUpdateFailure();
-                                        }
-                                    });
+                                myExamRVInfoVector.add(new ExamRVInfo(
+                                        teacherConfigs.getTeacherIdCache(),
+                                        teacherConfigs.getExamTitleCache(),
+                                        teacherConfigs.getExamSubjectCache(),
+                                        teacherConfigs.getExamDeliveryDateCache(),
+                                        teacherConfigs.getExamFileId(),
+                                        teacherConfigs.getCorrectAnswersFileId()));
+
+                                myExamLoaded++;
+                                if (myExamLoaded == driveFileList.size()) {
+                                    onMyExamUpdateSuccess();
                                 }
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                                onFailure(e.getMessage());
+                                onFailure(e);
                             }
                         }
 
                         @Override
-                        public void onFailure(String errorMessage) {
+                        public void onFailure(Exception exception) {
                             // TODO Error Configs file
                             onMyExamUpdateFailure();
                         }
@@ -157,8 +161,6 @@ public class MainActivity extends GoogleRestConnectActivity {
             }
         });
     }
-
-
 
 
     // *Shared:
@@ -171,7 +173,6 @@ public class MainActivity extends GoogleRestConnectActivity {
         driveIOHandler.queryFiles("mimeType = '" + EMimeType.STUDENT_CONFIG.getMimeType() + "' and sharedWithMe", new FileQueryCallback() {
             @Override
             public void onResult(final List<File> driveFileList) {
-                System.out.println("RESULT SIZE: " + driveFileList.size());
 
                 for (int i = 0; i < driveFileList.size(); i++) {
                     driveIOHandler.readFile(driveFileList.get(i), new FileReadCallback() {
@@ -179,39 +180,29 @@ public class MainActivity extends GoogleRestConnectActivity {
                         public void onSuccess(String content) {
                             try {
                                 StudentConfigs studentConfigs = new StudentConfigs(content);
-                                String examFileId = studentConfigs.getExamFileId();
-                                if (!examFileId.equals("")) {
-                                    driveIOHandler.readFile(examFileId, new FileReadCallback() {
-                                        @Override
-                                        public void onSuccess(String content) {
-                                            try {
-                                                Exam exam = new Exam(content);
-                                                sharedExamRVInfoVector.add(new ExamRVInfo(exam));
-                                                sharedExamLoaded++;
-                                                if (sharedExamLoaded == driveFileList.size()) {
-                                                    onSharedExamUpdateSuccess();
-                                                }
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                                onFailure(e.getMessage());
-                                            }
-                                        }
+                                
+                                sharedExamRVInfoVector.add(new ExamRVInfo(
+                                        studentConfigs.getTeacherIdCache(),
+                                        studentConfigs.getExamTitleCache(),
+                                        studentConfigs.getExamSubjectCache(),
+                                        studentConfigs.getExamDeliveryDateCache(),
+                                        studentConfigs.getExamFileId(),
+                                        studentConfigs.getAnswersFileId(),
+                                        studentConfigs.getGradeFileId()));
 
-                                        @Override
-                                        public void onFailure(String errorMessage) {
-                                            // TODO Error Exam file
-                                            onSharedExamUpdateFailure();
-                                        }
-                                    });
+                                sharedExamLoaded++;
+                                if (sharedExamLoaded == driveFileList.size()) {
+                                    onSharedExamUpdateSuccess();
                                 }
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                                onFailure(e.getMessage());
+                                onFailure(e);
                             }
                         }
 
                         @Override
-                        public void onFailure(String errorMessage) {
+                        public void onFailure(Exception exception) {
                             // TODO Error Configs file
                             onSharedExamUpdateFailure();
                         }
@@ -220,7 +211,6 @@ public class MainActivity extends GoogleRestConnectActivity {
             }
         });
     }
-
 
 
 

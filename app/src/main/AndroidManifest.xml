@@ -13,23 +13,14 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/appName"
-
         android:theme="@style/YukonMainTheme" >
-
         <meta-data
             android:name="com.google.android.apps.drive.APP_ID"
             android:value="id=yukon-1085" />
 
-
         <activity
             android:name=".view.activities.MainActivity"
             android:label="@string/activityTitle.main" >
-            <intent-filter
-                android:label="@string/appName">
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".view.activities.ExamCreateActivity"
@@ -55,8 +46,15 @@
             android:name=".view.activities.ExamAnsweringConfirmActivity"
             android:label="@string/activityTitle.examAnsweringConfirm" >
         </activity>
+        <activity
+            android:name=".view.activities.DisconnectedActivity"
+            android:label="@string/title_activity_disconnected" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
