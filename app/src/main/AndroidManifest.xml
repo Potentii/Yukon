@@ -18,8 +18,6 @@
             android:name="com.google.android.apps.drive.APP_ID"
             android:value="id=yukon-1085" />
 
-
-
         <activity
             android:name=".view.activities.DisconnectedActivity"
             android:label="@string/title_activity_disconnected" >
@@ -31,43 +29,56 @@
         </activity>
         <activity
             android:name=".view.activities.MainActivity"
-            android:label="@string/activityTitle.main">
+            android:label="@string/activityTitle.main" >
         </activity>
-
 
         <!-- * Exam Creation Activities * -->
         <activity
-            android:name=".view.activities.ExamCreateActivity"
+            android:name=".view.activities.creation.ExamCreateActivity"
             android:label="@string/activityTitle.examCreate"
-            android:parentActivityName=".view.activities.MainActivity">
+            android:parentActivityName=".view.activities.MainActivity" >
         </activity>
         <activity
-            android:name=".view.activities.QuestionsCreateActivity"
+            android:name=".view.activities.creation.QuestionsCreateActivity"
             android:label="@string/activityTitle.questionCreate"
-            android:parentActivityName=".view.activities.ExamCreateActivity">
+            android:parentActivityName=".view.activities.creation.ExamCreateActivity" >
         </activity>
         <activity
-            android:name=".view.activities.ExamCreateConfirmActivity"
+            android:name=".view.activities.creation.ExamCreateConfirmActivity"
             android:label="@string/activityTitle.examCreateConfirm" >
         </activity>
 
-
         <!-- * Exam Answering Activities * -->
         <activity
-            android:name=".view.activities.ExamAnsweringActivity"
+            android:name=".view.activities.answering.ExamAnsweringActivity"
             android:label="@string/activityTitle.examAnswering"
             android:parentActivityName=".view.activities.MainActivity" >
         </activity>
         <activity
-            android:name=".view.activities.QuestionAnsweringActivity"
+            android:name=".view.activities.answering.QuestionAnsweringActivity"
             android:label="@string/activityTitle.questionAnswering"
-            android:parentActivityName=".view.activities.ExamAnsweringActivity">
+            android:parentActivityName=".view.activities.answering.ExamAnsweringActivity" >
         </activity>
         <activity
-            android:name=".view.activities.ExamAnsweringConfirmActivity"
+            android:name=".view.activities.answering.ExamAnsweringConfirmActivity"
             android:label="@string/activityTitle.examAnsweringConfirm" >
         </activity>
 
-
+        <!-- * Exam Managing Activities * -->
+        <activity
+            android:name=".view.activities.managing.ExamManagingActivity"
+            android:label="@string/activityTitle.examManaging"
+            android:parentActivityName=".view.activities.MainActivity" >
+        </activity>
+        <activity
+            android:name=".view.activities.managing.ExamManagingStudentsActivity"
+            android:label="@string/activityTitle.examManagingStudents"
+            android:parentActivityName=".view.activities.managing.ExamManagingActivity" >
+        </activity>
+        <activity
+            android:name=".view.activities.managing.ExamManagingStudentInspectActivity"
+            android:label="@string/title_activity_exam_managing_student_inspect" >
+        </activity>
     </application>
+
 </manifest>

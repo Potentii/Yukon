@@ -122,12 +122,6 @@ public abstract class GoogleRestConnectActivity extends ActionBarActivity {
     }
 
     protected void onConnect(){
-        System.out.println(">> CONNECTED <<");
-        try {
-            System.out.println(credential.getSelectedAccountName());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
     protected void onConnectOnce(){

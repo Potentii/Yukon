@@ -1,4 +1,4 @@
-package com.sharman.yukon.view.activities;
+package com.sharman.yukon.view.activities.creation;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.sharman.yukon.R;
 import com.sharman.yukon.model.Answer;
@@ -21,14 +20,13 @@ import com.sharman.yukon.model.SingleChoiceAnswer;
 import com.sharman.yukon.model.TeacherAnswers;
 import com.sharman.yukon.model.WeightTypeAnswerStruct;
 import com.sharman.yukon.model.util.EMultipleAnswerType;
+import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 import com.sharman.yukon.view.activities.dialog.AlternativeAnswerDialog;
 import com.sharman.yukon.view.activities.util.AnswerAlternativePair;
 import com.sharman.yukon.view.activities.util.DialogCallback;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

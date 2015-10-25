@@ -1,8 +1,6 @@
-package com.sharman.yukon.view.activities;
+package com.sharman.yukon.view.activities.answering;
 
-import android.app.ActionBar;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,6 +10,8 @@ import com.sharman.yukon.io.drive.DriveIOHandler;
 import com.sharman.yukon.io.drive.callback.FileReadCallback;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.Grade;
+import com.sharman.yukon.model.StudentConfigs;
+import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 
 import org.json.JSONException;
 
@@ -38,21 +38,26 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
 
 
         try {
-            // TODO CHANGE: intent should pass the fileId of exam file
-            // *Gets the exam from intent:
-            studentAnswerFileId = getIntent().getExtras().getString("studentAnswerFileId");
-            examFileId = getIntent().getExtras().getString("examFileId");
-            gradeFileId = getIntent().getExtras().getString("gradeFileId");
+            // *Gets the studentConfigs from intent:
+            StudentConfigs studentConfigs = new StudentConfigs(getIntent().getExtras().getString("studentConfigs"));
 
-            // TODO get other cached data
-            String examTitleCache = getIntent().getExtras().getString("examTitleCache");
+            studentAnswerFileId = studentConfigs.getAnswersFileId();
+            examFileId = studentConfigs.getExamFileId();
+            gradeFileId = studentConfigs.getGradeFileId();
+            String examTitleCache = studentConfigs.getExamTitleCache();
 
-            // *Sets the exam's cached title to the actionBar title:
-            getSupportActionBar().setTitle(examTitleCache);
+
+
+            try {
+                // *Sets the exam's cached title to the actionBar title:
+                getSupportActionBar().setTitle(examTitleCache);
+            } catch (NullPointerException e){
+                e.printStackTrace();
+            }
 
             loadFiles();
 
-        } catch (NullPointerException /*| JSONException*/ e){
+        } catch (NullPointerException | JSONException e){
             // TODO error
             e.printStackTrace();
         }
@@ -69,7 +74,11 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getSupportActionBar().setTitle(exam.getTitle());
+                            try {
+                                getSupportActionBar().setTitle(exam.getTitle());
+                            } catch (NullPointerException e){
+                                e.printStackTrace();
+                            }
                         }
                     });
 

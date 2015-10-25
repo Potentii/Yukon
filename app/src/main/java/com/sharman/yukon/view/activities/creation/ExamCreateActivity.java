@@ -1,22 +1,20 @@
-package com.sharman.yukon.view.activities;
+package com.sharman.yukon.view.activities.creation;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.sharman.yukon.R;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.Question;
+import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 import com.sharman.yukon.view.activities.dialog.DeliveryDateDialog;
 import com.sharman.yukon.view.activities.util.DialogCallback;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class ExamCreateActivity extends GoogleRestConnectActivity implements DialogCallback {
 
@@ -31,7 +29,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity implements Dia
     }
 
 
-    public void examDeliverDateIn_onCLick(View view){
+    public void examDeliveryDateIn_onCLick(View view){
         deliveryDateDialog.show(getSupportFragmentManager(), "delivery_date_dialog");
     }
 
@@ -39,7 +37,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity implements Dia
     public void examCreateNextActionButton_onClick(){
         EditText examTitleIn = (EditText) findViewById(R.id.examTitleIn);
         EditText examSubjectIn = (EditText) findViewById(R.id.examSubjectIn);
-        EditText examDeliverDateIn = (EditText) findViewById(R.id.examDeliverDateIn);
+        EditText examDeliveryDateIn = (EditText) findViewById(R.id.examDeliveryDateIn);
 
         Exam exam = new Exam(
                 examTitleIn.getText().toString(),
@@ -76,7 +74,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity implements Dia
 
     @Override
     public void onPositive() {
-        ((EditText) findViewById(R.id.examDeliverDateIn)).setText(new SimpleDateFormat("dd/MM/yyyy").format(deliveryDateDialog.getDate()));
+        ((EditText) findViewById(R.id.examDeliveryDateIn)).setText(new SimpleDateFormat("dd/MM/yyyy").format(deliveryDateDialog.getDate()));
     }
 
     @Override

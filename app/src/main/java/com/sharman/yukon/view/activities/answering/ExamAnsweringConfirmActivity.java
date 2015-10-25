@@ -1,4 +1,4 @@
-package com.sharman.yukon.view.activities;
+package com.sharman.yukon.view.activities.answering;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -12,6 +12,7 @@ import com.sharman.yukon.io.drive.callback.FileEditCallback;
 import com.sharman.yukon.io.drive.callback.FileShareEditCallback;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.StudentAnswers;
+import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 
 import org.json.JSONException;
 

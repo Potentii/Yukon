@@ -5,13 +5,11 @@ import android.graphics.BitmapFactory;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.plus.model.Person;
 import com.sharman.yukon.io.plus.callback.*;
-import com.sharman.yukon.view.activities.MainActivity;
 
 import java.io.IOException;
 import java.io.InputStream;

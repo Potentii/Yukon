@@ -1,7 +1,6 @@
-package com.sharman.yukon.view.activities;
+package com.sharman.yukon.view.activities.answering;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -24,6 +22,7 @@ import com.sharman.yukon.model.Question;
 import com.sharman.yukon.model.SingleChoiceAnswer;
 import com.sharman.yukon.model.StudentAnswers;
 import com.sharman.yukon.model.util.EMultipleAnswerType;
+import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 
 import org.json.JSONException;
 
@@ -60,8 +59,13 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
 
             question = exam.getQuestionArray()[questionIndex];
 
-            // *Setting the title of the actionBar:
-            getSupportActionBar().setTitle(getResources().getString(R.string.activityTitle_questionAnswering) + questionIndex + "/" + exam.getQuestionArray().length);
+
+            try {
+                // *Setting the title of the actionBar:
+                getSupportActionBar().setTitle(getResources().getString(R.string.activityTitle_questionAnswering) + " " + questionIndex + "/" + exam.getQuestionArray().length);
+            } catch (NullPointerException e){
+                e.printStackTrace();
+            }
 
             //TODO change the button icon if it is the last question
 

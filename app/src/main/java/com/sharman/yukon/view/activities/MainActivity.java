@@ -7,8 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.plus.Plus;
+import com.google.api.services.plus.model.PeopleFeed;
 import com.google.api.services.plus.model.Person;
 import com.sharman.yukon.io.drive.util.EMimeType;
 import com.sharman.yukon.R;
@@ -17,15 +20,21 @@ import com.sharman.yukon.io.drive.callback.FileQueryCallback;
 import com.sharman.yukon.io.drive.callback.FileReadCallback;
 import com.sharman.yukon.io.plus.PlusIOHandler;
 import com.sharman.yukon.io.plus.callback.PersonReadCallback;
-import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.StudentConfigs;
 import com.sharman.yukon.model.TeacherConfigs;
-import com.sharman.yukon.view.activities.util.ExamRVAdapter;
-import com.sharman.yukon.view.activities.util.ExamRVInfo;
-import com.sharman.yukon.view.activities.util.OnExamRVItemClickListener;
-
+import com.sharman.yukon.view.activities.answering.ExamAnsweringActivity;
+import com.sharman.yukon.view.activities.creation.ExamCreateActivity;
+import com.sharman.yukon.view.activities.managing.ExamManagingActivity;
+import com.sharman.yukon.view.activities.util.recycler.ExamRVAdapter;
+import com.sharman.yukon.view.activities.util.recycler.ExamRVInfo;
+import com.sharman.yukon.view.activities.util.recycler.OnExamRVItemClickListener;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.plus.model.Person;
 import org.json.JSONException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
@@ -57,28 +66,18 @@ public class MainActivity extends GoogleRestConnectActivity {
         myExamRVAdapter = new ExamRVAdapter(this, getCredential(), myExamRVInfoVector, new OnExamRVItemClickListener() {
             @Override
             public void onClick(ExamRVInfo examRVInfo) {
-                //TODO mudar para o shared:
-                /*
-                Intent examAnsweringIntent = new Intent(getApplicationContext(), ExamAnsweringActivity.class);
-                examAnsweringIntent.putExtra("exam", exam.toString());
-                startActivity(examAnsweringIntent);
-                finish();
-                */
+                Intent examManagingIntent = new Intent(getApplicationContext(), ExamManagingActivity.class);
+                examManagingIntent.putExtra("teacherConfigs", examRVInfo.getConfigs());
+                startActivity(examManagingIntent);
             }
         });
 
         sharedExamRVAdapter = new ExamRVAdapter(this, getCredential(), sharedExamRVInfoVector, new OnExamRVItemClickListener() {
             @Override
             public void onClick(ExamRVInfo examRVInfo) {
-                // TODO open Exam
                 Intent examAnsweringIntent = new Intent(getApplicationContext(), ExamAnsweringActivity.class);
-                examAnsweringIntent.putExtra("studentAnswerFileId", examRVInfo.getStudentAnswerFileId());
-                examAnsweringIntent.putExtra("examFileId", examRVInfo.getExamFileId());
-                examAnsweringIntent.putExtra("gradeFileId", examRVInfo.getGradeFileId());
-
-                examAnsweringIntent.putExtra("examTitleCache", examRVInfo.getExamTitle());
+                examAnsweringIntent.putExtra("studentConfigs", examRVInfo.getConfigs());
                 startActivity(examAnsweringIntent);
-                //finish();
             }
         });
 
@@ -99,6 +98,55 @@ public class MainActivity extends GoogleRestConnectActivity {
 
         updateMyExamList();
         updateSharedExamList();
+
+        /*
+        new Thread(new Runnable() {
+            private com.google.api.services.plus.Plus getPlusService(){
+                HttpTransport transport = AndroidHttp.newCompatibleTransport();
+                JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+                return new com.google.api.services.plus.Plus.Builder(
+                        transport, jsonFactory, getCredential())
+                        .setApplicationName("Yukon")
+                        .build();
+            }
+            @Override
+            public void run() {
+                try {
+                    System.out.println(">> Comeco <<");
+                    Plus.People.List listPeople = getPlusService().people().list("me", "visible");
+                    PeopleFeed peopleFeed = listPeople.execute();
+                    listPeople.setMaxResults(5L);
+                    List<Person> personList = listPeople.execute().getItems();
+
+
+                    while (personList != null) {
+                        for (Person person : personList) {
+                            System.out.println(person.getDisplayName());
+                        }
+
+                        // We will know we are on the last page when the next page token is
+                        // null.
+                        // If this is the case, break.
+                        if (peopleFeed.getNextPageToken() == null) {
+                            break;
+                        }
+
+                        // Prepare the next page of results
+                        listPeople.setPageToken(peopleFeed.getNextPageToken());
+
+                        // Execute and process the next page request
+                        peopleFeed = listPeople.execute();
+                        personList = peopleFeed.getItems();
+                    }
+                    System.out.println(">> FIM <<");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }).start();
+        */
     }
 
 
@@ -137,8 +185,16 @@ public class MainActivity extends GoogleRestConnectActivity {
                                         teacherConfigs.getExamTitleCache(),
                                         teacherConfigs.getExamSubjectCache(),
                                         teacherConfigs.getExamDeliveryDateCache(),
+                                        content));
+                                /*
+                                myExamRVInfoVector.add(new ExamRVInfo(
+                                        teacherConfigs.getTeacherIdCache(),
+                                        teacherConfigs.getExamTitleCache(),
+                                        teacherConfigs.getExamSubjectCache(),
+                                        teacherConfigs.getExamDeliveryDateCache(),
                                         teacherConfigs.getExamFileId(),
                                         teacherConfigs.getCorrectAnswersFileId()));
+                                        */
 
                                 myExamLoaded++;
                                 if (myExamLoaded == driveFileList.size()) {
@@ -186,9 +242,17 @@ public class MainActivity extends GoogleRestConnectActivity {
                                         studentConfigs.getExamTitleCache(),
                                         studentConfigs.getExamSubjectCache(),
                                         studentConfigs.getExamDeliveryDateCache(),
+                                        content));
+                                /*
+                                sharedExamRVInfoVector.add(new ExamRVInfo(
+                                        studentConfigs.getTeacherIdCache(),
+                                        studentConfigs.getExamTitleCache(),
+                                        studentConfigs.getExamSubjectCache(),
+                                        studentConfigs.getExamDeliveryDateCache(),
                                         studentConfigs.getExamFileId(),
                                         studentConfigs.getAnswersFileId(),
                                         studentConfigs.getGradeFileId()));
+                                        */
 
                                 sharedExamLoaded++;
                                 if (sharedExamLoaded == driveFileList.size()) {

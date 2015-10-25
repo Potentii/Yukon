@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/activityMargin"
-    tools:context="com.sharman.yukon.view.activities.QuestionsCreateActivity">
+    tools:context="com.sharman.yukon.view.activities.creation.QuestionsCreateActivity">
 
 
     <ScrollView
@@ -104,7 +104,7 @@
                     android:layout_alignParentStart="true"
                     android:src="@drawable/common_ic_googleplayservices" />
 
-                <EditText
+                <android.widget.EditText
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/questionAlternativesIn"

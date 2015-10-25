@@ -12,6 +12,9 @@
     <string name="activityTitle.questionAnswering">Question</string>
     <string name="activityTitle.examAnsweringConfirm">Review</string>
 
+    <string name="activityTitle.examManaging"></string>
+    <string name="activityTitle.examManagingStudents">Students</string>
+
 
     <!-- * Action buttons * -->
     <string name="actionButton.examCreate.next">Add questions</string>
@@ -50,7 +53,11 @@
 
 
     <string name="action_settings">Settings</string>
+
     <string name="title_activity_disconnected">DisconnectedActivity</string>
+    <string name="title_activity_exam_managing_student_inspect">ExamManagingStudentInspectActivity
+    </string>
 
     <string name="hello_world">Hello world!</string>
+
 </resources>

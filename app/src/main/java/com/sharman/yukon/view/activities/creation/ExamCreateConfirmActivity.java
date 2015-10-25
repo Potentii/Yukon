@@ -1,4 +1,4 @@
-package com.sharman.yukon.view.activities;
+package com.sharman.yukon.view.activities.creation;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -36,6 +36,7 @@ import com.sharman.yukon.model.StudentAnswers;
 import com.sharman.yukon.model.StudentConfigs;
 import com.sharman.yukon.model.TeacherAnswers;
 import com.sharman.yukon.model.TeacherConfigs;
+import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 import com.sharman.yukon.view.activities.util.StudentConfigFilePair;
 
 import org.json.JSONException;
@@ -417,14 +418,14 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
                 new DriveIOHandler(getCredential()).createFile(studentFolderId, "Answers", "", EMimeType.JSON.getMimeType(), studentAnswers.toString(), new FileCreateCallback() {
                     @Override
                     public void onSuccess(final String answersFileId) {
-                        Grade grade = new Grade(0.0);
+                        Grade grade = new Grade(-1);
 
                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                         // *Grade file creation:
                         new DriveIOHandler(getCredential()).createFile(studentFolderId, "Grade", "", EMimeType.JSON.getMimeType(), grade.toString(), new FileCreateCallback() {
                             @Override
                             public void onSuccess(final String gradeFileId) {
-                                StudentConfigs studentConfigs = new StudentConfigs(gradeFileId, answersFileId, examFileId, exam.getTitle(), exam.getDeliverDate(), exam.getSubject(), exam.getTeacherId());
+                                StudentConfigs studentConfigs = new StudentConfigs(gradeFileId, answersFileId, examFileId, studentConfigFilePair.getUserId(), exam.getTitle(), exam.getDeliverDate(), exam.getSubject(), exam.getTeacherId());
 
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                                 // *Configs file creation:
@@ -532,7 +533,8 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
     private void generateTeacherConfigFile(){
 
         String[] studentConfigsFileIdArray = new String[studentConfigFilePairArray.length];
-        for(int i=0; i<studentConfigsFileIdArray.length; i++){
+
+        for(int i=0; i<studentConfigFilePairArray.length; i++){
             studentConfigsFileIdArray[i] = studentConfigFilePairArray[i].getConfigFileId();
         }
 
