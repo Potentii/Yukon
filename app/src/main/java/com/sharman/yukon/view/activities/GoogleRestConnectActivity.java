@@ -1,26 +1,30 @@
 package com.sharman.yukon.view.activities;
 
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.Scopes;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.admin.directory.DirectoryScopes;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.plus.PlusScopes;
 
 import java.io.IOException;
 import java.util.Arrays;
 
-public abstract class GoogleRestConnectActivity extends ActionBarActivity {
+public abstract class GoogleRestConnectActivity extends AppCompatActivity {
     private static GoogleAccountCredential credential;
     protected static final int REQUEST_ACCOUNT_PICKER = 1000;
     protected static final int REQUEST_AUTHORIZATION = 1001;
@@ -33,7 +37,13 @@ public abstract class GoogleRestConnectActivity extends ActionBarActivity {
             PlusScopes.USERINFO_PROFILE,
             PlusScopes.PLUS_ME,
             PlusScopes.PLUS_LOGIN,
-            PlusScopes.USERINFO_EMAIL
+            PlusScopes.USERINFO_EMAIL,
+            DirectoryScopes.ADMIN_DIRECTORY_USER_READONLY
+            /*
+            Scopes.EMAIL,
+            "https://www.googleapis.com/auth/plus.profile.emails.read",
+            "https://www.google.com/m8/feeds"
+            */
     };
     private boolean connected;
     private boolean connectedOnceCalled;

@@ -1,28 +1,31 @@
 package com.sharman.yukon.view.activities.managing;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.sharman.yukon.R;
 import com.sharman.yukon.io.drive.DriveIOHandler;
 import com.sharman.yukon.io.drive.callback.FileReadCallback;
 import com.sharman.yukon.model.StudentConfigs;
-import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
+import com.sharman.yukon.view.activities.dialog.StudentPickerDialog;
+import com.sharman.yukon.view.activities.util.DialogCallback;
 import com.sharman.yukon.view.activities.util.recycler.OnStudentRVItemClickListener;
 import com.sharman.yukon.view.activities.util.recycler.StudentRVAdapter;
 import com.sharman.yukon.view.activities.util.recycler.StudentRVInfo;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
-public class ExamManagingStudentsActivity extends GoogleRestConnectActivity {
+public class ExamManagingStudentsActivity extends GoogleRestConnectActivity implements DialogCallback {
     final private Vector<StudentRVInfo> studentRVInfoVector = new Vector<>();
     private StudentRVAdapter studentRVAdapter;
     private RecyclerView studentRecyclerView;
@@ -32,11 +35,14 @@ public class ExamManagingStudentsActivity extends GoogleRestConnectActivity {
     private String teacherAnswerFileId;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exam_managing_students);
 
+        studentPickerDialog = new StudentPickerDialog();
 
         studentRVAdapter = new StudentRVAdapter(this, getCredential(), studentRVInfoVector, new OnStudentRVItemClickListener() {
             @Override
@@ -64,17 +70,27 @@ public class ExamManagingStudentsActivity extends GoogleRestConnectActivity {
     protected void onConnectOnce(){
         super.onConnectOnce();
 
+
         try {
             studentConfigsFileIdArray = getIntent().getExtras().getStringArray("studentConfigsFileIdArray");
             teacherAnswerFileId = getIntent().getExtras().getString("teacherAnswerFileId");
 
-            loadInfo();
+            //loadInfo();
 
 
         } catch (NullPointerException e){
             // TODO error
             e.printStackTrace();
         }
+
+
+        /*
+        new PlusIOHandler(getCredential()).listPersonContacts("me", new PersonContactsListCallback() {
+            @Override
+            public void onResult(List<Person> personList) {
+
+            }
+        });*/
     }
 
 
@@ -118,6 +134,36 @@ public class ExamManagingStudentsActivity extends GoogleRestConnectActivity {
 
 
 
+    private StudentPickerDialog studentPickerDialog;
+    private List<String> idList = new ArrayList<>();
+
+    @Override
+    public void onPositive() {
+        idList = studentPickerDialog.getIdList();
+
+    }
+    @Override
+    public void onNegative() {
+        studentPickerDialog.setIdList(idList);
+    }
+    @Override
+    public void onNeutral() {}
+
+
+
+
+    public void addStudentBtn_onClick(View view){
+        if(!isConnected()){
+            return;
+        }
+
+        studentPickerDialog.setDialogCallback(this);
+        studentPickerDialog.setIdList(idList);
+
+        studentPickerDialog.show(getFragmentManager(), "student_picker_dialog");
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -140,4 +186,8 @@ public class ExamManagingStudentsActivity extends GoogleRestConnectActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
+
 }

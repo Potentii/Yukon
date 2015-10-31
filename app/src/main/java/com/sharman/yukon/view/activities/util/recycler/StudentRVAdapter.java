@@ -86,7 +86,7 @@ public class StudentRVAdapter extends RecyclerView.Adapter<StudentRVAdapter.View
         });
 
         final PlusIOHandler plusIOHandler = new PlusIOHandler(credential);
-        plusIOHandler.ReadPerson(currentStudentRVInfo.getStudentEmail(), new PersonReadCallback() {
+        plusIOHandler.readPerson(currentStudentRVInfo.getStudentEmail(), new PersonReadCallback() {
             @Override
             public void onSuccess(final Person person) {
 
@@ -98,7 +98,7 @@ public class StudentRVAdapter extends RecyclerView.Adapter<StudentRVAdapter.View
                     }
                 });
 
-                plusIOHandler.ReadPersonImg(person, new PersonImgReadCallback() {
+                plusIOHandler.readPersonImg(person, new PersonImgReadCallback() {
                     @Override
                     public void onSuccess(final Bitmap bitmap) {
                         context.runOnUiThread(new Runnable() {

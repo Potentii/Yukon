@@ -123,7 +123,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
 
     public void questionAlternativesIn_onCLick(View view){
         alternativeAnswerDialog.setEMultipleAnswerType(eMultipleAnswerType);
-        alternativeAnswerDialog.show(getSupportFragmentManager(), "alternatives_dialog");
+        alternativeAnswerDialog.show(getFragmentManager(), "alternatives_dialog");
     }
 
 

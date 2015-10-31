@@ -21,7 +21,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/inputHint.questionCreate.alternatives"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/inputLeftMargin" />
+            android:layout_marginLeft="@dimen/input_start_margin" />
     </LinearLayout>
 
     <ScrollView

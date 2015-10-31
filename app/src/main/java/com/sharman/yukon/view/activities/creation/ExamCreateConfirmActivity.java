@@ -1,20 +1,9 @@
 package com.sharman.yukon.view.activities.creation;
 
-import android.content.ContentResolver;
-import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.api.services.plus.model.Person;
@@ -31,34 +20,36 @@ import com.sharman.yukon.io.plus.callback.PersonReadCallback;
 import com.sharman.yukon.model.Answer;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.Grade;
-import com.sharman.yukon.model.Question;
 import com.sharman.yukon.model.StudentAnswers;
 import com.sharman.yukon.model.StudentConfigs;
 import com.sharman.yukon.model.TeacherAnswers;
 import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
+import com.sharman.yukon.view.activities.dialog.StudentPickerDialog;
+import com.sharman.yukon.view.activities.util.DialogCallback;
 import com.sharman.yukon.view.activities.util.StudentConfigFilePair;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Vector;
 
 
-
-public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
+public class ExamCreateConfirmActivity extends GoogleRestConnectActivity implements DialogCallback {
     private Exam exam;
     private TeacherAnswers teacherAnswers;
 
     // *StudentPicker variables:
+    /*
     private LayoutInflater layoutInflater;
     private LinearLayout studentPickerDiv;
     private List<View> studentPickerList = new ArrayList<>();
     private ArrayAdapter<String> emailsAdapter;
+    */
     private StudentConfigFilePair[] studentConfigFilePairArray;
+
 
     // *Exam creation variables:
     private String examFileId;
@@ -77,11 +68,15 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
 
         onCreationFailOrSuccessCalled = false;
         studentFoldersCreated = 0;
+        studentPickerDialog = new StudentPickerDialog();
+        /*
         layoutInflater = LayoutInflater.from(this);
         studentPickerDiv = (LinearLayout) findViewById(R.id.studentPickerDiv);
+        */
 
 
         // *Queries the contacts's e-mail:
+        /*
         new Runnable(){
             @Override
             public void run() {
@@ -93,7 +88,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
                 onQueryContactResult(emailArray);
             }
         }.run();
-
+        */
 
         try {
             exam = new Exam(getIntent().getExtras().getString("exam"));
@@ -103,10 +98,6 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
             e.printStackTrace();
             System.out.println("Erro ao tentar recuperar 'Exam'");
         }
-
-        //TODO System.out.println();
-        System.out.println(">> EXAM: " + exam.toString());
-        System.out.println(">> TEACHER_ANSWERS: " + teacherAnswers.toString());
     }
 
 
@@ -118,6 +109,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
     // *Queries the contact's e-mail:
+    /*
     private List<String> queryContactsEmail(){
         List<String> emailList = new ArrayList<String>();
         HashSet<String> emailHash = new HashSet<String>();
@@ -164,7 +156,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
         addStudentPicker();
     }
 
-
+*/
 
 
     /*
@@ -173,6 +165,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
     // *Creates a new "studentPicker", adds to the list, and sets to it the properly listener:
+    /*
     private void addStudentPicker(){
         final View studentPicker = layoutInflater.inflate(R.layout.student_picker, null);
         AutoCompleteTextView studentPickerIn = (AutoCompleteTextView) studentPicker.findViewById(R.id.studentPickerIn);
@@ -207,7 +200,71 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
         studentPickerDiv.removeView(studentPicker);
         studentPickerList.remove(studentPicker);
     }
+*/
+    private List<String> idList = new ArrayList<>();
+    private StudentPickerDialog studentPickerDialog;
+    private Vector<String> emailVector = new Vector<>();
+    private boolean fetchingEmails = false;
 
+    public void studentIn_onClick(View view){
+        if(!isConnected()){
+            return;
+        }
+
+        studentPickerDialog.setDialogCallback(this);
+        studentPickerDialog.setIdList(idList);
+
+        studentPickerDialog.show(getFragmentManager(), "student_picker_dialog");
+    }
+
+
+    @Override
+    public void onPositive() {
+        try {
+            fetchingEmails = true;
+            idList = studentPickerDialog.getIdList();
+            for (int i = 0; i < idList.size(); i++) {
+                new PlusIOHandler(getCredential()).readPerson(idList.get(i), new PersonReadCallback() {
+                    @Override
+                    public void onSuccess(Person person) {
+                        System.out.println("Person: " + person.getDisplayName());
+
+                        List<Person.Emails> emailList = person.getEmails();
+                        if(emailList == null){
+                            System.out.println("NULLLLLLL");
+                            return;
+                        }
+                        for (int i = 0; i < emailList.size(); i++) {
+                            System.out.println("I: " + i);
+                            System.out.println("Type: " + emailList.get(i).getType());
+                            System.out.println("Value: " + emailList.get(i).getValue());
+                            System.out.println("String: " + emailList.get(i).toString());
+                            try {
+                                System.out.println("PrettyString: " + emailList.get(i).toPrettyString());
+                            } catch (IOException e) {
+                            }
+
+                        }
+                        //emailVector.add(person.getEmails().get(0).getType());
+                    }
+
+                    @Override
+                    public void onFailure(Exception exception) {
+                        //TODO error
+                    }
+                });
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+    @Override
+    public void onNegative() {
+        studentPickerDialog.setIdList(idList);
+    }
+    @Override
+    public void onNeutral() {}
 
 
 
@@ -218,14 +275,17 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity {
      */
     // *Execute the creation and share of the Exam:
     private void examCreateConfirmFinishActionButton_onClick(){
-        // TODO move to onConnectOnce()
-        studentConfigFilePairArray = new StudentConfigFilePair[studentPickerList.size()-1];
-        for (int i = 0; i < studentConfigFilePairArray.length; i++) {
-            AutoCompleteTextView studentPicker = (AutoCompleteTextView) studentPickerList.get(i).findViewById(R.id.studentPickerIn);
-            studentConfigFilePairArray[i] = new StudentConfigFilePair(studentPicker.getText().toString(), "");
+        if(!isConnected() || idList.isEmpty()){
+            return;
         }
 
-        new PlusIOHandler(getCredential()).ReadPerson("me", new PersonReadCallback() {
+
+        studentConfigFilePairArray = new StudentConfigFilePair[idList.size()];
+        for (int i = 0; i < studentConfigFilePairArray.length; i++) {
+            studentConfigFilePairArray[i] = new StudentConfigFilePair(idList.get(i), "");
+        }
+
+        new PlusIOHandler(getCredential()).readPerson("me", new PersonReadCallback() {
             @Override
             public void onSuccess(Person person) {
                 try {

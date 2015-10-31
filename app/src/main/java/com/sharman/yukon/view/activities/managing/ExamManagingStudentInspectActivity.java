@@ -55,7 +55,7 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
         acceptGradeBtn = (Button) findViewById(R.id.acceptGradeBtn);
 
         try{
-            getSupportActionBar().setCustomView(actionBarView);
+            getActionBar().setCustomView(actionBarView);
         } catch (NullPointerException e){
             e.printStackTrace();
         }
@@ -99,7 +99,7 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
 
 
 
-        plusIOHandler.ReadPerson(studentEmail, new PersonReadCallback() {
+        plusIOHandler.readPerson(studentEmail, new PersonReadCallback() {
             @Override
             public void onSuccess(final Person person) {
 
@@ -110,7 +110,7 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
                     }
                 });
 
-                plusIOHandler.ReadPersonImg(person, new PersonImgReadCallback() {
+                plusIOHandler.readPersonImg(person, new PersonImgReadCallback() {
                     @Override
                     public void onSuccess(final Bitmap bitmap) {
                         runOnUiThread(new Runnable() {

@@ -52,12 +52,12 @@
     </ScrollView>
 
     <RelativeLayout
-        android:layout_width="@dimen/addCircularButtonSize"
-        android:layout_height="@dimen/addCircularButtonSize"
+        android:layout_width="@dimen/floating_action_button_size"
+        android:layout_height="@dimen/floating_action_button_size"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:background="@drawable/circle"
-        android:elevation="@dimen/addCircularButtonElevation" >
+        android:elevation="@dimen/floating_action_button_elevation" >
 
         <ImageButton
             android:layout_width="match_parent"
@@ -65,8 +65,10 @@
             android:onClick="questionAnsweringNextButton_onClick"
             android:id="@+id/nextBtn"
             android:background="@color/transparent"
-            android:src="@drawable/common_ic_googleplayservices"
+            android:src="@drawable/ic_chevron_right_24dp"
             android:textColor="#ffffff"
-            android:textSize="@dimen/addCircularButtonTextSize" />
+            android:textSize="@dimen/floating_action_button_text_size"
+            android:scaleType="fitCenter"
+            android:tint="#eee" />
     </RelativeLayout>
 </RelativeLayout>

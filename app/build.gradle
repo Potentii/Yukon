@@ -2,48 +2,76 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.0.2"
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "com.sharman.yukon"
         minSdkVersion 21
-        targetSdkVersion 22
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
 
         multiDexEnabled true
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    productFlavors {
+    }
+    /*
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }*/
 }
 
+repositories {
+    mavenCentral()
+}
+
+
+
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+
 
     // *Android Dependencies:
-    compile 'com.android.support:appcompat-v7:22.0.+'
-    compile 'com.android.support:recyclerview-v7:22.0.+'
+    compile 'com.android.support:appcompat-v7:21.0.0'
+    compile 'com.android.support:recyclerview-v7:21.0.0'
 
+
+    // *Google Dependencies:
+    compile('com.google.api-client:google-api-client-android:1.20.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    compile('com.google.http-client:google-http-client-gson:1.20.0') {
+        exclude module: 'httpclient'
+    }
     compile('com.google.android.gms:play-services:8.1.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+
 
     // *Google Drive REST API Dependencies:
     compile('com.google.apis:google-api-services-drive:v2-rev188-1.20.0') {
         exclude group: 'org.apache.httpcomponents'
     }
 
-    compile('com.google.api-client:google-api-client-android:1.20.0') {
+    /*
+    compile ('com.google.gdata:core:1.47.1') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    */
+
+    compile('com.google.apis:google-api-services-admin-directory:directory_v1-rev53-1.20.0') {
         exclude group: 'org.apache.httpcomponents'
     }
 
-    compile ('com.google.http-client:google-http-client-gson:1.20.0') {
-        exclude module: 'httpclient'
-    }
-
+    // *Google Plus REST API Dependencies:
     compile 'com.google.apis:google-api-services-plus:v1-rev278-1.20.0'
 }

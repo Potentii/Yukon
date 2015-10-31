@@ -1,0 +1,18 @@
+
+<Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="64dp">
+
+    <!--
+    <include
+        layout="@layout/action_info_photo"
+        android:layout_marginTop="64dp"
+        android:layout_width="match_parent"
+        android:layout_height="64dp">
+
+    </include>
+    -->
+
+</Toolbar>

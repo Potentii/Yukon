@@ -16,4 +16,13 @@
         android:layout_height="wrap_content">
     </android.support.v7.widget.RecyclerView>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add student"
+        android:id="@+id/addStudentBtn"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentBottom="true"
+        android:onClick="addStudentBtn_onClick" />
+
 </RelativeLayout>

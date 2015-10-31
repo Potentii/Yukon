@@ -15,12 +15,21 @@
         <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/scrollView" >
+            android:id="@+id/scrollView">
+
+
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="160dp"
+                    android:id="@+id/topImg"
+                    android:src="@mipmap/yukon_top"
+                    android:scaleType="fitEnd" />
 
                 <!-- First recyclerView -->
                 <RelativeLayout
@@ -73,14 +82,16 @@
         </ScrollView>
 
 
+
+
         <RelativeLayout
-            android:layout_width="@dimen/addCircularButtonSize"
-            android:layout_height="@dimen/addCircularButtonSize"
+            android:layout_width="@dimen/floating_action_button_size"
+            android:layout_height="@dimen/floating_action_button_size"
             android:layout_margin="@dimen/activityMargin"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:background="@drawable/circle"
-            android:elevation="@dimen/addCircularButtonElevation">
+            android:elevation="@dimen/floating_action_button_elevation">
 
             <Button
                 android:layout_width="match_parent"
@@ -89,7 +100,7 @@
                 android:background="@color/transparent"
                 android:text="+"
                 android:textColor="#ffffff"
-                android:textSize="@dimen/addCircularButtonTextSize" />
+                android:textSize="@dimen/floating_action_button_text_size" />
 
         </RelativeLayout>
 

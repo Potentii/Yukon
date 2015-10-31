@@ -44,8 +44,8 @@ public class ExamManagingActivity extends GoogleRestConnectActivity {
         actionBarExamDeliveryDate   = (TextView) actionBarView.findViewById(R.id.tertiaryInfoOut);
 
         try{
-            LayoutParams layout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            getSupportActionBar().setCustomView(actionBarView, layout);
+            //LayoutParams layout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            //getActionBar().setCustomView(actionBarView, layout);
         } catch (NullPointerException e){
             e.printStackTrace();
         }
@@ -67,10 +67,10 @@ public class ExamManagingActivity extends GoogleRestConnectActivity {
 
 
             final PlusIOHandler plusIOHandler = new PlusIOHandler(getCredential());
-            plusIOHandler.ReadPerson(teacherConfigs.getTeacherIdCache(), new PersonReadCallback() {
+            plusIOHandler.readPerson(teacherConfigs.getTeacherIdCache(), new PersonReadCallback() {
                 @Override
                 public void onSuccess(Person person) {
-                    plusIOHandler.ReadPersonImg(person, new PersonImgReadCallback() {
+                    plusIOHandler.readPersonImg(person, new PersonImgReadCallback() {
                         @Override
                         public void onSuccess(final Bitmap bitmap) {
                             runOnUiThread(new Runnable() {

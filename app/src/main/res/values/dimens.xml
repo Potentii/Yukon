@@ -1,14 +1,11 @@
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="activityMargin">16dp</dimen>
+    <dimen name="input_container_vertical_margin">32dp</dimen>
+    <dimen name="input_start_margin">8dp</dimen>
 
-    <dimen name="inputLineBottomMargin">32dp</dimen>
-    <dimen name="inputLeftMargin">8dp</dimen>
-
-    <dimen name="addCircularButtonSize">64dp</dimen>
-    <dimen name="addCircularButtonElevation">8dp</dimen>
-    <dimen name="addCircularButtonTextSize">24sp</dimen>
+    <dimen name="floating_action_button_size">64dp</dimen>
+    <dimen name="floating_action_button_elevation">8dp</dimen>
+    <dimen name="floating_action_button_text_size">24sp</dimen>
 </resources>

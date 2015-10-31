@@ -50,7 +50,7 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
 
             try {
                 // *Sets the exam's cached title to the actionBar title:
-                getSupportActionBar().setTitle(examTitleCache);
+                getActionBar().setTitle(examTitleCache);
             } catch (NullPointerException e){
                 e.printStackTrace();
             }
@@ -75,7 +75,7 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
                         @Override
                         public void run() {
                             try {
-                                getSupportActionBar().setTitle(exam.getTitle());
+                                getActionBar().setTitle(exam.getTitle());
                             } catch (NullPointerException e){
                                 e.printStackTrace();
                             }

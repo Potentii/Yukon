@@ -62,7 +62,7 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
 
             try {
                 // *Setting the title of the actionBar:
-                getSupportActionBar().setTitle(getResources().getString(R.string.activityTitle_questionAnswering) + " " + questionIndex + "/" + exam.getQuestionArray().length);
+                getActionBar().setTitle(getResources().getString(R.string.activityTitle_questionAnswering) + " " + questionIndex + "/" + exam.getQuestionArray().length);
             } catch (NullPointerException e){
                 e.printStackTrace();
             }

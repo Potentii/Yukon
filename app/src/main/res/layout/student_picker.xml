@@ -11,5 +11,5 @@
         android:ems="10"
         android:id="@+id/studentPickerIn"
         android:singleLine="true"
-        android:layout_marginBottom="@dimen/inputLineBottomMargin" />
+        android:layout_marginBottom="@dimen/input_container_vertical_margin" />
 </RelativeLayout>

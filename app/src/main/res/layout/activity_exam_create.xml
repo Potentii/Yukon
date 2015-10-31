@@ -1,102 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.sharman.yukon.view.activities.creation.ExamCreateActivity">
+
+    <Toolbar
+        android:id="@+id/toolbar"
+        style="@style/toolbar">
+
+        <!-- * Exam title * -->
+        <EditText
+            style="@style/labeledInput"
+            android:id="@+id/examTitleIn"
+            android:hint="@string/inputHint.examCreate.title" />
+    </Toolbar>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/scrollView2" >
+        android:layout_below="@+id/toolbar">
 
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:baselineAligned="false">
+            style="@style/inputListLinearLayout">
 
-            <!-- Exam title -->
+
+            <!-- * Exam subject * -->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/inputLineBottomMargin">
+                style="@style/inputContainer">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:id="@+id/examTitleImg"
-                    android:layout_alignParentStart="true"
-                    android:src="@drawable/common_ic_googleplayservices" />
+                    style="@style/imageLabel"
+                    android:src="@drawable/ic_school_24dp" />
 
                 <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/examTitleIn"
-                    android:hint="@string/inputHint.examCreate.title"
-                    android:layout_marginLeft="@dimen/inputLeftMargin"
-                    android:inputType="text"
-                    android:singleLine="true" />
-            </LinearLayout>
-
-
-            <!-- Exam subject -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/inputLineBottomMargin">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:id="@+id/examSubjectImg"
-                    android:layout_alignParentStart="true"
-                    android:src="@drawable/common_ic_googleplayservices" />
-
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    style="@style/labeledInput"
                     android:id="@+id/examSubjectIn"
-                    android:hint="@string/inputHint.examCreate.subject"
-                    android:layout_marginLeft="@dimen/inputLeftMargin"
-                    android:singleLine="true"
-                    android:inputType="text" />
+                    android:hint="@string/inputHint.examCreate.subject" />
             </LinearLayout>
 
 
-            <!-- Exam deliver date -->
+            <!-- * Exam deliver date * -->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/inputLineBottomMargin">
+                style="@style/inputContainer">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:id="@+id/examDeliverDateImg"
-                    android:layout_alignParentStart="true"
-                    android:src="@drawable/common_ic_googleplayservices" />
+                    style="@style/imageLabel"
+                    android:src="@drawable/ic_event_24dp"/>
 
                 <android.widget.EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    style="@style/labeledInput"
                     android:id="@+id/examDeliveryDateIn"
                     android:hint="@string/inputHint.examCreate.deliveryDate"
-                    android:layout_marginLeft="@dimen/inputLeftMargin"
                     android:editable="false"
-                    android:onClick="examDeliveryDateIn_onCLick"
-                    android:focusable="false" />
+                    android:focusable="false"
+                    android:onClick="examDeliveryDateIn_onCLick" />
             </LinearLayout>
-
 
         </LinearLayout>
     </ScrollView>
-
 </RelativeLayout>

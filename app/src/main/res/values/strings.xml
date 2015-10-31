@@ -4,7 +4,7 @@
 
     <!-- * Activity titles * -->
     <string name="activityTitle.main">Exams</string>
-    <string name="activityTitle.examCreate"></string>
+    <string name="activityTitle.examCreate">Exam create</string>
     <string name="activityTitle.questionCreate">Question</string>
     <string name="activityTitle.examCreateConfirm">Share</string>
 
@@ -40,6 +40,9 @@
 
     <string name="inputHint.questionCreate.alternativeDialog.answerRow">Type a possible answer</string>
 
+    <string name="inputHint.examCreateConfirm.students">Students</string>
+
+    <string name="inputHint.studentPickerDialog.student">Student e-mail</string>
 
     <!-- * Dialog Buttons * -->
     <string name="dialog.confirm">Confirm</string>

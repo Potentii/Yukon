@@ -1,10 +1,42 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context="com.sharman.yukon.view.activities.managing.ExamManagingActivity">
+
+    <Toolbar
+        android:id="@+id/toolbar"
+        style="@style/toolbar">
+
+        <include
+            layout="@layout/action_info_photo"
+            style="@style/infoPhotoInclude"/>
+    </Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar">
+
+        <LinearLayout
+            style="@style/inputListLinearLayout">
+
+            <LinearLayout
+                style="@style/inputContainer">
+
+                <ImageView
+                    style="@style/imageLabelMultiline"
+                    android:src="@drawable/common_ic_googleplayservices" />
+
+                <TextView
+                    style="@style/labeledSpanMultiline"
+                    android:id="@+id/descriptionOut"/>
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
 
     <Button
         android:layout_width="match_parent"

@@ -3,8 +3,10 @@
     <color name="primary">#277a55</color>
     <color name="primary_dark">#195038</color>
 
-    <color name="primary_grey">#ffffff</color>
+    <color name="primary_grey">#f7f7f7</color>
     <color name="primary_grey_dark">#454d49</color>
+
+    <color name="input_icon">#666666</color>
 
     <color name="transparent">#00000000</color>
 </resources>
