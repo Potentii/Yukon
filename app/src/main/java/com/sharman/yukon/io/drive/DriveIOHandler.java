@@ -1,5 +1,8 @@
 package com.sharman.yukon.io.drive;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.batch.BatchRequest;
 import com.google.api.client.googleapis.batch.json.JsonBatchCallback;
@@ -7,7 +10,6 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.http.ByteArrayContent;
-import com.google.api.client.http.FileContent;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpResponse;
@@ -19,20 +21,9 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.ParentReference;
 import com.google.api.services.drive.model.Permission;
-import com.google.api.services.drive.model.PermissionList;
-import com.sharman.yukon.io.drive.callback.FileCreateCallback;
-import com.sharman.yukon.io.drive.callback.FileDeleteCallback;
-import com.sharman.yukon.io.drive.callback.FileEditCallback;
-import com.sharman.yukon.io.drive.callback.FileQueryCallback;
-import com.sharman.yukon.io.drive.callback.FileReadCallback;
-import com.sharman.yukon.io.drive.callback.FileShareCallback;
-import com.sharman.yukon.io.drive.callback.FileShareEditCallback;
-import com.sharman.yukon.io.drive.callback.FolderCreateCallback;
-import com.sharman.yukon.io.drive.callback.FolderDeleteCallback;
-import com.sharman.yukon.io.drive.callback.FolderShareCallback;
+import com.sharman.yukon.io.drive.callback.*;
 import com.sharman.yukon.io.drive.util.EMimeType;
 import com.sharman.yukon.io.drive.util.PermissionStruct;
-import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,6 +32,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 
 /**
  * Created by poten on 10/10/2015.
@@ -53,7 +45,7 @@ public final class DriveIOHandler {
      *  * Constructor:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public DriveIOHandler(GoogleAccountCredential credential) {
+    public DriveIOHandler(@NonNull GoogleAccountCredential credential) {
         this.credential = credential;
     }
 
@@ -75,7 +67,7 @@ public final class DriveIOHandler {
      *  * Creates a file on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void createFile(final String folderId, final String title, final String description, final String mimeType, final String content, final FileCreateCallback fileCreateCallback){
+    public void createFile(final String folderId, @NonNull final String title, @NonNull final String description, @NonNull final String mimeType, @NonNull final String content, @NonNull final FileCreateCallback fileCreateCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -122,7 +114,7 @@ public final class DriveIOHandler {
      *  * Reads a file on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void readFile(final String fileId, final FileReadCallback fileReadCallback){
+    public void readFile(@NonNull final String fileId, @NonNull final FileReadCallback fileReadCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -144,7 +136,7 @@ public final class DriveIOHandler {
         }).start();
     }
 
-    public void readFile(final File file, final FileReadCallback fileReadCallback){
+    public void readFile(@NonNull final File file, @NonNull final FileReadCallback fileReadCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -168,7 +160,7 @@ public final class DriveIOHandler {
      *  * Query for files on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void queryFiles(final String query, final FileQueryCallback fileQueryCallback){
+    public void queryFiles(@NonNull final String query, @NonNull final FileQueryCallback fileQueryCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -202,7 +194,7 @@ public final class DriveIOHandler {
      *  * Edits a file on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void editFile(final String fileId, final String newTitle, final String newMimeType, final String newContent, final FileEditCallback fileEditCallback){
+    public void editFile(@NonNull final String fileId, @Nullable final String newTitle, @Nullable final String newMimeType, @NonNull final String newContent, @NonNull final FileEditCallback fileEditCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -240,7 +232,7 @@ public final class DriveIOHandler {
      *  * Deletes a file on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void deleteFile(final FileDeleteCallback fileDeleteCallback){
+    public void deleteFile(@NonNull final FileDeleteCallback fileDeleteCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -255,7 +247,7 @@ public final class DriveIOHandler {
      *  * Shares a file on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void shareFile(final String fileId, final String emailMessage, final PermissionStruct[] permissionStructArray, final FileShareCallback fileShareCallback){
+    public void shareFile(@NonNull final String fileId, final String emailMessage, @NonNull final PermissionStruct[] permissionStructArray, @NonNull final FileShareCallback fileShareCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -319,7 +311,7 @@ public final class DriveIOHandler {
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
     // Doesn't work for ownership transferring:
-    public void editFileShare(final String fileId, final String userEMail, final String newRole, final FileShareEditCallback fileShareEditCallback){
+    public void editFileShare(@NonNull final String fileId, @NonNull final String userEMail, @NonNull final String newRole, @NonNull final FileShareEditCallback fileShareEditCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -374,13 +366,89 @@ public final class DriveIOHandler {
 
 
 
+    public void querySharedUsers(@NonNull final String fileId, @NonNull final String role, @NonNull final SharedUsersQueryCallback sharedUsersQueryCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<String> userList = new ArrayList<>();
+
+                // *Get the Drive service instance:
+                com.google.api.services.drive.Drive service = getDriveService();
+
+
+                try {
+                    // *Retrieve the permission list for this file:
+                    List<Permission> permissionList = service.permissions().list(fileId).execute().getItems();
+
+
+                    // *Searches for permissions with the given role:
+                    for(Permission permission : permissionList){
+                        if(permission.getRole().equals(role)){
+                            userList.add(permission.getEmailAddress());
+                        }
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                sharedUsersQueryCallback.onResult(userList);
+            }
+        }).start();
+    }
+
+
+    public void readMultipleFiles(@NonNull final String[] fileIdArray, @NonNull final MultipleFilesReadCallback multipleFilesReadCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                // *Get the Drive service instance:
+                Drive service = getDriveService();
+                String[] contentArray = new String[fileIdArray.length];
+
+
+                for(int i=0; i<fileIdArray.length; i++){
+                    StringBuilder sb = new StringBuilder();
+                    BufferedReader buffer = null;
+                    String line;
+
+                    try {
+                        InputStream inputStream = service.files().get(fileIdArray[i]).executeMediaAsInputStream();
+                        buffer = new BufferedReader(new InputStreamReader(inputStream));
+                        while ((line = buffer.readLine()) != null) {
+                            sb.append(line);
+                        }
+
+                    } catch (NullPointerException | IOException e){
+                        e.printStackTrace();
+                        multipleFilesReadCallback.onFailure(e.getMessage());
+                        return;
+
+                    } finally {
+                        try {
+                            buffer.close();
+                        } catch (NullPointerException | IOException e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                    contentArray[i] = sb.toString();
+                }
+
+                multipleFilesReadCallback.onSuccess(contentArray);
+            }
+        }).start();
+    }
+
+
+
 
     /*
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      *  * Creates a folder on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void createFolder(final String folderId, final String title, final String description, final FolderCreateCallback folderCreateCallback){
+    public void createFolder(final String folderId, @NonNull final String title, @NonNull final String description, @NonNull final FolderCreateCallback folderCreateCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -423,7 +491,7 @@ public final class DriveIOHandler {
      *  * Deletes a folder on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void deleteFolder(final FolderDeleteCallback folderDeleteCallback){
+    public void deleteFolder(@NonNull final FolderDeleteCallback folderDeleteCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -438,7 +506,7 @@ public final class DriveIOHandler {
      *  * Shares a folder on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void shareFolder(final FolderShareCallback folderShareCallback){
+    public void shareFolder(@NonNull final FolderShareCallback folderShareCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -455,25 +523,31 @@ public final class DriveIOHandler {
 
 
 
-    private String readFile(com.google.api.services.drive.Drive service, File file) throws IOException{
+    private String readFile(@NonNull com.google.api.services.drive.Drive service, @NonNull File file) throws IOException{
         StringBuilder sb = new StringBuilder();
+        BufferedReader buffer = null;
         String line;
+
         try {
             InputStream inputStream = downloadFile(service, file);
-            BufferedReader buffer = new BufferedReader(new InputStreamReader(inputStream));
+            buffer = new BufferedReader(new InputStreamReader(inputStream));
             while ((line = buffer.readLine()) != null) {
                 sb.append(line);
             }
-            buffer.close();
+
         }catch (NullPointerException e){
             e.printStackTrace();
+        } finally {
+            if(buffer!=null) {
+                buffer.close();
+            }
         }
 
         return sb.toString();
     }
 
 
-    private InputStream downloadFile(com.google.api.services.drive.Drive service, File file) throws IOException{
+    private InputStream downloadFile(@NonNull com.google.api.services.drive.Drive service, @NonNull File file) throws IOException{
         if (file.getDownloadUrl() != null && file.getDownloadUrl().length() > 0){
             HttpResponse response = service.getRequestFactory().buildGetRequest(new GenericUrl(file.getDownloadUrl())).execute();
             return response.getContent();

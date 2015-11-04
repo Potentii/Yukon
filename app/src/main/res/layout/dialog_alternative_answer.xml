@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -13,28 +15,27 @@
         <ImageView
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/common_ic_googleplayservices" />
+            android:src="@drawable/ic_list_24dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/inputHint.questionCreate.alternatives"
+            android:text="@string/dialogTitle.alternativeAnswer"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/inputLeftMargin" />
+            android:layout_marginStart="@dimen/input_start_margin" />
     </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/scrollView5"
-        android:layout_margin="@dimen/activityMargin">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/alternativeAnswerDiv">
+            android:id="@+id/alternativeAnswerDiv"
+            android:layout_margin="@dimen/activity_horizontal_margin">
 
         </LinearLayout>
     </ScrollView>

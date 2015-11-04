@@ -5,22 +5,26 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         tools:context="com.sharman.yukon.view.activities.MainActivity">
 
 
         <ScrollView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/scrollView" >
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="160dp"
+                    android:id="@+id/topImg"
+                    android:src="@mipmap/yukon_top"
+                    android:scaleType="fitEnd" />
 
                 <!-- First recyclerView -->
                 <RelativeLayout
@@ -74,23 +78,25 @@
 
 
         <RelativeLayout
-            android:layout_width="@dimen/addCircularButtonSize"
-            android:layout_height="@dimen/addCircularButtonSize"
-            android:layout_margin="@dimen/activityMargin"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:background="@drawable/circle"
-            android:elevation="@dimen/addCircularButtonElevation">
-
+            style="@style/floatingActionButtonContainer">
             <Button
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                style="@style/floatingActionButton"
                 android:onClick="addExamBtn_onClick"
-                android:background="@color/transparent"
-                android:text="+"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/addCircularButtonTextSize" />
+                android:text="+" />
+        </RelativeLayout>
 
+        <RelativeLayout
+            style="@style/floatingActionButtonContainer"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="false"
+            android:layout_marginLeft="16dp"
+            android:backgroundTint="#d23"
+            android:clickable="true">
+            <Button
+                style="@style/floatingActionButton"
+                android:onClick="disconnectBtn_onClick"
+
+                android:text="D" />
         </RelativeLayout>
 
     </RelativeLayout>

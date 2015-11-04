@@ -1,0 +1,84 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.sharman.yukon.view.activities.managing.ExamManagingStudentInspectActivity">
+
+    <Toolbar
+        android:id="@+id/toolbar"
+        style="@style/toolbar">
+
+        <include
+            android:id="@+id/infoPhotoHeader"
+            layout="@layout/action_info_photo"
+            style="@style/infoPhotoInclude"/>
+    </Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar">
+
+        <LinearLayout
+            style="@style/inputListLinearLayout">
+
+            <LinearLayout
+                style="@style/inputContainer">
+
+                <ImageView
+                    style="@style/imageLabel"
+                    android:src="@drawable/ic_thumbs_up_down_24dp" />
+
+                <TextView
+                    style="@style/labeledSpan"
+                    android:id="@+id/gradeOut"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                style="@style/inputContainer">
+
+                <ImageView
+                    style="@style/imageLabel"
+                    android:layout_width="24dp"/>
+
+                <Button
+                    style="@style/labeledEntry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button.examManagingStudentInspect.acceptGrade"
+                    android:id="@+id/acceptGradeBtn"
+                    android:paddingStart="32dp"
+                    android:paddingEnd="32dp"
+                    android:onClick="acceptGradeBtn_onClick"
+                    android:backgroundTint="@color/acceptance"
+                    android:textColor="@color/primary_grey"
+                    android:enabled="false"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                style="@style/inputContainer">
+
+                <ImageView
+                    style="@style/imageLabelMultiline"
+                    android:src="@drawable/ic_mode_edit_24dp" />
+
+                <LinearLayout
+                    style="@style/labeledSpanMultiline"
+                    android:id="@+id/rowContainer"
+                    android:orientation="vertical">
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+
+
+
+</RelativeLayout>

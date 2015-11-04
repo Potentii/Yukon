@@ -1,8 +1,9 @@
-package com.sharman.yukon.view.activities.util;
+package com.sharman.yukon.view.activities.util.recycler;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +17,8 @@ import com.sharman.yukon.R;
 import com.sharman.yukon.io.plus.PlusIOHandler;
 import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
 import com.sharman.yukon.io.plus.callback.PersonReadCallback;
-import com.sharman.yukon.model.Exam;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Vector;
 
 /**
@@ -61,16 +58,19 @@ public class ExamRVAdapter extends RecyclerView.Adapter<ExamRVAdapter.ViewHolder
         viewHolder.examRVInfo = currentExamRVInfo;
 
         final PlusIOHandler plusIOHandler = new PlusIOHandler(credential);
-        plusIOHandler.ReadPerson(currentExamRVInfo.getTeacherId(), new PersonReadCallback() {
+        plusIOHandler.readPerson(currentExamRVInfo.getTeacherId(), new PersonReadCallback() {
             @Override
             public void onSuccess(Person person) {
-                plusIOHandler.ReadPersonImg(person, new PersonImgReadCallback() {
+                plusIOHandler.readPersonImg(person, new PersonImgReadCallback() {
                     @Override
                     public void onSuccess(final Bitmap bitmap) {
                         context.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                viewHolder.teacherImg.setImageBitmap(bitmap);
+                                RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(context.getResources(), bitmap);
+                                roundedBitmapDrawable.setCornerRadius(Math.max(bitmap.getWidth(), bitmap.getHeight()) / 2.0f);
+                                roundedBitmapDrawable.setAntiAlias(true);
+                                viewHolder.teacherImg.setImageDrawable(roundedBitmapDrawable);
                             }
                         });
                     }

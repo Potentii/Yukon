@@ -5,8 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.widget.Toast;
+import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -20,7 +19,7 @@ import com.google.api.services.plus.PlusScopes;
 import java.io.IOException;
 import java.util.Arrays;
 
-public abstract class GoogleRestConnectActivity extends ActionBarActivity {
+public abstract class GoogleRestConnectActivity extends AppCompatActivity {
     private static GoogleAccountCredential credential;
     protected static final int REQUEST_ACCOUNT_PICKER = 1000;
     protected static final int REQUEST_AUTHORIZATION = 1001;
@@ -122,12 +121,6 @@ public abstract class GoogleRestConnectActivity extends ActionBarActivity {
     }
 
     protected void onConnect(){
-        System.out.println(">> CONNECTED <<");
-        try {
-            System.out.println(credential.getSelectedAccountName());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
     protected void onConnectOnce(){
