@@ -1,9 +1,15 @@
 package com.sharman.yukon.view.activities.creation;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.api.services.plus.model.Person;
@@ -16,6 +22,7 @@ import com.sharman.yukon.io.drive.callback.FileShareCallback;
 import com.sharman.yukon.io.drive.callback.FolderCreateCallback;
 import com.sharman.yukon.io.drive.util.PermissionStruct;
 import com.sharman.yukon.io.plus.PlusIOHandler;
+import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
 import com.sharman.yukon.io.plus.callback.PersonReadCallback;
 import com.sharman.yukon.model.Answer;
 import com.sharman.yukon.model.Exam;
@@ -25,33 +32,26 @@ import com.sharman.yukon.model.StudentConfigs;
 import com.sharman.yukon.model.TeacherAnswers;
 import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
+import com.sharman.yukon.view.activities.MainActivity;
 import com.sharman.yukon.view.activities.dialog.StudentPickerDialog;
+import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.DialogCallback;
 import com.sharman.yukon.view.activities.util.StudentConfigFilePair;
 
 import org.json.JSONException;
 
-import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 
 public class ExamCreateConfirmActivity extends GoogleRestConnectActivity implements DialogCallback {
     private Exam exam;
     private TeacherAnswers teacherAnswers;
-
-    // *StudentPicker variables:
-    /*
-    private LayoutInflater layoutInflater;
-    private LinearLayout studentPickerDiv;
-    private List<View> studentPickerList = new ArrayList<>();
-    private ArrayAdapter<String> emailsAdapter;
-    */
     private StudentConfigFilePair[] studentConfigFilePairArray;
 
-
-    // *Exam creation variables:
+    // *Exam creation variables
+    private String teacherId = null;
     private String examFileId;
     private String correctAnswersFileId;
     private String examRootFolderId;
@@ -59,6 +59,11 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
     private String studentFilesFolderId;
     private boolean onCreationFailOrSuccessCalled;
     private int studentFoldersCreated;
+
+    // *Student picker dialog variables
+    private List<String> idList = new ArrayList<>();
+    private StudentPickerDialog studentPickerDialog;
+
 
 
     @Override
@@ -69,30 +74,68 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
         onCreationFailOrSuccessCalled = false;
         studentFoldersCreated = 0;
         studentPickerDialog = new StudentPickerDialog();
-        /*
-        layoutInflater = LayoutInflater.from(this);
-        studentPickerDiv = (LinearLayout) findViewById(R.id.studentPickerDiv);
-        */
+    }
 
 
-        // *Queries the contacts's e-mail:
-        /*
-        new Runnable(){
-            @Override
-            public void run() {
-                List<String> emailList = queryContactsEmail();
-                String[] emailArray = new String[emailList.size()];
-                for(int i=0; i<emailList.size(); i++){
-                    emailArray[i] = emailList.get(i);
-                }
-                onQueryContactResult(emailArray);
-            }
-        }.run();
-        */
+    @Override
+    protected void onConnectOnce(){
+        super.onConnectOnce();
 
         try {
             exam = new Exam(getIntent().getExtras().getString("exam"));
             teacherAnswers = new TeacherAnswers(getIntent().getExtras().getString("teacherAnswers"));
+
+            final View infoPhotoHeader = findViewById(R.id.infoPhotoHeader);
+            final ImageView infoImg           = (ImageView) infoPhotoHeader.findViewById(R.id.infoImg);
+            final TextView primaryInfoOut     = (TextView) infoPhotoHeader.findViewById(R.id.primaryInfoOut);
+            final TextView secondaryInfoOut   = (TextView) infoPhotoHeader.findViewById(R.id.secondaryInfoOut);
+            final TextView tertiaryInfoOut    = (TextView) infoPhotoHeader.findViewById(R.id.tertiaryInfoOut);
+
+            primaryInfoOut.setText(exam.getTitle());
+            secondaryInfoOut.setText(exam.getSubject());
+            tertiaryInfoOut.setText(new SimpleDateFormat("dd/MM/yyyy").format(exam.getDeliverDate()));
+
+            final PlusIOHandler plusIOHandler = new PlusIOHandler(getCredential());
+            plusIOHandler.readPerson("me", new PersonReadCallback() {
+                @Override
+                public void onSuccess(Person person) {
+                    teacherId = person.getId();
+
+                    try {
+                        exam.setTeacherId(teacherId);
+                    } catch (JSONException e){
+                        teacherId = null;
+                        e.printStackTrace();
+                    }
+
+                    plusIOHandler.readPersonImg(person, new PersonImgReadCallback() {
+                        @Override
+                        public void onSuccess(final Bitmap bitmap) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                                    roundedBitmapDrawable.setCornerRadius(Math.max(bitmap.getWidth(), bitmap.getHeight()) / 2.0f);
+                                    roundedBitmapDrawable.setAntiAlias(true);
+                                    infoImg.setImageDrawable(roundedBitmapDrawable);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            //TODO error
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(Exception exception) {
+                    // TODO error
+                }
+            });
+
+
         } catch (NullPointerException | JSONException e){
             // TODO error
             e.printStackTrace();
@@ -101,225 +144,21 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
     }
 
 
-
-
-    /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * Contacts query methods:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
-    // *Queries the contact's e-mail:
-    /*
-    private List<String> queryContactsEmail(){
-        List<String> emailList = new ArrayList<String>();
-        HashSet<String> emailHash = new HashSet<String>();
-        Context context = getApplicationContext();
-        ContentResolver cr = context.getContentResolver();
-
-        String[] PROJECTION = new String[] { ContactsContract.RawContacts._ID,
-                ContactsContract.Contacts.DISPLAY_NAME,
-                ContactsContract.Contacts.PHOTO_ID,
-                ContactsContract.CommonDataKinds.Email.DATA,
-                ContactsContract.CommonDataKinds.Photo.CONTACT_ID };
-
-        String order = "CASE WHEN "
-                + ContactsContract.Contacts.DISPLAY_NAME
-                + " NOT LIKE '%@%' THEN 1 ELSE 2 END, "
-                + ContactsContract.Contacts.DISPLAY_NAME
-                + ", "
-                + ContactsContract.CommonDataKinds.Email.DATA
-                + " COLLATE NOCASE";
-
-        String filter = ContactsContract.CommonDataKinds.Email.DATA + " NOT LIKE ''";
-        Cursor cur = cr.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, PROJECTION, filter, null, order);
-
-        if(cur.moveToFirst()) {
-            do{
-                //String name = cur.getString(1);
-                String email = cur.getString(3);
-
-                // *Only unique e-mails:
-                if(emailHash.add(email.toLowerCase())) {
-                    emailList.add(email);
-                }
-            } while (cur.moveToNext());
-        }
-
-        cur.close();
-        return emailList;
-    }
-
-
-    // *Callback for the query thread result:
-    public void onQueryContactResult(String[] emailArray){
-        emailsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, emailArray);
-        addStudentPicker();
-    }
-
-*/
-
-
-    /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * StudentPicker methods:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
-    // *Creates a new "studentPicker", adds to the list, and sets to it the properly listener:
-    /*
-    private void addStudentPicker(){
-        final View studentPicker = layoutInflater.inflate(R.layout.student_picker, null);
-        AutoCompleteTextView studentPickerIn = (AutoCompleteTextView) studentPicker.findViewById(R.id.studentPickerIn);
-        studentPickerIn.setAdapter(emailsAdapter);
-        studentPickerIn.addTextChangedListener(new TextWatcher(){
-            private boolean hasCreatedView = false;
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
-            @Override
-            public void afterTextChanged(Editable editable) {}
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int count) {
-                if(!hasCreatedView && charSequence.length()>0){
-                    addStudentPicker();
-                    hasCreatedView = true;
-                } else if(hasCreatedView && charSequence.length()==0){
-                    hasCreatedView = false;
-                    removeStudentPicker(studentPicker);
-                }
-            }
-        });
-        studentPickerDiv.addView(studentPicker);
-        studentPickerList.add(studentPicker);
-    }
-
-
-    // *Remove the last "studentPicker" from the list and from the interface:
-    private void removeStudentPicker(View studentPicker){
-        studentPickerDiv.removeView(studentPicker);
-        studentPickerList.remove(studentPicker);
-    }
-*/
-    private List<String> idList = new ArrayList<>();
-    private StudentPickerDialog studentPickerDialog;
-    private Vector<String> emailVector = new Vector<>();
-    private boolean fetchingEmails = false;
-
-    public void studentIn_onClick(View view){
-        if(!isConnected()){
-            return;
-        }
-
-        studentPickerDialog.setDialogCallback(this);
-        studentPickerDialog.setIdList(idList);
-
-        studentPickerDialog.show(getFragmentManager(), "student_picker_dialog");
-    }
-
-
-    @Override
-    public void onPositive() {
-        try {
-            fetchingEmails = true;
-            idList = studentPickerDialog.getIdList();
-            for (int i = 0; i < idList.size(); i++) {
-                new PlusIOHandler(getCredential()).readPerson(idList.get(i), new PersonReadCallback() {
-                    @Override
-                    public void onSuccess(Person person) {
-                        System.out.println("Person: " + person.getDisplayName());
-
-                        List<Person.Emails> emailList = person.getEmails();
-                        if(emailList == null){
-                            System.out.println("NULLLLLLL");
-                            return;
-                        }
-                        for (int i = 0; i < emailList.size(); i++) {
-                            System.out.println("I: " + i);
-                            System.out.println("Type: " + emailList.get(i).getType());
-                            System.out.println("Value: " + emailList.get(i).getValue());
-                            System.out.println("String: " + emailList.get(i).toString());
-                            try {
-                                System.out.println("PrettyString: " + emailList.get(i).toPrettyString());
-                            } catch (IOException e) {
-                            }
-
-                        }
-                        //emailVector.add(person.getEmails().get(0).getType());
-                    }
-
-                    @Override
-                    public void onFailure(Exception exception) {
-                        //TODO error
-                    }
-                });
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-    }
-    @Override
-    public void onNegative() {
-        studentPickerDialog.setIdList(idList);
-    }
-    @Override
-    public void onNeutral() {}
-
-
-
     /*
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      *  * Exam creation methods:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    // *Execute the creation and share of the Exam:
-    private void examCreateConfirmFinishActionButton_onClick(){
-        if(!isConnected() || idList.isEmpty()){
-            return;
-        }
-
-
-        studentConfigFilePairArray = new StudentConfigFilePair[idList.size()];
-        for (int i = 0; i < studentConfigFilePairArray.length; i++) {
-            studentConfigFilePairArray[i] = new StudentConfigFilePair(idList.get(i), "");
-        }
-
-        new PlusIOHandler(getCredential()).readPerson("me", new PersonReadCallback() {
-            @Override
-            public void onSuccess(Person person) {
-                try {
-                    exam.setTeacherId(person.getId());
-
-                    // *Create:
-                    createExamOnDrive();
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    onFailure(e);
-                }
-            }
-
-            @Override
-            public void onFailure(Exception exception) {
-                onCreationFail();
-            }
-        });
-    }
-
-
-
     private synchronized void onCreationSuccess(){
         System.out.println("Creation Success CALLED");
         if (!onCreationFailOrSuccessCalled) {
             onCreationFailOrSuccessCalled = true;
 
-            this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
-                }
-            });
+            new AndroidUtil(this).showToast("Success", Toast.LENGTH_SHORT);
+
+            Intent mainIntent = new Intent(this, MainActivity.class);
+            startActivity(mainIntent);
+            finish();
         }
     }
 
@@ -328,23 +167,13 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
         if (!onCreationFailOrSuccessCalled) {
             onCreationFailOrSuccessCalled = true;
 
-            this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(), "Fail", Toast.LENGTH_SHORT).show();
-                }
-            });
+            new AndroidUtil(this).showToast("Fail", Toast.LENGTH_SHORT);
         }
     }
 
 
     private void createExamOnDrive(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), "Working...", Toast.LENGTH_LONG);
-            }
-        });
+        new AndroidUtil(this).showToast("Working...", Toast.LENGTH_LONG);
 
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
         // *ExamRoot folder creation:
@@ -457,9 +286,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
             }
         });
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
-
     }
-
 
 
 
@@ -478,7 +305,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                 new DriveIOHandler(getCredential()).createFile(studentFolderId, "Answers", "", EMimeType.JSON.getMimeType(), studentAnswers.toString(), new FileCreateCallback() {
                     @Override
                     public void onSuccess(final String answersFileId) {
-                        Grade grade = new Grade(-1);
+                        Grade grade = new Grade(-1, new Boolean[]{});
 
                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
                         // *Grade file creation:
@@ -567,9 +394,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
             }
         });
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
-
     }
-
 
 
 
@@ -616,11 +441,70 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
             }
         });
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
+    }
+
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * DialogCallback methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    @Override
+    public void onPositive() {
+        idList = studentPickerDialog.getIdList();
+    }
+
+    @Override
+    public void onNegative() {
+        studentPickerDialog.setIdList(idList);
+    }
+
+    @Override
+    public void onNeutral() {
 
     }
 
 
 
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Listeners methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    public void studentIn_onClick(View view){
+        if(!isConnected()){
+            return;
+        }
+
+        studentPickerDialog.setDialogCallback(this);
+        studentPickerDialog.setIdList(idList);
+
+        studentPickerDialog.show(getFragmentManager(), "student_picker_dialog");
+    }
+
+
+
+    private void examCreateConfirmFinishActionButton_onClick(){
+        if(!isConnected() || idList.isEmpty() || teacherId == null){
+            return;
+        }
+
+        studentConfigFilePairArray = new StudentConfigFilePair[idList.size()];
+        for (int i = 0; i < studentConfigFilePairArray.length; i++) {
+            studentConfigFilePairArray[i] = new StudentConfigFilePair(idList.get(i), "");
+        }
+
+        createExamOnDrive();
+    }
+
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * ActionBar methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_exam_create_confirm, menu);

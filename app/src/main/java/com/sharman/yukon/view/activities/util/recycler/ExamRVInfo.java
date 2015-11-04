@@ -12,16 +12,7 @@ public class ExamRVInfo {
     private String examTitle;
     private String examSubject;
     private Date examDeliveryDate;
-
-    /*
-    private String examFileId;
-    private String studentAnswerFileId;
-    private String gradeFileId;
-
-    private String correctAnswersFileId;
-    */
     private String configs;
-
 
 
     public ExamRVInfo(String teacherId, String examTitle, String examSubject, Date examDeliveryDate, String configs) {
@@ -31,7 +22,6 @@ public class ExamRVInfo {
         this.examDeliveryDate = examDeliveryDate;
         this.configs = configs;
     }
-
 
 
     public String getTeacherId() {

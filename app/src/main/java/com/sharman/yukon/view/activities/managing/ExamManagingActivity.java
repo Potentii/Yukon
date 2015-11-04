@@ -1,9 +1,10 @@
 package com.sharman.yukon.view.activities.managing;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +18,6 @@ import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
 import com.sharman.yukon.io.plus.callback.PersonReadCallback;
 import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
-import android.support.v7.app.ActionBar.LayoutParams;
 
 import org.json.JSONException;
 
@@ -26,30 +26,14 @@ import java.text.SimpleDateFormat;
 public class ExamManagingActivity extends GoogleRestConnectActivity {
     private TeacherConfigs teacherConfigs;
 
-    private View actionBarView;
-    private ImageView actionBarTeacherImg;
-    private TextView actionBarExamTitle;
-    private TextView actionBarExamSubject;
-    private TextView actionBarExamDeliveryDate;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exam_managing);
-
-        actionBarView = getLayoutInflater().inflate(R.layout.action_info_photo, null);
-        actionBarTeacherImg         = (ImageView) actionBarView.findViewById(R.id.infoImg);
-        actionBarExamTitle          = (TextView) actionBarView.findViewById(R.id.primaryInfoOut);
-        actionBarExamSubject        = (TextView) actionBarView.findViewById(R.id.secondaryInfoOut);
-        actionBarExamDeliveryDate   = (TextView) actionBarView.findViewById(R.id.tertiaryInfoOut);
-
-        try{
-            //LayoutParams layout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            //getActionBar().setCustomView(actionBarView, layout);
-        } catch (NullPointerException e){
-            e.printStackTrace();
-        }
     }
+
 
 
     @Override
@@ -58,13 +42,19 @@ public class ExamManagingActivity extends GoogleRestConnectActivity {
 
         try {
             // *Gets the teacherConfigs from intent:
+            // TODO alterar para ler Exam e parar de usar cache nos arquivos
             teacherConfigs = new TeacherConfigs(getIntent().getExtras().getString("teacherConfigs"));
 
 
-            actionBarExamTitle.setText(teacherConfigs.getExamTitleCache());
-            actionBarExamSubject.setText(teacherConfigs.getExamSubjectCache());
-            actionBarExamDeliveryDate.setText(new SimpleDateFormat("dd/MM/yyyy").format(teacherConfigs.getExamDeliveryDateCache()));
+            final View infoPhotoHeader = findViewById(R.id.infoPhotoHeader);
+            final ImageView infoImg           = (ImageView) infoPhotoHeader.findViewById(R.id.infoImg);
+            final TextView primaryInfoOut     = (TextView) infoPhotoHeader.findViewById(R.id.primaryInfoOut);
+            final TextView secondaryInfoOut   = (TextView) infoPhotoHeader.findViewById(R.id.secondaryInfoOut);
+            final TextView tertiaryInfoOut    = (TextView) infoPhotoHeader.findViewById(R.id.tertiaryInfoOut);
 
+            primaryInfoOut.setText(teacherConfigs.getExamTitleCache());
+            secondaryInfoOut.setText(teacherConfigs.getExamSubjectCache());
+            tertiaryInfoOut.setText(new SimpleDateFormat("dd/MM/yyyy").format(teacherConfigs.getExamDeliveryDateCache()));
 
             final PlusIOHandler plusIOHandler = new PlusIOHandler(getCredential());
             plusIOHandler.readPerson(teacherConfigs.getTeacherIdCache(), new PersonReadCallback() {
@@ -76,14 +66,17 @@ public class ExamManagingActivity extends GoogleRestConnectActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    actionBarTeacherImg.setImageBitmap(bitmap);
+                                    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                                    roundedBitmapDrawable.setCornerRadius(Math.max(bitmap.getWidth(), bitmap.getHeight()) / 2.0f);
+                                    roundedBitmapDrawable.setAntiAlias(true);
+                                    infoImg.setImageDrawable(roundedBitmapDrawable);
                                 }
                             });
                         }
 
                         @Override
                         public void onFailure(String errorMessage) {
-                            // TODO error
+                            //TODO error
                         }
                     });
                 }
@@ -95,6 +88,8 @@ public class ExamManagingActivity extends GoogleRestConnectActivity {
             });
 
 
+            final TextView descriptionOut = (TextView) findViewById(R.id.descriptionOut);
+            descriptionOut.setText("");
 
         } catch (NullPointerException | JSONException e){
             // TODO error
@@ -104,23 +99,28 @@ public class ExamManagingActivity extends GoogleRestConnectActivity {
 
 
 
-
-
-
-
-
-
-
-
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Listeners methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     public void studentsBtn_onClick(View view){
         Intent examManagingStudentsIntent = new Intent(this, ExamManagingStudentsActivity.class);
+        examManagingStudentsIntent.putExtra("teacherConfigs", teacherConfigs.toString());
+        /*
         examManagingStudentsIntent.putExtra("studentConfigsFileIdArray", teacherConfigs.getStudentConfigsFileIdArray());
         examManagingStudentsIntent.putExtra("teacherAnswerFileId", teacherConfigs.getCorrectAnswersFileId());
+        */
         startActivity(examManagingStudentsIntent);
     }
 
 
 
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * ActionBar methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

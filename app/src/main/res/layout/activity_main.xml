@@ -5,19 +5,14 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         tools:context="com.sharman.yukon.view.activities.MainActivity">
 
 
         <ScrollView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/scrollView">
-
-
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:orientation="vertical"
@@ -82,26 +77,12 @@
         </ScrollView>
 
 
-
-
         <RelativeLayout
-            android:layout_width="@dimen/floating_action_button_size"
-            android:layout_height="@dimen/floating_action_button_size"
-            android:layout_margin="@dimen/activityMargin"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:background="@drawable/circle"
-            android:elevation="@dimen/floating_action_button_elevation">
-
+            style="@style/floatingActionButtonContainer">
             <Button
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                style="@style/floatingActionButton"
                 android:onClick="addExamBtn_onClick"
-                android:background="@color/transparent"
-                android:text="+"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/floating_action_button_text_size" />
-
+                android:text="+" />
         </RelativeLayout>
 
     </RelativeLayout>

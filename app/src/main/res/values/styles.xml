@@ -25,22 +25,43 @@
     </style>
 
 
+
+    <!--
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * Toolbar
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    -->
     <!-- * Toolbar * -->
     <style name="toolbar">
-        <item name="android:layout_height">72dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:minHeight">?android:attr/actionBarSize</item>
         <item name="android:background">?android:attr/colorPrimary</item>
         <item name="android:paddingLeft">16dp</item>
         <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingRight">0dp</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:elevation">0dp</item>
     </style>
 
+    <!-- * input * -->
+    <style name="toolbarInput">
+        <item name="android:textColor">#eee</item>
+        <item name="android:backgroundTint">#eee</item>
+        <item name="android:textColorHint">#9eee</item>
+    </style>
+
+    <!-- * output * -->
+    <style name="toolbarOutput">
+        <item name="android:textColor">@color/primary_grey</item>
+    </style>
 
 
-
+    <!--
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * Form
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    -->
     <!-- * Input List LinearLayout * -->
     <style name="inputListLinearLayout">
         <item name="android:layout_width">match_parent</item>
@@ -69,7 +90,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:scaleType">fitCenter</item>
-        <item name="android:tint">@color/input_icon</item>
+        <item name="android:tint">@color/icon_dark</item>
     </style>
 
     <style name="imageLabelMultiline" parent="imageLabel">
@@ -122,17 +143,26 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@color/transparent</item>
-        <item name="android:textColor">#ffffffff</item>
+        <item name="android:textColor">#eeeeee</item>
+        <item name="android:tint">#eeeeee</item>
+        <item name="android:scaleType">fitCenter</item>
         <item name="android:textSize">@dimen/floating_action_button_text_size</item>
     </style>
 
 
 
 
-    <!-- * Info Photo Include * -->
+
+    <!-- * Info Photo * -->
+    <!-- * Include * -->
     <style name="infoPhotoInclude">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">@dimen/toolbar_info_photo_height</item>
+    </style>
+
+    <!-- * Image * -->
+    <style name="infoPhotoImage">
+
     </style>
 
 

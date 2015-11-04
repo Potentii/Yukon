@@ -10,6 +10,7 @@
         style="@style/toolbar">
 
         <include
+            android:id="@+id/infoPhotoHeader"
             layout="@layout/action_info_photo"
             style="@style/infoPhotoInclude"/>
     </Toolbar>
@@ -27,7 +28,7 @@
 
                 <ImageView
                     style="@style/imageLabel"
-                    android:src="@drawable/common_ic_googleplayservices" />
+                    android:src="@drawable/ic_thumbs_up_down_24dp" />
 
                 <TextView
                     style="@style/labeledSpan"
@@ -47,9 +48,13 @@
                     style="@style/labeledEntry"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Accept grade"
+                    android:text="@string/button.examManagingStudentInspect.acceptGrade"
+                    android:id="@+id/acceptGradeBtn"
                     android:paddingStart="32dp"
-                    android:paddingEnd="32dp"/>
+                    android:paddingEnd="32dp"
+                    android:backgroundTint="@color/acceptance"
+                    android:textColor="@color/primary_grey"
+                    android:enabled="false"/>
 
             </LinearLayout>
 
@@ -59,11 +64,11 @@
 
                 <ImageView
                     style="@style/imageLabelMultiline"
-                    android:src="@drawable/common_ic_googleplayservices" />
+                    android:src="@drawable/ic_mode_edit_24dp" />
 
                 <LinearLayout
                     style="@style/labeledSpanMultiline"
-                    android:id="@+id/answersContainer"
+                    android:id="@+id/rowContainer"
                     android:orientation="vertical">
 
                 </LinearLayout>

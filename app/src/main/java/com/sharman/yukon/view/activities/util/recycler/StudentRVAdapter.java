@@ -1,7 +1,6 @@
 package com.sharman.yukon.view.activities.util.recycler;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,17 +9,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.services.plus.model.Person;
 import com.sharman.yukon.R;
 import com.sharman.yukon.io.drive.DriveIOHandler;
 import com.sharman.yukon.io.drive.callback.FileReadCallback;
-import com.sharman.yukon.io.plus.PlusIOHandler;
-import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
-import com.sharman.yukon.io.plus.callback.PersonReadCallback;
 import com.sharman.yukon.model.Grade;
+import com.sharman.yukon.view.activities.util.AndroidUtil;
+import com.sharman.yukon.view.activities.util.StudentContact;
 
 import org.json.JSONException;
 
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -29,22 +27,24 @@ import java.util.Vector;
 public class StudentRVAdapter extends RecyclerView.Adapter<StudentRVAdapter.ViewHolder> {
     private final LayoutInflater layoutInflater;
     private Vector<StudentRVInfo> studentRVInfoVector = new Vector<>();
+    private List<StudentContact> studentContactList;
     private OnStudentRVItemClickListener onStudentRVItemClickListener;
     private GoogleAccountCredential credential;
-    final private Activity context;
+    final private Activity activity;
 
-    public StudentRVAdapter(Activity context, GoogleAccountCredential credential, Vector<StudentRVInfo> studentRVInfoVector, OnStudentRVItemClickListener onStudentRVItemClickListener) {
-        layoutInflater = LayoutInflater.from(context);
-        this.context = context;
+    public StudentRVAdapter(Activity activity, GoogleAccountCredential credential, Vector<StudentRVInfo> studentRVInfoVector, List<StudentContact> studentContactList, OnStudentRVItemClickListener onStudentRVItemClickListener) {
+        layoutInflater = LayoutInflater.from(activity);
+        this.activity = activity;
         this.credential = credential;
         this.studentRVInfoVector = studentRVInfoVector;
+        this.studentContactList = studentContactList;
         this.onStudentRVItemClickListener = onStudentRVItemClickListener;
     }
 
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int i) {
-        View view = this.layoutInflater.inflate(R.layout.rv_row_student, parent, false);
+        View view = layoutInflater.inflate(R.layout.recycler_student_row, parent, false);
         ViewHolder viewHolder = new ViewHolder(view, onStudentRVItemClickListener);
         return viewHolder;
     }
@@ -54,77 +54,72 @@ public class StudentRVAdapter extends RecyclerView.Adapter<StudentRVAdapter.View
     public void onBindViewHolder(final ViewHolder viewHolder, int i) {
         final StudentRVInfo currentStudentRVInfo = studentRVInfoVector.get(i);
 
-        viewHolder.studentRVInfo = currentStudentRVInfo;
+        // *If the grade file isn't downloaded yet:
+        if(currentStudentRVInfo.getStudentGradeStr() == null){
+            DriveIOHandler driveIOHandler = new DriveIOHandler(credential);
+            driveIOHandler.readFile(currentStudentRVInfo.getStudentGradeFileId(), new FileReadCallback() {
+                @Override
+                public void onSuccess(final String content) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Grade grade = new Grade(content);
+                                currentStudentRVInfo.setStudentGradeStr(content);
+                                viewHolder.setGrade(grade);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(Exception exception) {
+                    // TODO error
+                    exception.printStackTrace();
+                }
+            });
+
+        } else{
+            try {
+                Grade grade = new Grade(currentStudentRVInfo.getStudentGradeStr());
+                viewHolder.setGrade(grade);
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+
+
+        // *If the student image or photo was not loaded yet:
+        if(currentStudentRVInfo.getStudentName() == null || currentStudentRVInfo.getStudentImageUri() == null){
+            String id = currentStudentRVInfo.getStudentEmail();
+            StudentContact studentContactFound = null;
+
+            for(StudentContact studentContact : studentContactList){
+                if(id.equals(studentContact.getId())){
+                    studentContactFound = studentContact;
+                }
+            }
+
+
+            if(studentContactFound != null){
+                currentStudentRVInfo.setStudentName(studentContactFound.getName());
+                currentStudentRVInfo.setStudentImageUri(studentContactFound.getImageUri());
+            } else{
+                currentStudentRVInfo.setStudentName(currentStudentRVInfo.getStudentEmail());
+                currentStudentRVInfo.setStudentImageUri("");
+            }
+        }
 
         viewHolder.studentNameOut.setText(currentStudentRVInfo.getStudentName());
-        viewHolder.studentGradeOut.setText(currentStudentRVInfo.getStudentGrade());
+        viewHolder.studentEmailOut.setText(currentStudentRVInfo.getStudentEmail());
 
+        viewHolder.setImage(currentStudentRVInfo.getStudentImageUri());
 
-        DriveIOHandler driveIOHandler = new DriveIOHandler(credential);
-        driveIOHandler.readFile(currentStudentRVInfo.getStudentGradeFileId(), new FileReadCallback() {
-            @Override
-            public void onSuccess(final String content) {
-                context.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Grade grade = new Grade(content);
-                            currentStudentRVInfo.setStudentGrade(content);
-                            viewHolder.studentGradeOut.setText(Double.toString(grade.getGrade()));
-                        }catch (JSONException e){
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(Exception exception) {
-                // TODO error
-                System.out.println(exception.getMessage());
-            }
-        });
-
-        final PlusIOHandler plusIOHandler = new PlusIOHandler(credential);
-        plusIOHandler.readPerson(currentStudentRVInfo.getStudentEmail(), new PersonReadCallback() {
-            @Override
-            public void onSuccess(final Person person) {
-
-                context.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        currentStudentRVInfo.setStudentName(person.getDisplayName());
-                        viewHolder.studentNameOut.setText(currentStudentRVInfo.getStudentName());
-                    }
-                });
-
-                plusIOHandler.readPersonImg(person, new PersonImgReadCallback() {
-                    @Override
-                    public void onSuccess(final Bitmap bitmap) {
-                        context.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                viewHolder.studentImg.setImageBitmap(bitmap);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        //TODO error
-                        //onFailure(errorMessage);
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(Exception exception) {
-                // TODO
-                System.out.println(exception.getMessage());
-            }
-        });
-
+        viewHolder.studentRVInfo = currentStudentRVInfo;
     }
+
 
     @Override
     public int getItemCount() {
@@ -136,6 +131,7 @@ public class StudentRVAdapter extends RecyclerView.Adapter<StudentRVAdapter.View
     public class ViewHolder extends RecyclerView.ViewHolder{
         private ImageView studentImg;
         private TextView studentNameOut;
+        private TextView studentEmailOut;
         private TextView studentGradeOut;
 
         private StudentRVInfo studentRVInfo;
@@ -143,8 +139,9 @@ public class StudentRVAdapter extends RecyclerView.Adapter<StudentRVAdapter.View
         public ViewHolder(View itemView, final OnStudentRVItemClickListener onStudentRVItemClickListener) {
             super(itemView);
 
-            studentImg = (ImageView) itemView.findViewById(R.id.studentImg);
-            studentNameOut = (TextView) itemView.findViewById(R.id.studentNameOut);
+            studentImg      = (ImageView)itemView.findViewById(R.id.studentImg);
+            studentNameOut  = (TextView) itemView.findViewById(R.id.studentNameOut);
+            studentEmailOut = (TextView) itemView.findViewById(R.id.studentEmailOut);
             studentGradeOut = (TextView) itemView.findViewById(R.id.studentGradeOut);
 
 
@@ -155,5 +152,27 @@ public class StudentRVAdapter extends RecyclerView.Adapter<StudentRVAdapter.View
                 }
             });
         }
+
+
+        public void setGrade(Grade grade){
+            if(grade != null) {
+                double gradeGrade = grade.getGrade();
+                if (gradeGrade < 0) {
+
+                    studentGradeOut.setText(activity.getResources().getString(R.string.output_grade_notSet_symbol));
+                } else {
+                    studentGradeOut.setText(Double.toString(grade.getGrade()));
+                }
+            } else{
+                studentGradeOut.setText(activity.getResources().getString(R.string.output_grade_notSet_symbol));
+            }
+        }
+
+        public void setImage(String imageUri){
+            new AndroidUtil(activity).formatContactImageView(studentImg, imageUri);
+        }
+
+
+
     }
 }

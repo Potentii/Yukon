@@ -11,12 +11,14 @@
 
         <!-- Question title -->
         <EditText
-            style="@style/labeledInputMultiline"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            style="@style/toolbarInput"
             android:id="@+id/questionTitleIn"
             android:hint="@string/inputHint.questionCreate.title"
             android:inputType="textMultiLine"
             android:lines="4"
-            android:maxLines="8"/>
+            android:maxLines="8" />
     </Toolbar>
 
     <ScrollView
@@ -32,7 +34,7 @@
 
                 <ImageView
                     style="@style/imageLabel"
-                    android:src="@drawable/common_ic_googleplayservices" />
+                    android:src="@drawable/ic_assessment_24dp" />
 
                 <EditText
                     style="@style/labeledInput"
@@ -46,7 +48,7 @@
 
                 <ImageView
                     style="@style/imageLabel"
-                    android:src="@drawable/common_ic_googleplayservices" />
+                    android:src="@drawable/ic_label_24dp" />
 
                 <Spinner
                     style="@style/labeledInput"

@@ -12,9 +12,12 @@
 
         <!-- * Exam title * -->
         <EditText
-            style="@style/labeledInput"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            style="@style/toolbarInput"
             android:id="@+id/examTitleIn"
-            android:hint="@string/inputHint.examCreate.title" />
+            android:hint="@string/inputHint.examCreate.title"
+            android:textStyle="bold" />
     </Toolbar>
 
     <ScrollView
@@ -24,6 +27,22 @@
 
         <LinearLayout
             style="@style/inputListLinearLayout">
+
+
+            <!-- * Exam description * -->
+            <LinearLayout
+                style="@style/inputContainer">
+
+                <ImageView
+                    style="@style/imageLabelMultiline"
+                    android:src="@drawable/ic_description_24dp" />
+
+                <EditText
+                    style="@style/labeledInputMultiline"
+                    android:id="@+id/examDescriptionIn"
+                    android:hint="@string/inputHint.examCreate.description"
+                    android:lines="3"/>
+            </LinearLayout>
 
 
             <!-- * Exam subject * -->

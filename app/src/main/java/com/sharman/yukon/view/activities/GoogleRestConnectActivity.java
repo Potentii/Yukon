@@ -1,23 +1,18 @@
 package com.sharman.yukon.view.activities;
 
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.Scopes;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.util.ExponentialBackOff;
-import com.google.api.services.admin.directory.DirectoryScopes;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.plus.PlusScopes;
 
@@ -37,13 +32,7 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
             PlusScopes.USERINFO_PROFILE,
             PlusScopes.PLUS_ME,
             PlusScopes.PLUS_LOGIN,
-            PlusScopes.USERINFO_EMAIL,
-            DirectoryScopes.ADMIN_DIRECTORY_USER_READONLY
-            /*
-            Scopes.EMAIL,
-            "https://www.googleapis.com/auth/plus.profile.emails.read",
-            "https://www.google.com/m8/feeds"
-            */
+            PlusScopes.USERINFO_EMAIL
     };
     private boolean connected;
     private boolean connectedOnceCalled;

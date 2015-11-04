@@ -2,10 +2,8 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp">
+    android:layout_height="64dp"
+    android:orientation="horizontal">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -14,45 +12,41 @@
         android:layout_weight="1">
 
         <ImageView
-            android:layout_width="48dp"
+            android:layout_width="64dp"
             android:layout_height="match_parent"
             android:id="@+id/studentImg"
             android:scaleType="fitCenter" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginStart="8dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/studentNameOut"
-                android:layout_marginStart="16dp"
-                android:singleLine="true"
-                android:layout_alignParentTop="true" />
+                android:singleLine="true" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:id="@+id/studentEmailOut"
-                android:layout_marginStart="16dp"
-                android:singleLine="true"
-                android:layout_alignParentBottom="true" />
-        </RelativeLayout>
+                android:singleLine="true" />
+        </LinearLayout>
 
     </LinearLayout>
 
-    <ImageButton
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/removeBtn"
-        android:src="@drawable/ic_cancel_24dp"
-        android:background="@color/transparent"
-        android:tint="@color/icon_dark"
-        android:scaleType="fitCenter"
-        android:padding="12dp"
-        android:layout_weight="5" />
+        android:id="@+id/studentGradeOut"
+        android:layout_weight="5"
+        android:textAlignment="gravity"
+        android:gravity="center"
+        android:textStyle="bold" />
 
 </LinearLayout>

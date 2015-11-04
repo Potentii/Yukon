@@ -3,12 +3,12 @@ package com.sharman.yukon.view.activities.util;
 /**
  * Created by poten on 25/10/2015.
  */
-public class StudentNameIdImageStruct {
+public class StudentContact {
     private String name;
     private String id;
     private String imageUri;
 
-    public StudentNameIdImageStruct(String name, String id, String imageUri) {
+    public StudentContact(String name, String id, String imageUri) {
         this.name = name;
         this.id = id;
         this.imageUri = imageUri;

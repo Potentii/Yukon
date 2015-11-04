@@ -10,6 +10,7 @@
         style="@style/toolbar">
 
         <include
+            android:id="@+id/infoPhotoHeader"
             layout="@layout/action_info_photo"
             style="@style/infoPhotoInclude"/>
     </Toolbar>
@@ -27,7 +28,7 @@
 
                 <ImageView
                     style="@style/imageLabel"
-                    android:src="@drawable/ic_person_add_24dp" />
+                    android:src="@drawable/ic_people_24dp" />
 
                 <android.widget.EditText
                     style="@style/labeledInput"

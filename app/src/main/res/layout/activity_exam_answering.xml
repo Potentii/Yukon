@@ -27,7 +27,7 @@
 
                 <ImageView
                     style="@style/imageLabel"
-                    android:src="@drawable/common_ic_googleplayservices" />
+                    android:src="@drawable/ic_thumbs_up_down_24dp" />
 
                 <TextView
                     style="@style/labeledSpan"
@@ -41,7 +41,7 @@
 
                 <ImageView
                     style="@style/imageLabelMultiline"
-                    android:src="@drawable/common_ic_googleplayservices" />
+                    android:src="@drawable/ic_description_24dp" />
 
                 <TextView
                     style="@style/labeledSpanMultiline"

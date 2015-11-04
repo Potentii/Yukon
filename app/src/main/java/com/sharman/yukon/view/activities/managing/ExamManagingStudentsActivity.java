@@ -1,5 +1,6 @@
 package com.sharman.yukon.view.activities.managing;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -7,14 +8,19 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.sharman.yukon.R;
 import com.sharman.yukon.io.drive.DriveIOHandler;
 import com.sharman.yukon.io.drive.callback.FileReadCallback;
+import com.sharman.yukon.io.drive.callback.MultipleFilesReadCallback;
 import com.sharman.yukon.model.StudentConfigs;
+import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 import com.sharman.yukon.view.activities.dialog.StudentPickerDialog;
+import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.DialogCallback;
+import com.sharman.yukon.view.activities.util.StudentContact;
 import com.sharman.yukon.view.activities.util.recycler.OnStudentRVItemClickListener;
 import com.sharman.yukon.view.activities.util.recycler.StudentRVAdapter;
 import com.sharman.yukon.view.activities.util.recycler.StudentRVInfo;
@@ -30,10 +36,12 @@ public class ExamManagingStudentsActivity extends GoogleRestConnectActivity impl
     private StudentRVAdapter studentRVAdapter;
     private RecyclerView studentRecyclerView;
 
+    private TeacherConfigs teacherConfigs;
+    private String teacherAnswersStr;
 
-    private String[] studentConfigsFileIdArray;
-    private String teacherAnswerFileId;
-
+    private StudentPickerDialog studentPickerDialog;
+    private List<StudentContact> contactList;
+    private List<String> idList = new ArrayList<>();
 
 
 
@@ -44,114 +52,138 @@ public class ExamManagingStudentsActivity extends GoogleRestConnectActivity impl
 
         studentPickerDialog = new StudentPickerDialog();
 
-        studentRVAdapter = new StudentRVAdapter(this, getCredential(), studentRVInfoVector, new OnStudentRVItemClickListener() {
+        contactList = new AndroidUtil(this).queryContacts();
+        studentPickerDialog.setStudentContactList(contactList);
+
+
+        studentRVAdapter = new StudentRVAdapter(this, getCredential(), studentRVInfoVector, contactList, new OnStudentRVItemClickListener() {
             @Override
             public void onClick(StudentRVInfo studentRVInfo) {
                 // *Acessing student inspection activity:
-                Intent examManagingStudentInspectActivityIntent = new Intent(getApplicationContext(), ExamManagingStudentInspectActivity.class);
-                examManagingStudentInspectActivityIntent.putExtra("gradeFileId", studentRVInfo.getStudentGradeFileId());
-                examManagingStudentInspectActivityIntent.putExtra("grade", studentRVInfo.getStudentGrade());
-                examManagingStudentInspectActivityIntent.putExtra("studentAnswerFileId", studentRVInfo.getStudentAnswerFileId());
-                examManagingStudentInspectActivityIntent.putExtra("teacherAnswerFileId", teacherAnswerFileId);
-                examManagingStudentInspectActivityIntent.putExtra("studentName", studentRVInfo.getStudentName());
-                examManagingStudentInspectActivityIntent.putExtra("studentEmail", studentRVInfo.getStudentEmail());
-                startActivity(examManagingStudentInspectActivityIntent);
+                if(teacherAnswersStr != null || teacherConfigs != null) {
+                    Intent examManagingStudentInspectActivityIntent = new Intent(getApplicationContext(), ExamManagingStudentInspectActivity.class);
+
+                    examManagingStudentInspectActivityIntent.putExtra("gradeFileId", studentRVInfo.getStudentGradeFileId());
+                    examManagingStudentInspectActivityIntent.putExtra("studentAnswerFileId", studentRVInfo.getStudentAnswerFileId());
+                    examManagingStudentInspectActivityIntent.putExtra("teacherAnswers", teacherAnswersStr);
+                    examManagingStudentInspectActivityIntent.putExtra("studentName", studentRVInfo.getStudentName());
+                    examManagingStudentInspectActivityIntent.putExtra("studentEmail", studentRVInfo.getStudentEmail());
+                    examManagingStudentInspectActivityIntent.putExtra("studentImageUri", studentRVInfo.getStudentImageUri());
+
+                    startActivity(examManagingStudentInspectActivityIntent);
+                }
             }
         });
 
         studentRecyclerView = (RecyclerView) findViewById(R.id.studentRecyclerView);
         studentRecyclerView.setAdapter(studentRVAdapter);
         studentRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
     }
+
 
 
     @Override
     protected void onConnectOnce(){
         super.onConnectOnce();
 
-
         try {
-            studentConfigsFileIdArray = getIntent().getExtras().getStringArray("studentConfigsFileIdArray");
-            teacherAnswerFileId = getIntent().getExtras().getString("teacherAnswerFileId");
+            teacherConfigs = new TeacherConfigs(getIntent().getExtras().getString("teacherConfigs"));
 
-            //loadInfo();
+            if(teacherAnswersStr == null) {
+                new DriveIOHandler(getCredential()).readFile(teacherConfigs.getCorrectAnswersFileId(), new FileReadCallback() {
+                    @Override
+                    public void onSuccess(String content) {
+                        teacherAnswersStr = content;
+                    }
 
+                    @Override
+                    public void onFailure(Exception exception) {
+                        // TODO error
+                        exception.printStackTrace();
+                    }
+                });
+            }
 
-        } catch (NullPointerException e){
+            loadInfo();
+
+        } catch (NullPointerException | JSONException e){
             // TODO error
             e.printStackTrace();
         }
-
-
-        /*
-        new PlusIOHandler(getCredential()).listPersonContacts("me", new PersonContactsListCallback() {
-            @Override
-            public void onResult(List<Person> personList) {
-
-            }
-        });*/
     }
-
-
 
 
 
     private void loadInfo(){
+        studentRVInfoVector.clear();
+        idList.clear();
         final DriveIOHandler driveIOHandler = new DriveIOHandler(getCredential());
+        final Activity activity = this;
 
-        for(int i=0; i<studentConfigsFileIdArray.length; i++) {
-            driveIOHandler.readFile(studentConfigsFileIdArray[i], new FileReadCallback() {
-                @Override
-                public void onSuccess(final String content) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try{
-                                StudentConfigs studentConfigs = new StudentConfigs(content);
-                                System.out.println(">> STUDENT: " + studentConfigs.getStudent());
-                                studentRVInfoVector.add(new StudentRVInfo(studentConfigs.getGradeFileId(), studentConfigs.getAnswersFileId(), studentConfigs.getStudent()));
-                                studentRecyclerView.getAdapter().notifyDataSetChanged();
-                            } catch (JSONException e){
-                                e.printStackTrace();
-                                onFailure(e);
-                            }
-                        }
-                    });
+        driveIOHandler.readMultipleFiles(teacherConfigs.getStudentConfigsFileIdArray(), new MultipleFilesReadCallback() {
+            @Override
+            public void onSuccess(String[] contentArray) {
+                for(String content : contentArray){
+                    try{
+                        StudentConfigs studentConfigs = new StudentConfigs(content);
+                        studentRVInfoVector.add(new StudentRVInfo(
+                                studentConfigs.getGradeFileId(),
+                                studentConfigs.getAnswersFileId(),
+                                studentConfigs.getStudent()
+                        ));
+
+                        idList.add(studentConfigs.getStudent());
+
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
                 }
 
-                @Override
-                public void onFailure(Exception exception) {
-                    // TODO error
-                    exception.printStackTrace();
-                }
-            });
-        }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        studentRecyclerView.getAdapter().notifyDataSetChanged();
+                    }
+                });
+            }
 
+            @Override
+            public void onFailure(String errorMessage) {
+                new AndroidUtil(activity).showToast("Error", Toast.LENGTH_SHORT);
+            }
+        });
     }
 
 
 
-
-
-    private StudentPickerDialog studentPickerDialog;
-    private List<String> idList = new ArrayList<>();
-
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * DialogCallback methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     @Override
     public void onPositive() {
         idList = studentPickerDialog.getIdList();
 
     }
+
     @Override
     public void onNegative() {
         studentPickerDialog.setIdList(idList);
     }
+
     @Override
-    public void onNeutral() {}
+    public void onNeutral() {
+
+    }
 
 
 
-
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Listeners methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     public void addStudentBtn_onClick(View view){
         if(!isConnected()){
             return;
@@ -165,6 +197,11 @@ public class ExamManagingStudentsActivity extends GoogleRestConnectActivity impl
 
 
 
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * ActionBar methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -186,8 +223,4 @@ public class ExamManagingStudentsActivity extends GoogleRestConnectActivity impl
 
         return super.onOptionsItemSelected(item);
     }
-
-
-
-
 }

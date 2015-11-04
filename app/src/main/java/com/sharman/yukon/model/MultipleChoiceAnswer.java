@@ -1,5 +1,7 @@
 package com.sharman.yukon.model;
 
+import android.support.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -20,6 +22,43 @@ public class MultipleChoiceAnswer extends Answer{
             this.setAnswer(answer);
         } catch (JSONException e){
             e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public String getFormattedAnswerString(){
+        String answerStr = "";
+        int[] answer = getAnswer();
+
+        for(int i=0; i<answer.length; i++){
+            answerStr += convertIntIndexToStringIndex(answer[i]) + (i<answer.length-1?", ":"");
+        }
+
+        return answerStr;
+    }
+
+    @Override
+    public Boolean compareAnswerTo(Answer otherAnswer){
+        try{
+            MultipleChoiceAnswer otherAnswerCasted = (MultipleChoiceAnswer) otherAnswer;
+
+            int[] thisAnswerArray = getAnswer();
+            int[] otherAnswerArray = otherAnswerCasted.getAnswer();
+
+            if(thisAnswerArray.length != otherAnswerArray.length){
+                return false;
+            }
+
+            for(int i=0; i<thisAnswerArray.length; i++){
+                if(thisAnswerArray[i] != otherAnswerArray[i]){
+                    return false;
+                }
+            }
+
+            return true;
+        } catch (ClassCastException e){
+            return false;
         }
     }
 

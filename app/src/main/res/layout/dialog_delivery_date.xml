@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -13,15 +15,15 @@
         <ImageView
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/common_ic_googleplayservices" />
+            android:src="@drawable/ic_event_24dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/inputHint.examCreate.deliveryDate"
+            android:text="@string/dialogTitle.deliveryDate"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/input_start_margin" />
+            android:layout_marginStart="@dimen/input_start_margin" />
     </LinearLayout>
 
     <DatePicker

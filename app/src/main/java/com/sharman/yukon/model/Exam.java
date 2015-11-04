@@ -40,10 +40,11 @@ public class Exam extends JSONObject{
      *  * Constructor:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public Exam(String title, Date deliverDate, String teacherId, String subject, Question[] questionArray){
+    public Exam(String title, String description, Date deliverDate, String teacherId, String subject, Question[] questionArray){
         super();
         try {
             this.setTitle(title);
+            this.setDescription(description);
             this.setDeliverDate(deliverDate);
             this.setTeacherId(teacherId);
             this.setSubject(subject);
