@@ -82,6 +82,14 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
 
         try {
             exam = new Exam(getIntent().getExtras().getString("exam"));
+
+            try {
+                // *Setting the title of the actionBar:
+                getSupportActionBar().setTitle(getResources().getString(R.string.activityTitle_questionCreate) + " " + exam.getQuestionArray().length);
+            } catch (NullPointerException e){
+                e.printStackTrace();
+            }
+
         } catch (NullPointerException | JSONException e){
             // TODO error
             e.printStackTrace();

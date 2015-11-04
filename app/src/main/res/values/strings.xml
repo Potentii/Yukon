@@ -14,7 +14,7 @@
 
     <string name="activityTitle.examAnswering"></string>
     <string name="activityTitle.questionAnswering">Question</string>
-    <string name="activityTitle.examAnsweringConfirm">Review</string>
+    <string name="activityTitle.examAnsweringConfirm">Review before sending</string>
 
     <string name="activityTitle.examManaging"></string>
     <string name="activityTitle.examManagingStudents">Students</string>
@@ -92,8 +92,8 @@
     <string name="dialog.cancel">Cancel</string>
     <string name="dialog.ok">OK</string>
 
-    <string name="dialog.answerCorrection.dissertative.correct">it\'s correct</string>
-    <string name="dialog.answerCorrection.dissertative.incorrect">Incorrect</string>
+    <string name="dialog.answerCorrection.needsCorrection.correct">it\'s correct</string>
+    <string name="dialog.answerCorrection.needsCorrection.incorrect">Incorrect</string>
 
     <!--
     *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *

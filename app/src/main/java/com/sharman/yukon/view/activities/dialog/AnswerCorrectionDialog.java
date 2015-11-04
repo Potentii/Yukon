@@ -5,13 +5,13 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
 import com.sharman.yukon.R;
 import com.sharman.yukon.model.Answer;
-import com.sharman.yukon.model.util.EMultipleAnswerType;
 import com.sharman.yukon.view.activities.util.DialogCallback;
 
 /**
@@ -20,15 +20,11 @@ import com.sharman.yukon.view.activities.util.DialogCallback;
 public class AnswerCorrectionDialog extends DialogFragment {
     private Answer studentAnswer;
     private Answer teacherAnswer;
-    private EMultipleAnswerType eMultipleAnswerType;
-    private boolean corrected;
+    @Nullable private Boolean correct;
     private int color;
     private int index;
 
     private DialogCallback dialogCallback;
-
-    private LayoutInflater layoutInflater;
-
 
     private DialogInterface.OnClickListener positiveCallback = new DialogInterface.OnClickListener(){
         public void onClick(DialogInterface dialog, int id) {
@@ -59,41 +55,47 @@ public class AnswerCorrectionDialog extends DialogFragment {
     };
 
 
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        layoutInflater = getActivity().getLayoutInflater();
+        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+
 
         View view = layoutInflater.inflate(R.layout.dialog_answer_correction, null);
         View teacherAnswerContainer = view.findViewById(R.id.teacherAnswerContainer);
         TextView studentAnswerOut = (TextView) view.findViewById(R.id.studentAnswerOut);
         TextView teacherAnswerOut = (TextView) view.findViewById(R.id.teacherAnswerOut);
 
+
         studentAnswerOut.setText(studentAnswer.getFormattedAnswerString());
         studentAnswerOut.setTextColor(color);
 
-        teacherAnswerOut.setText(teacherAnswer.getFormattedAnswerString());
 
-        builder.setView(view);
-
-        if(eMultipleAnswerType == null){
+        String teacherAnswerStr = teacherAnswer.getFormattedAnswerString();
+        if(teacherAnswerStr.isEmpty()){
             teacherAnswerContainer.setVisibility(View.GONE);
-
-            if(corrected){
-                builder.setNeutralButton(R.string.dialog_ok, neutralCallback);
-            } else {
-                builder.setPositiveButton(R.string.dialog_answerCorrection_dissertative_correct, positiveCallback);
-                builder.setNegativeButton(R.string.dialog_answerCorrection_dissertative_incorrect, negativeCallback);
-                builder.setNeutralButton(R.string.dialog_cancel, neutralCallback);
-            }
         } else{
             teacherAnswerContainer.setVisibility(View.VISIBLE);
+            teacherAnswerOut.setText(teacherAnswerStr);
+        }
 
+
+        if(correct == null){
+            builder.setPositiveButton(R.string.dialog_answerCorrection_needsCorrection_correct, positiveCallback);
+            builder.setNegativeButton(R.string.dialog_answerCorrection_needsCorrection_incorrect, negativeCallback);
+            builder.setNeutralButton(R.string.dialog_cancel, neutralCallback);
+        } else{
             builder.setNeutralButton(R.string.dialog_ok, neutralCallback);
         }
 
+
+        builder.setView(view);
+
         return builder.create();
     }
+
+
 
 
     public Answer getStudentAnswer() {
@@ -110,18 +112,12 @@ public class AnswerCorrectionDialog extends DialogFragment {
         this.teacherAnswer = teacherAnswer;
     }
 
-    public boolean isCorrected() {
-        return corrected;
+    @Nullable
+    public Boolean getCorrect() {
+        return correct;
     }
-    public void setCorrected(boolean corrected) {
-        this.corrected = corrected;
-    }
-
-    public EMultipleAnswerType geteMultipleAnswerType() {
-        return eMultipleAnswerType;
-    }
-    public void seteMultipleAnswerType(EMultipleAnswerType eMultipleAnswerType) {
-        this.eMultipleAnswerType = eMultipleAnswerType;
+    public void setCorrect(@Nullable Boolean correct) {
+        this.correct = correct;
     }
 
     public int getColor() {

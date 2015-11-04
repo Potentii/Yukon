@@ -9,15 +9,25 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.services.plus.model.Person;
 import com.sharman.yukon.R;
+import com.sharman.yukon.io.plus.PlusIOHandler;
+import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
+import com.sharman.yukon.io.plus.callback.PersonReadCallback;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -112,7 +122,7 @@ public class AndroidUtil {
     }
 
 
-    public void formatContactImageView(final ImageView imageView, final String imageUri){
+    public void formatPersonImageView_AndroidContacts(@NonNull final ImageView imageView, @Nullable final String imageUri){
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -124,7 +134,7 @@ public class AndroidUtil {
                     roundedBitmapDrawable.setAntiAlias(true);
                     imageView.setImageDrawable(roundedBitmapDrawable);
                 } catch (Exception e){
-                    // *Loading default contact picture:
+                    // *Loading default person picture:
                     Drawable drawable = activity.getResources().getDrawable(R.drawable.default_person_rounded);
                     imageView.setImageDrawable(drawable);
                 }
@@ -132,4 +142,88 @@ public class AndroidUtil {
         });
     }
 
+
+
+    public void formatPersonImageView_GPlus(@NonNull final ImageView imageView, @NonNull GoogleAccountCredential credential, final String userId){
+        final PlusIOHandler plusIOHandler = new PlusIOHandler(credential);
+        plusIOHandler.readPerson(userId, new PersonReadCallback() {
+            @Override
+            public void onSuccess(Person person) {
+                plusIOHandler.readPersonImg(person, new PersonImgReadCallback() {
+                    @Override
+                    public void onSuccess(final Bitmap bitmap) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(activity.getResources(), bitmap);
+                                roundedBitmapDrawable.setCornerRadius(Math.max(bitmap.getWidth(), bitmap.getHeight()) / 2.0f);
+                                roundedBitmapDrawable.setAntiAlias(true);
+                                imageView.setImageDrawable(roundedBitmapDrawable);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        // *Loading default person picture:
+                        Drawable drawable = activity.getResources().getDrawable(R.drawable.default_person_rounded);
+                        imageView.setImageDrawable(drawable);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
+                // *Loading default person picture:
+                Drawable drawable = activity.getResources().getDrawable(R.drawable.default_person_rounded);
+                imageView.setImageDrawable(drawable);
+            }
+        });
+    }
+
+
+
+
+
+    public void fillInfoPhotoToolbar_GPlusImage(@NonNull final View toolbar, @NonNull final GoogleAccountCredential credential, @NonNull final String userId, final String primaryInfoText, final String secondaryInfoText, final String tertiaryInfoText){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final ImageView infoImg = (ImageView) toolbar.findViewById(R.id.infoImg);
+                    formatPersonImageView_GPlus(infoImg, credential, userId);
+                    fillInfoPhotoToolbar(toolbar, primaryInfoText, secondaryInfoText, tertiaryInfoText);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    public void fillInfoPhotoToolbar_AndroidContactsImage(@NonNull final View toolbar, final String photoUri, final String primaryInfoText, final String secondaryInfoText, final String tertiaryInfoText){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final ImageView infoImg = (ImageView) toolbar.findViewById(R.id.infoImg);
+                    formatPersonImageView_AndroidContacts(infoImg, photoUri);
+                    fillInfoPhotoToolbar(toolbar, primaryInfoText, secondaryInfoText, tertiaryInfoText);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    private void fillInfoPhotoToolbar(@NonNull View toolbar, String primaryInfoText, String secondaryInfoText, String tertiaryInfoText){
+        final TextView primaryInfoOut     = (TextView)  toolbar.findViewById(R.id.primaryInfoOut);
+        final TextView secondaryInfoOut   = (TextView)  toolbar.findViewById(R.id.secondaryInfoOut);
+        final TextView tertiaryInfoOut    = (TextView)  toolbar.findViewById(R.id.tertiaryInfoOut);
+
+        primaryInfoOut.setText(primaryInfoText);
+        secondaryInfoOut.setText(secondaryInfoText);
+        tertiaryInfoOut.setText(tertiaryInfoText);
+    }
 }

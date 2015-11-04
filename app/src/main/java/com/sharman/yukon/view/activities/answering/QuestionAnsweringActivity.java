@@ -62,7 +62,7 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
 
             try {
                 // *Setting the title of the actionBar:
-                getActionBar().setTitle(getResources().getString(R.string.activityTitle_questionAnswering) + " " + questionIndex + "/" + exam.getQuestionArray().length);
+                getSupportActionBar().setTitle(getResources().getString(R.string.activityTitle_questionAnswering) + " " + (questionIndex+1) + "/" + exam.getQuestionArray().length);
             } catch (NullPointerException e){
                 e.printStackTrace();
             }
@@ -200,7 +200,6 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
             examAnsweringIntent.putExtra("studentAnswerFileId", studentAnswerFileId);
             examAnsweringIntent.putExtra("exam", exam.toString());
             startActivity(examAnsweringIntent);
-            //finish();
         } else {
             updateStudentAnswers();
             Intent questionAnsweringIntent = new Intent(this, QuestionAnsweringActivity.class);
@@ -209,7 +208,6 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
             questionAnsweringIntent.putExtra("studentAnswerFileId", studentAnswerFileId);
             questionAnsweringIntent.putExtra("exam", exam.toString());
             startActivity(questionAnsweringIntent);
-            //finish();
         }
     }
 

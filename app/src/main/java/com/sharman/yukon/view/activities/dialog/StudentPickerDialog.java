@@ -177,7 +177,7 @@ public class StudentPickerDialog extends DialogFragment {
         final TextView studentEmailOut = (TextView) row.findViewById(R.id.studentEmailOut);
         final ImageButton removeBtn = (ImageButton) row.findViewById(R.id.removeBtn);
 
-        new AndroidUtil(getActivity()).formatContactImageView(studentImg, studentContact.getImageUri());
+        new AndroidUtil(getActivity()).formatPersonImageView_AndroidContacts(studentImg, studentContact.getImageUri());
 
         studentNameOut.setText(studentContact.getName());
         studentEmailOut.setText(studentContact.getId());

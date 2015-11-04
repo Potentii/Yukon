@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
@@ -24,6 +25,7 @@ import com.sharman.yukon.io.drive.callback.FileCreateCallback;
 import com.sharman.yukon.io.drive.util.EMimeType;
 import com.sharman.yukon.io.plus.PlusIOHandler;
 import com.sharman.yukon.io.plus.callback.PersonReadCallback;
+import com.sharman.yukon.view.activities.util.AndroidUtil;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -36,6 +38,7 @@ public class DisconnectedActivity extends GoogleRestConnectActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disconnected);
 
+        new AndroidUtil(this).showToast("Connecting...", Toast.LENGTH_SHORT);
 
     }
 

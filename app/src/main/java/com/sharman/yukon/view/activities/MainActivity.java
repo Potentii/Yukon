@@ -18,6 +18,7 @@ import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.view.activities.answering.ExamAnsweringActivity;
 import com.sharman.yukon.view.activities.creation.ExamCreateActivity;
 import com.sharman.yukon.view.activities.managing.ExamManagingActivity;
+import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.recycler.ExamRVAdapter;
 import com.sharman.yukon.view.activities.util.recycler.ExamRVInfo;
 import com.sharman.yukon.view.activities.util.recycler.OnExamRVItemClickListener;
@@ -85,6 +86,7 @@ public class MainActivity extends GoogleRestConnectActivity {
     protected void onConnectOnce(){
         super.onConnectOnce();
 
+        new AndroidUtil(this).showToast("Loading exams...", Toast.LENGTH_LONG);
         updateMyExamList();
         updateSharedExamList();
     }

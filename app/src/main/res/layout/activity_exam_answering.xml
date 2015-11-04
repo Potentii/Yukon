@@ -10,6 +10,7 @@
         style="@style/toolbar">
 
         <include
+            android:id="@+id/infoPhotoHeader"
             layout="@layout/action_info_photo"
             style="@style/infoPhotoInclude"/>
     </Toolbar>

@@ -1,19 +1,34 @@
 package com.sharman.yukon.view.activities.answering;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.api.services.plus.model.Person;
 import com.sharman.yukon.R;
 import com.sharman.yukon.io.drive.DriveIOHandler;
 import com.sharman.yukon.io.drive.callback.FileReadCallback;
+import com.sharman.yukon.io.plus.PlusIOHandler;
+import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
+import com.sharman.yukon.io.plus.callback.PersonReadCallback;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.Grade;
 import com.sharman.yukon.model.StudentConfigs;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
+import com.sharman.yukon.view.activities.util.AndroidUtil;
 
 import org.json.JSONException;
+
+import java.text.SimpleDateFormat;
 
 public class ExamAnsweringActivity extends GoogleRestConnectActivity {
     private String studentAnswerFileId;
@@ -36,6 +51,7 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
     protected void onConnectOnce(){
         super.onConnectOnce();
 
+        new AndroidUtil(this).showToast("Loading exam...", Toast.LENGTH_LONG);
 
         try {
             // *Gets the studentConfigs from intent:
@@ -44,16 +60,6 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
             studentAnswerFileId = studentConfigs.getAnswersFileId();
             examFileId = studentConfigs.getExamFileId();
             gradeFileId = studentConfigs.getGradeFileId();
-            String examTitleCache = studentConfigs.getExamTitleCache();
-
-
-
-            try {
-                // *Sets the exam's cached title to the actionBar title:
-                getActionBar().setTitle(examTitleCache);
-            } catch (NullPointerException e){
-                e.printStackTrace();
-            }
 
             loadFiles();
 
@@ -65,6 +71,8 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
 
     private void loadFiles(){
         final DriveIOHandler driveIOHandler = new DriveIOHandler(getCredential());
+        final Activity activity = this;
+
         driveIOHandler.readFile(examFileId, new FileReadCallback() {
             @Override
             public void onSuccess(String content) {
@@ -74,11 +82,21 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            try {
-                                getActionBar().setTitle(exam.getTitle());
-                            } catch (NullPointerException e){
-                                e.printStackTrace();
-                            }
+
+                            // *Showing the description of the exam:
+                            TextView descriptionOut = (TextView) findViewById(R.id.descriptionOut);
+                            descriptionOut.setText(exam.getDescription());
+
+                            // *Building the toolbar:
+                            View infoPhotoHeader = findViewById(R.id.infoPhotoHeader);
+                            new AndroidUtil(activity).fillInfoPhotoToolbar_GPlusImage(
+                                    infoPhotoHeader,
+                                    getCredential(),
+                                    exam.getTeacherId(),
+                                    exam.getTitle(),
+                                    exam.getSubject(),
+                                    new SimpleDateFormat("dd/MM/yyyy").format(exam.getDeliverDate())
+                            );
                         }
                     });
 
@@ -91,7 +109,16 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        // TODO show the grade of the student
+                                        // *Showing the grade of the student:
+                                        TextView gradeOut = (TextView) findViewById(R.id.gradeOut);
+                                        double gradeGrade = grade.getGrade();
+
+                                        if(gradeGrade<0){
+                                            gradeOut.setText(getResources().getString(R.string.output_grade_notSet_text));
+                                        } else{
+                                            gradeOut.setText(Double.toString(gradeGrade));
+                                        }
+
                                     }
                                 });
                             } catch (JSONException e) {
@@ -131,7 +158,6 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
             questionAnsweringIntent.putExtra("exam", exam.toString());
             questionAnsweringIntent.putExtra("studentAnswerFileId", studentAnswerFileId);
             startActivity(questionAnsweringIntent);
-            //finish();
         }
     }
 

@@ -169,7 +169,7 @@ public class StudentRVAdapter extends RecyclerView.Adapter<StudentRVAdapter.View
         }
 
         public void setImage(String imageUri){
-            new AndroidUtil(activity).formatContactImageView(studentImg, imageUri);
+            new AndroidUtil(activity).formatPersonImageView_AndroidContacts(studentImg, imageUri);
         }
 
 

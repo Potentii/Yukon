@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,13 +18,15 @@ import com.sharman.yukon.model.Grade;
 import com.sharman.yukon.model.StudentAnswers;
 import com.sharman.yukon.model.TeacherAnswers;
 import com.sharman.yukon.model.WeightTypeAnswerStruct;
-import com.sharman.yukon.model.util.EMultipleAnswerType;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 import com.sharman.yukon.view.activities.dialog.AnswerCorrectionDialog;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.DialogCallback;
 
 import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivity {
     private String studentAnswerFileId;
@@ -65,14 +66,27 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
             teacherAnswers = new TeacherAnswers(getIntent().getExtras().getString("teacherAnswers"));
 
             final View infoPhotoHeader = findViewById(R.id.infoPhotoHeader);
+            new AndroidUtil(this).fillInfoPhotoToolbar_AndroidContactsImage(
+                    infoPhotoHeader,
+                    getIntent().getExtras().getString("studentImageUri"),
+                    getIntent().getExtras().getString("studentName"),
+                    getIntent().getExtras().getString("studentEmail"),
+                    ""
+            );
+
+
+            // TODO remover isso
+            /*
             final ImageView infoImg           = (ImageView) infoPhotoHeader.findViewById(R.id.infoImg);
             final TextView primaryInfoOut     = (TextView) infoPhotoHeader.findViewById(R.id.primaryInfoOut);
             final TextView secondaryInfoOut   = (TextView) infoPhotoHeader.findViewById(R.id.secondaryInfoOut);
 
-            new AndroidUtil(this).formatContactImageView(infoImg, getIntent().getExtras().getString("studentImageUri"));
+            new AndroidUtil(this).formatPersonImageView_AndroidContacts(infoImg, getIntent().getExtras().getString("studentImageUri"));
 
             primaryInfoOut.setText(getIntent().getExtras().getString("studentName"));
             secondaryInfoOut.setText(getIntent().getExtras().getString("studentEmail"));
+            */
+
 
             if(grade == null) {
                 loadInfo();
@@ -88,8 +102,6 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
 
     private void loadInfo(){
         final DriveIOHandler driveIOHandler = new DriveIOHandler(getCredential());
-        final TextView gradeOut = (TextView) findViewById(R.id.gradeOut);
-
 
         driveIOHandler.readFile(gradeFileId, new FileReadCallback() {
             @Override
@@ -97,9 +109,9 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        try{
+                        try {
                             grade = new Grade(content);
-
+                            /*
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -111,6 +123,7 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
                                     }
                                 }
                             });
+                            */
 
                             driveIOHandler.readFile(studentAnswerFileId, new FileReadCallback() {
                                 @Override
@@ -136,7 +149,7 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
                                 }
                             });
 
-                        } catch (JSONException e){
+                        } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
@@ -147,8 +160,6 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
             public void onFailure(Exception exception) {
                 // TODO error
                 exception.printStackTrace();
-                gradeOut.setText(getResources().getString(R.string.output_grade_notSet_text));
-                acceptGradeBtn.setEnabled(false);
             }
         });
     }
@@ -156,77 +167,60 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
 
 
 
-    private DialogCallback dissertativeDialogCallback = new DialogCallback() {
-        @Override
-        public void onPositive() {
-            // *The answer was CORRECT:
-            correctionArray[answerCorrectionDialog.getIndex()] = true;
-            verifyIfGradeIsReadyToSet();
-        }
-        @Override
-        public void onNegative() {
-            // *The answer was INCORRECT:
-            correctionArray[answerCorrectionDialog.getIndex()] = false;
-            verifyIfGradeIsReadyToSet();
-        }
-        @Override
-        public void onNeutral() {}
 
-
-    };
-
-    private DialogCallback multipleDialogCallback = new DialogCallback() {
-        @Override
-        public void onPositive() {}
-        @Override
-        public void onNegative() {}
-        @Override
-        public void onNeutral() {}
-    };
-
-
-    private void verifyIfGradeIsReadyToSet(){
-        for(int i=0; i<correctionArray.length; i++){
-            if(correctionArray[i] == null){
-                thereIsNullAnswers = true;
-                acceptGradeBtn.setEnabled(false);
-                return;
-            }
-        }
-        thereIsNullAnswers = false;
-
-        acceptGradeBtn.setEnabled(!alreadyCorrected);
-    }
-
-
-    private boolean thereIsNullAnswers = false;
+    private List<View> rowList = new ArrayList<>();
     private Boolean[] correctionArray;
-    private boolean alreadyCorrected;
+    private boolean gradeSet;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     private void buildAnswersList(){
-        correctionArray = grade.getCorrectionArray();
+        Boolean[] correctionArray = grade.getCorrectionArray();
         WeightTypeAnswerStruct[] teacherAnswerArray = teacherAnswers.getWeightTypeAnswerStructArray();
         Answer[] studentAnswerArray = studentAnswers.getAnswerArray();
+        double gradeGrade = grade.getGrade();
 
         rowContainer.removeAllViews();
 
-        if(correctionArray.length > 0 || grade.getGrade()>=0){
-            alreadyCorrected = true;
+        if(gradeGrade<0){
+            gradeSet = false;
+            correctTheAnswers(studentAnswerArray, teacherAnswerArray);
         } else{
-            alreadyCorrected = false;
-            correctionArray = new Boolean[studentAnswerArray.length];
+            if(correctionArray.length>0){
+                // *The student already answered and have its grade set:
+                // TODO listar apenas usando o correctionArray
+                gradeSet = true;
+                listAnswers(studentAnswerArray, teacherAnswerArray, correctionArray);
+            } else{
+                // *Ocorreu algum erro com o correctionArray, portanto deve gerar outro:
+                gradeSet = false;
+                correctTheAnswers(studentAnswerArray, teacherAnswerArray);
+            }
         }
 
-
-        int studentAnswerLength = studentAnswerArray.length;
-        int teacherAnswerLength = teacherAnswerArray.length;
-        int correctionLength = correctionArray.length;
+        tryToEnableButton();
+    }
 
 
-        if(studentAnswerLength != teacherAnswerLength || studentAnswerLength != correctionLength){
-            //TODO error: numero de respostas está incoerente ou aluno ainda nao respondeu
 
+    private void correctTheAnswers(Answer[] studentAnswerArray, WeightTypeAnswerStruct[] teacherAnswerArray){
+        if(studentAnswerArray.length == 0){
             final View row = layoutInflater.inflate(R.layout.row_answer_managing, null);
             TextView answerOut = (TextView) row.findViewById(R.id.answerOut);
             answerOut.setText(getResources().getString(R.string.output_answerCorrection_studentDidntAnswered));
@@ -234,31 +228,48 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
             return;
         }
 
-
-        for(int i=0; i<studentAnswerArray.length; i++){
-            Answer studentAnswer = studentAnswerArray[i];
-            Answer teacherAnswer = teacherAnswerArray[i].getAnswer();
-            if(!alreadyCorrected){
-                correctionArray[i] = studentAnswer.compareAnswerTo(teacherAnswer);
-                System.out.println(studentAnswer.getFormattedAnswerString() + " == " + teacherAnswer.getFormattedAnswerString() + " : " + correctionArray[i]);
-            }
-
-            thereIsNullAnswers = correctionArray[i] == null?true:thereIsNullAnswers;
-            addRow(i, teacherAnswerArray[i].getEMultipleAnswerType(), correctionArray[i], alreadyCorrected, studentAnswer, teacherAnswer);
+        if(studentAnswerArray.length != teacherAnswerArray.length){
+            // TODO error
+            System.out.println("ERRO");
+            return;
         }
 
+        Boolean[] correctionArray = new Boolean[teacherAnswerArray.length];
 
-        verifyIfGradeIsReadyToSet();
+        for(int i=0; i<teacherAnswerArray.length; i++){
+            correctionArray[i] = teacherAnswerArray[i].getAnswer().compareAnswerTo(studentAnswerArray[i]);
+        }
+
+        listAnswers(studentAnswerArray, teacherAnswerArray, correctionArray);
     }
 
 
 
-    private void addRow(final int index, @Nullable final EMultipleAnswerType eMultipleAnswerType, final Boolean correct, final boolean corrected, final Answer studentAnswer, final Answer teacherAnswer){
-        final int color;
+    private void listAnswers(Answer[] studentAnswerArray, WeightTypeAnswerStruct[] teacherAnswerArray, Boolean[] correctionArray){
+        if(studentAnswerArray.length != teacherAnswerArray.length || studentAnswerArray.length != correctionArray.length){
+            // TODO error
+            System.out.println("ERRO");
+            return;
+        }
 
-        final View row = layoutInflater.inflate(R.layout.row_answer_managing, null);
-        TextView answerNumberOut = (TextView) row.findViewById(R.id.answerNumberOut);
-        TextView answerOut = (TextView) row.findViewById(R.id.answerOut);
+        this.correctionArray = correctionArray;
+        rowList.clear();
+        rowContainer.removeAllViews();
+
+        for(int i=0; i<studentAnswerArray.length; i++){
+            final View row = layoutInflater.inflate(R.layout.row_answer_managing, null);
+            formatRow(i, row, correctionArray[i], studentAnswerArray[i], teacherAnswerArray[i].getAnswer());
+            rowList.add(row);
+            rowContainer.addView(row);
+        }
+    }
+
+
+
+    private void formatRow(final int index, final View row, @Nullable final Boolean correct, final Answer studentAnswer, final Answer teacherAnswer){
+        final TextView answerNumberOut = (TextView) row.findViewById(R.id.answerNumberOut);
+        final TextView answerOut = (TextView) row.findViewById(R.id.answerOut);
+        final int color;
 
         if(correct == null){
             color = getResources().getColor(R.color.answer_neutral);
@@ -271,35 +282,93 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
         }
 
         answerNumberOut.setText((index+1) + "-)");
+
         answerOut.setText(studentAnswer.getFormattedAnswerString());
         answerOut.setTextColor(color);
+
 
         row.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                answerCorrectionDialog.seteMultipleAnswerType(eMultipleAnswerType);
                 answerCorrectionDialog.setStudentAnswer(studentAnswer);
                 answerCorrectionDialog.setTeacherAnswer(teacherAnswer);
                 answerCorrectionDialog.setColor(color);
                 answerCorrectionDialog.setIndex(index);
-                answerCorrectionDialog.setCorrected(corrected);
-                if(eMultipleAnswerType == null) {
-                    answerCorrectionDialog.setDialogCallback(dissertativeDialogCallback);
-                } else{
-                    answerCorrectionDialog.setDialogCallback(multipleDialogCallback);
-                }
+                answerCorrectionDialog.setCorrect(correct);
+                answerCorrectionDialog.setDialogCallback(dialogCallback);
 
                 answerCorrectionDialog.show(getFragmentManager(), "answer_correction_dialog");
-
             }
         });
+    }
 
 
-        rowContainer.addView(row);
+    private DialogCallback dialogCallback = new DialogCallback() {
+        @Override
+        public void onPositive() {
+            int index = answerCorrectionDialog.getIndex();
+            correctionArray[index] = true;
+
+            formatRow(index, rowList.get(index), correctionArray[index], answerCorrectionDialog.getStudentAnswer(), answerCorrectionDialog.getTeacherAnswer());
+            tryToEnableButton();
+        }
+
+        @Override
+        public void onNegative() {
+            int index = answerCorrectionDialog.getIndex();
+            correctionArray[index] = false;
+
+            formatRow(index, rowList.get(index), correctionArray[index], answerCorrectionDialog.getStudentAnswer(), answerCorrectionDialog.getTeacherAnswer());
+            tryToEnableButton();
+        }
+
+        @Override
+        public void onNeutral() {}
+    };
+
+
+
+    private void tryToEnableButton(){
+        if(gradeSet){ return; }
+        for(int i=0; i<correctionArray.length; i++){
+            if(correctionArray[i] == null){
+                return;
+            }
+        }
+
+
+        WeightTypeAnswerStruct[] teacherAnswerArray = teacherAnswers.getWeightTypeAnswerStructArray();
+        double newGrade = 0.0;
+
+        if(teacherAnswerArray.length != correctionArray.length){
+            System.out.println("ERRO");
+            return;
+        }
+
+        for(int i=0; i<correctionArray.length; i++){
+            newGrade += correctionArray[i] ? teacherAnswerArray[i].getWeight() : 0.0;
+        }
+
+
+        try {
+            grade.setGrade(newGrade);
+            grade.setCorrectionArray(correctionArray);
+
+            // TODO show new grade
+            acceptGradeBtn.setEnabled(true);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 
 
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Listener methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     public void acceptGradeBtn_onClick(View view){
         if(grade == null){
             return;
@@ -307,6 +376,7 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
 
 
     }
+
 
 
     /*
