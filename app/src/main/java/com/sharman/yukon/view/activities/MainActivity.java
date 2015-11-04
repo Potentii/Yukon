@@ -86,7 +86,7 @@ public class MainActivity extends GoogleRestConnectActivity {
     protected void onConnectOnce(){
         super.onConnectOnce();
 
-        new AndroidUtil(this).showToast("Loading exams...", Toast.LENGTH_LONG);
+        new AndroidUtil(this).showToast("Loading exams...", Toast.LENGTH_SHORT);
         updateMyExamList();
         updateSharedExamList();
     }
@@ -96,6 +96,11 @@ public class MainActivity extends GoogleRestConnectActivity {
         Intent addExamIntent = new Intent(this, ExamCreateActivity.class);
         startActivity(addExamIntent);
     }
+
+    public void disconnectBtn_onClick(View view) {
+        tryToDisconnect();
+    }
+
 
 
     /*

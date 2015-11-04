@@ -1,5 +1,6 @@
 package com.sharman.yukon.view.activities.managing;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -13,11 +14,15 @@ import android.widget.TextView;
 
 import com.google.api.services.plus.model.Person;
 import com.sharman.yukon.R;
+import com.sharman.yukon.io.drive.DriveIOHandler;
+import com.sharman.yukon.io.drive.callback.FileReadCallback;
 import com.sharman.yukon.io.plus.PlusIOHandler;
 import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
 import com.sharman.yukon.io.plus.callback.PersonReadCallback;
+import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
+import com.sharman.yukon.view.activities.util.AndroidUtil;
 
 import org.json.JSONException;
 
@@ -42,59 +47,57 @@ public class ExamManagingActivity extends GoogleRestConnectActivity {
 
         try {
             // *Gets the teacherConfigs from intent:
-            // TODO alterar para ler Exam e parar de usar cache nos arquivos
             teacherConfigs = new TeacherConfigs(getIntent().getExtras().getString("teacherConfigs"));
 
-
-            final View infoPhotoHeader = findViewById(R.id.infoPhotoHeader);
-            final ImageView infoImg           = (ImageView) infoPhotoHeader.findViewById(R.id.infoImg);
-            final TextView primaryInfoOut     = (TextView) infoPhotoHeader.findViewById(R.id.primaryInfoOut);
-            final TextView secondaryInfoOut   = (TextView) infoPhotoHeader.findViewById(R.id.secondaryInfoOut);
-            final TextView tertiaryInfoOut    = (TextView) infoPhotoHeader.findViewById(R.id.tertiaryInfoOut);
-
-            primaryInfoOut.setText(teacherConfigs.getExamTitleCache());
-            secondaryInfoOut.setText(teacherConfigs.getExamSubjectCache());
-            tertiaryInfoOut.setText(new SimpleDateFormat("dd/MM/yyyy").format(teacherConfigs.getExamDeliveryDateCache()));
-
-            final PlusIOHandler plusIOHandler = new PlusIOHandler(getCredential());
-            plusIOHandler.readPerson(teacherConfigs.getTeacherIdCache(), new PersonReadCallback() {
-                @Override
-                public void onSuccess(Person person) {
-                    plusIOHandler.readPersonImg(person, new PersonImgReadCallback() {
-                        @Override
-                        public void onSuccess(final Bitmap bitmap) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                                    roundedBitmapDrawable.setCornerRadius(Math.max(bitmap.getWidth(), bitmap.getHeight()) / 2.0f);
-                                    roundedBitmapDrawable.setAntiAlias(true);
-                                    infoImg.setImageDrawable(roundedBitmapDrawable);
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onFailure(String errorMessage) {
-                            //TODO error
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(Exception exception) {
-                    // TODO error
-                }
-            });
-
-
-            final TextView descriptionOut = (TextView) findViewById(R.id.descriptionOut);
-            descriptionOut.setText("");
+            loadInfo();
 
         } catch (NullPointerException | JSONException e){
             // TODO error
             e.printStackTrace();
         }
+    }
+
+
+    private void loadInfo(){
+        final DriveIOHandler driveIOHandler = new DriveIOHandler(getCredential());
+        final Activity activity = this;
+
+        driveIOHandler.readFile(teacherConfigs.getExamFileId(), new FileReadCallback() {
+            @Override
+            public void onSuccess(String content) {
+                try {
+                    final Exam exam = new Exam(content);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            TextView descriptionOut = (TextView) findViewById(R.id.descriptionOut);
+                            descriptionOut.setText(exam.getDescription());
+
+                            // *Building the toolbar:
+                            View infoPhotoHeader = findViewById(R.id.infoPhotoHeader);
+                            new AndroidUtil(activity).fillInfoPhotoToolbar_GPlusImage(
+                                    infoPhotoHeader,
+                                    getCredential(),
+                                    exam.getTeacherId(),
+                                    exam.getTitle(),
+                                    exam.getSubject(),
+                                    new SimpleDateFormat("dd/MM/yyyy").format(exam.getDeliverDate())
+                            );
+                        }
+                    });
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
+                //TODO error
+                exception.printStackTrace();
+            }
+        });
     }
 
 

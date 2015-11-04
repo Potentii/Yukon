@@ -1,6 +1,7 @@
 package com.sharman.yukon.io.drive;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.batch.BatchRequest;
@@ -193,7 +194,7 @@ public final class DriveIOHandler {
      *  * Edits a file on Drive:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public void editFile(@NonNull final String fileId, final String newTitle, final String newMimeType, @NonNull final String newContent, @NonNull final FileEditCallback fileEditCallback){
+    public void editFile(@NonNull final String fileId, @Nullable final String newTitle, @Nullable final String newMimeType, @NonNull final String newContent, @NonNull final FileEditCallback fileEditCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {

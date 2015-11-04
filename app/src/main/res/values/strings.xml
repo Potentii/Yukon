@@ -14,7 +14,7 @@
 
     <string name="activityTitle.examAnswering"></string>
     <string name="activityTitle.questionAnswering">Question</string>
-    <string name="activityTitle.examAnsweringConfirm">Review before sending</string>
+    <string name="activityTitle.examAnsweringConfirm">Review</string>
 
     <string name="activityTitle.examManaging"></string>
     <string name="activityTitle.examManagingStudents">Students</string>

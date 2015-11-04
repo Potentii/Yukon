@@ -1,6 +1,8 @@
 package com.sharman.yukon.view.activities.answering;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,14 +17,10 @@ import com.sharman.yukon.io.drive.DriveIOHandler;
 import com.sharman.yukon.io.drive.callback.FileEditCallback;
 import com.sharman.yukon.io.drive.callback.FileShareEditCallback;
 import com.sharman.yukon.model.Answer;
-import com.sharman.yukon.model.DissertativeAnswer;
 import com.sharman.yukon.model.Exam;
-import com.sharman.yukon.model.MultipleChoiceAnswer;
-import com.sharman.yukon.model.Question;
-import com.sharman.yukon.model.SingleChoiceAnswer;
 import com.sharman.yukon.model.StudentAnswers;
-import com.sharman.yukon.model.util.EMultipleAnswerType;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
+import com.sharman.yukon.view.activities.MainActivity;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 
 import org.json.JSONException;
@@ -37,6 +35,7 @@ public class ExamAnsweringConfirmActivity extends GoogleRestConnectActivity {
 
     private LayoutInflater layoutInflater;
     private LinearLayout rowContainer;
+
 
 
     @Override
@@ -64,42 +63,17 @@ public class ExamAnsweringConfirmActivity extends GoogleRestConnectActivity {
 
     private void buildAnswerList(){
         Answer[] answerArray = studentAnswers.getAnswerArray();
-        Question[] questionArray = exam.getQuestionArray();
-
-        if(questionArray.length != answerArray.length){
-            System.out.println("ERRO");
-            return;
-        }
 
         rowContainer.removeAllViews();
 
         for(int i=0; i<answerArray.length; i++){
-            EMultipleAnswerType eMultipleAnswerType = questionArray[i].getAnswerBox().getEMultipleAnswerType();
-            Answer answer = null;
-
-            try {
-                if(eMultipleAnswerType == null){
-                    answer = (DissertativeAnswer) answerArray[i];
-                } else{
-                    switch (eMultipleAnswerType){
-                        case SINGLE_CHOICE:
-                            answer = (SingleChoiceAnswer) answerArray[i];
-                            break;
-                        case MULTIPLE_CHOICE:
-                            answer = (MultipleChoiceAnswer) answerArray[i];
-                            break;
-                    }
-                }
-            } catch (ClassCastException e){
-                e.printStackTrace();
-            }
-
-            addRow(i, answer);
+            addRow(i, answerArray[i]);
         }
     }
 
 
-    private void addRow(final int index, final Answer answer){
+
+    private void addRow(final int index, @NonNull final Answer answer){
         final View row = layoutInflater.inflate(R.layout.row_answer_managing, null);
 
         final TextView answerNumberOut = (TextView) row.findViewById(R.id.answerNumberOut);
@@ -121,13 +95,22 @@ public class ExamAnsweringConfirmActivity extends GoogleRestConnectActivity {
 
 
 
-
-
-
     private synchronized void onAnsweringSuccess(){
         if(!onAnsweringSuccess_called) {
             onAnsweringSuccess_called = true;
+
+            final Activity activity = this;
             new AndroidUtil(this).showToast("Answer sent, good luck", Toast.LENGTH_SHORT);
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent mainIntent = new Intent(activity, MainActivity.class);
+                    startActivity(mainIntent);
+                    finish();
+                }
+            });
+
         }
     }
 
@@ -140,7 +123,11 @@ public class ExamAnsweringConfirmActivity extends GoogleRestConnectActivity {
 
 
 
-
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Listeners methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     // *Action of the "Send" button:
     private void examAnsweringConfirmSendActionButton_onClick(){
         if(!isConnected()){
@@ -181,10 +168,11 @@ public class ExamAnsweringConfirmActivity extends GoogleRestConnectActivity {
 
 
 
-
-
-
-
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * ActionBar methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

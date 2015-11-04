@@ -41,7 +41,7 @@
                     style="@style/labeledInputMultiline"
                     android:id="@+id/examDescriptionIn"
                     android:hint="@string/inputHint.examCreate.description"
-                    android:lines="3"/>
+                    android:lines="3" />
             </LinearLayout>
 
 

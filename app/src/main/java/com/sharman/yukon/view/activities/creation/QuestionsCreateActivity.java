@@ -12,11 +12,8 @@ import android.widget.Spinner;
 import com.sharman.yukon.R;
 import com.sharman.yukon.model.Answer;
 import com.sharman.yukon.model.AnswerBox;
-import com.sharman.yukon.model.DissertativeAnswer;
 import com.sharman.yukon.model.Exam;
-import com.sharman.yukon.model.MultipleChoiceAnswer;
 import com.sharman.yukon.model.Question;
-import com.sharman.yukon.model.SingleChoiceAnswer;
 import com.sharman.yukon.model.TeacherAnswers;
 import com.sharman.yukon.model.WeightTypeAnswerStruct;
 import com.sharman.yukon.model.util.EMultipleAnswerType;
@@ -85,7 +82,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
 
             try {
                 // *Setting the title of the actionBar:
-                getSupportActionBar().setTitle(getResources().getString(R.string.activityTitle_questionCreate) + " " + exam.getQuestionArray().length);
+                getSupportActionBar().setTitle(getResources().getString(R.string.activityTitle_questionCreate) + " " + (exam.getQuestionArray().length+1));
             } catch (NullPointerException e){
                 e.printStackTrace();
             }
@@ -161,7 +158,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
         Answer answer;
 
         if(eMultipleAnswerType == null){
-            answer = new DissertativeAnswer("");
+            answer = new Answer(new String[]{});
         } else {
             switch (eMultipleAnswerType) {
                 default:
@@ -172,7 +169,8 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
                             indexCorrect = i;
                         }
                     }
-                    answer = new SingleChoiceAnswer(indexCorrect);
+
+                    answer = new Answer(Answer.convertIntArray_AlphabetArray(new int[]{indexCorrect}));
                     break;
 
                 case MULTIPLE_CHOICE:
@@ -192,7 +190,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
                         }
                     }
 
-                    answer = new MultipleChoiceAnswer(indexCorrectArray);
+                    answer = new Answer(Answer.convertIntArray_AlphabetArray(indexCorrectArray));
                     break;
             }
         }

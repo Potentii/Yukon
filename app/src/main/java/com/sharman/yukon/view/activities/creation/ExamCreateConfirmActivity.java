@@ -1,5 +1,6 @@
 package com.sharman.yukon.view.activities.creation;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -85,6 +86,8 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
             exam = new Exam(getIntent().getExtras().getString("exam"));
             teacherAnswers = new TeacherAnswers(getIntent().getExtras().getString("teacherAnswers"));
 
+            System.out.println(teacherAnswers.toString());
+
             final View infoPhotoHeader = findViewById(R.id.infoPhotoHeader);
             final ImageView infoImg           = (ImageView) infoPhotoHeader.findViewById(R.id.infoImg);
             final TextView primaryInfoOut     = (TextView) infoPhotoHeader.findViewById(R.id.primaryInfoOut);
@@ -156,9 +159,16 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
 
             new AndroidUtil(this).showToast("Success", Toast.LENGTH_SHORT);
 
-            Intent mainIntent = new Intent(this, MainActivity.class);
-            startActivity(mainIntent);
-            finish();
+            final Activity activity = this;
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent examManagingStudentsActivityIntent = new Intent(activity, MainActivity.class);
+                    startActivity(examManagingStudentsActivityIntent);
+                    finish();
+                }
+            });
         }
     }
 

@@ -1,5 +1,7 @@
 package com.sharman.yukon.view.activities.managing;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -9,9 +11,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sharman.yukon.R;
 import com.sharman.yukon.io.drive.DriveIOHandler;
+import com.sharman.yukon.io.drive.callback.FileEditCallback;
 import com.sharman.yukon.io.drive.callback.FileReadCallback;
 import com.sharman.yukon.model.Answer;
 import com.sharman.yukon.model.Grade;
@@ -19,6 +23,7 @@ import com.sharman.yukon.model.StudentAnswers;
 import com.sharman.yukon.model.TeacherAnswers;
 import com.sharman.yukon.model.WeightTypeAnswerStruct;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
+import com.sharman.yukon.view.activities.MainActivity;
 import com.sharman.yukon.view.activities.dialog.AnswerCorrectionDialog;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.DialogCallback;
@@ -40,6 +45,10 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
     private LinearLayout rowContainer;
     private Button acceptGradeBtn;
     private AnswerCorrectionDialog answerCorrectionDialog;
+
+    private List<View> rowList = new ArrayList<>();
+    private Boolean[] correctionArray;
+    private boolean gradeSet;
 
 
     @Override
@@ -74,20 +83,6 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
                     ""
             );
 
-
-            // TODO remover isso
-            /*
-            final ImageView infoImg           = (ImageView) infoPhotoHeader.findViewById(R.id.infoImg);
-            final TextView primaryInfoOut     = (TextView) infoPhotoHeader.findViewById(R.id.primaryInfoOut);
-            final TextView secondaryInfoOut   = (TextView) infoPhotoHeader.findViewById(R.id.secondaryInfoOut);
-
-            new AndroidUtil(this).formatPersonImageView_AndroidContacts(infoImg, getIntent().getExtras().getString("studentImageUri"));
-
-            primaryInfoOut.setText(getIntent().getExtras().getString("studentName"));
-            secondaryInfoOut.setText(getIntent().getExtras().getString("studentEmail"));
-            */
-
-
             if(grade == null) {
                 loadInfo();
             }
@@ -111,10 +106,13 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
                     public void run() {
                         try {
                             grade = new Grade(content);
-                            /*
+
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    // *Showing the grade of the student:
+                                    TextView gradeOut = (TextView) findViewById(R.id.gradeOut);
+
                                     double gradeGrade = grade.getGrade();
                                     if(gradeGrade<0){
                                         gradeOut.setText(getResources().getString(R.string.output_grade_notSet_text));
@@ -123,7 +121,6 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
                                     }
                                 }
                             });
-                            */
 
                             driveIOHandler.readFile(studentAnswerFileId, new FileReadCallback() {
                                 @Override
@@ -166,30 +163,6 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
 
 
 
-
-
-    private List<View> rowList = new ArrayList<>();
-    private Boolean[] correctionArray;
-    private boolean gradeSet;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private void buildAnswersList(){
         Boolean[] correctionArray = grade.getCorrectionArray();
         WeightTypeAnswerStruct[] teacherAnswerArray = teacherAnswers.getWeightTypeAnswerStructArray();
@@ -213,8 +186,6 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
                 correctTheAnswers(studentAnswerArray, teacherAnswerArray);
             }
         }
-
-        tryToEnableButton();
     }
 
 
@@ -262,6 +233,8 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
             rowList.add(row);
             rowContainer.addView(row);
         }
+
+        tryToEnableButton();
     }
 
 
@@ -355,6 +328,10 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
             grade.setCorrectionArray(correctionArray);
 
             // TODO show new grade
+
+            TextView gradeOut = (TextView) findViewById(R.id.gradeOut);
+            gradeOut.setText(Double.toString(newGrade));
+
             acceptGradeBtn.setEnabled(true);
 
         } catch (JSONException e) {
@@ -370,10 +347,38 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
     public void acceptGradeBtn_onClick(View view){
-        if(grade == null){
+        if(grade == null) {
             return;
         }
 
+        new AndroidUtil(this).showToast("Working.", Toast.LENGTH_SHORT);
+        final Activity activity = this;
+
+        new DriveIOHandler(getCredential()).editFile(gradeFileId, null, null, grade.toString(), new FileEditCallback() {
+            @Override
+            public void onSuccess() {
+                new AndroidUtil(activity).showToast("Grade set", Toast.LENGTH_SHORT);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        /*
+                        Intent examManagingStudentsActivityIntent = new Intent(activity, ExamManagingStudentsActivity.class);
+                        startActivity(examManagingStudentsActivityIntent);
+                        finish();
+                        */
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                new AndroidUtil(activity).showToast("Something went wrong, try again", Toast.LENGTH_SHORT);
+            }
+        });
+
+
+        System.out.println("E");
 
     }
 

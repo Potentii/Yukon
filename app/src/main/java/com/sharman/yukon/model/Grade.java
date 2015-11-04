@@ -68,7 +68,7 @@ public class Grade extends JSONObject {
         for(int i=0; i<correctionJSONArray.length(); i++){
             try {
                 correctionArray[i] = correctionJSONArray.getBoolean(i);
-            }catch (JSONException e){
+            }catch (JSONException | NullPointerException e){
                 correctionArray[i] = null;
             }
         }

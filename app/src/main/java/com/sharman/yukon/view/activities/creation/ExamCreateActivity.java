@@ -6,12 +6,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.sharman.yukon.R;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.Question;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 import com.sharman.yukon.view.activities.dialog.DeliveryDateDialog;
+import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.DialogCallback;
 
 import java.text.SimpleDateFormat;
@@ -20,6 +22,10 @@ public class ExamCreateActivity extends GoogleRestConnectActivity implements Dia
     private Exam exam;
     private DeliveryDateDialog deliveryDateDialog;
 
+    private EditText examTitleIn;
+    private EditText examDescriptionIn;
+    private EditText examSubjectIn;
+    private EditText examDeliveryDateIn;
 
 
     @Override
@@ -27,8 +33,15 @@ public class ExamCreateActivity extends GoogleRestConnectActivity implements Dia
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exam_create);
 
+
         deliveryDateDialog = new DeliveryDateDialog();
         deliveryDateDialog.setDialogCallback(this);
+
+
+        examTitleIn = (EditText) findViewById(R.id.examTitleIn);
+        examDescriptionIn = (EditText) findViewById(R.id.examDescriptionIn);
+        examSubjectIn = (EditText) findViewById(R.id.examSubjectIn);
+        examDeliveryDateIn = (EditText) findViewById(R.id.examDeliveryDateIn);
     }
 
 
@@ -40,7 +53,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity implements Dia
      */
     @Override
     public void onPositive() {
-        ((EditText) findViewById(R.id.examDeliveryDateIn)).setText(new SimpleDateFormat("dd/MM/yyyy").format(deliveryDateDialog.getDate()));
+        examDeliveryDateIn.setText(new SimpleDateFormat("dd/MM/yyyy").format(deliveryDateDialog.getDate()));
     }
 
     @Override
@@ -61,10 +74,13 @@ public class ExamCreateActivity extends GoogleRestConnectActivity implements Dia
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
     public void examCreateNextActionButton_onClick(){
-        EditText examTitleIn = (EditText) findViewById(R.id.examTitleIn);
-        EditText examDescriptionIn = (EditText) findViewById(R.id.examDescriptionIn);
-        EditText examSubjectIn = (EditText) findViewById(R.id.examSubjectIn);
-
+        if(examTitleIn.getText().toString().trim().length()==0
+                || examDescriptionIn.getText().toString().trim().length()==0
+                || examSubjectIn.getText().toString().trim().length()==0
+                || examDeliveryDateIn.getText().toString().trim().length()==0){
+            new AndroidUtil(this).showToast("Invalid fields", Toast.LENGTH_SHORT);
+            return;
+        }
 
         exam = new Exam(
                 examTitleIn.getText().toString(),

@@ -81,7 +81,8 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
 
-        <item name="android:layout_marginBottom">@dimen/input_container_vertical_margin</item>
+        <item name="android:layout_marginTop">@dimen/input_container_top_margin</item>
+        <item name="android:layout_marginBottom">@dimen/input_container_bottom_margin</item>
     </style>
 
 
@@ -111,6 +112,7 @@
     </style>
     <style name="labeledInputMultiline" parent="labeledInput">
         <item name="android:singleLine">false</item>
+        <item name="android:gravity">top</item>
     </style>
 
     <!-- * Labeled Span * -->

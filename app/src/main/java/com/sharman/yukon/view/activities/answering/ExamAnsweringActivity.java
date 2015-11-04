@@ -51,7 +51,7 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
     protected void onConnectOnce(){
         super.onConnectOnce();
 
-        new AndroidUtil(this).showToast("Loading exam...", Toast.LENGTH_LONG);
+        new AndroidUtil(this).showToast("Loading exam...", Toast.LENGTH_SHORT);
 
         try {
             // *Gets the studentConfigs from intent:

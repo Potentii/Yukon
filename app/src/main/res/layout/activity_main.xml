@@ -85,5 +85,19 @@
                 android:text="+" />
         </RelativeLayout>
 
+        <RelativeLayout
+            style="@style/floatingActionButtonContainer"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="false"
+            android:layout_marginLeft="16dp"
+            android:backgroundTint="#d23"
+            android:clickable="true">
+            <Button
+                style="@style/floatingActionButton"
+                android:onClick="disconnectBtn_onClick"
+
+                android:text="D" />
+        </RelativeLayout>
+
     </RelativeLayout>
 </android.support.v4.widget.DrawerLayout>

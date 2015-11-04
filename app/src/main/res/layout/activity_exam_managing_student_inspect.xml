@@ -52,6 +52,7 @@
                     android:id="@+id/acceptGradeBtn"
                     android:paddingStart="32dp"
                     android:paddingEnd="32dp"
+                    android:onClick="acceptGradeBtn_onClick"
                     android:backgroundTint="@color/acceptance"
                     android:textColor="@color/primary_grey"
                     android:enabled="false"/>

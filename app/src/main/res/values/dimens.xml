@@ -2,8 +2,9 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="input_container_vertical_margin">32dp</dimen>
-    <dimen name="input_start_margin">8dp</dimen>
+    <dimen name="input_container_top_margin">16dp</dimen>
+    <dimen name="input_container_bottom_margin">16dp</dimen>
+    <dimen name="input_start_margin">12dp</dimen>
 
     <dimen name="floating_action_button_size">64dp</dimen>
     <dimen name="floating_action_button_elevation">8dp</dimen>
