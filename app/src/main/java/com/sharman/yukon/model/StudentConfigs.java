@@ -21,6 +21,7 @@ public class StudentConfigs extends JSONObject {
         GRADE_FILE_ID("gradeFileId"),
         ANSWERS_FILE_ID("answersFileId"),
         EXAM_FILE_ID("examFileId"),
+        STUDENT("student"),
 
         EXAM_TITLE_CACHE("examTitleCache"),
         EXAM_DELIVERY_DATE_CACHE("examDeliveryDateCache"),
@@ -42,12 +43,13 @@ public class StudentConfigs extends JSONObject {
      *  * Constructor:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public StudentConfigs(String gradeFileId, String answersFileId, String examFileId, String examTitleCache, Date examDeliveryDateCache, String examSubjectCache, String teacherIdCache){
+    public StudentConfigs(String gradeFileId, String answersFileId, String examFileId, String student, String examTitleCache, Date examDeliveryDateCache, String examSubjectCache, String teacherIdCache){
         super();
         try {
             this.setGradeFileId(gradeFileId);
             this.setAnswersFileId(answersFileId);
             this.setExamFileId(examFileId);
+            this.setStudent(student);
 
             this.setExamTitleCache(examTitleCache);
             this.setExamDeliveryDateCache(examDeliveryDateCache);
@@ -91,6 +93,13 @@ public class StudentConfigs extends JSONObject {
         super.putOpt(StudentConfigsJSONKeys.EXAM_FILE_ID.getKey(), examFileId);
     }
 
+    // *Student
+    public String getStudent(){
+        return super.optString(StudentConfigsJSONKeys.STUDENT.getKey());
+    }
+    public void setStudent(String student) throws JSONException{
+        super.putOpt(StudentConfigsJSONKeys.STUDENT.getKey(), student);
+    }
 
 
     // *ExamTitleCache

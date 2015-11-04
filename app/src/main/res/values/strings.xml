@@ -1,33 +1,62 @@
 <resources>
+    <!--
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * General
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    -->
     <string name="appName">Yukon</string>
-
 
     <!-- * Activity titles * -->
     <string name="activityTitle.main">Exams</string>
     <string name="activityTitle.examCreate"></string>
     <string name="activityTitle.questionCreate">Question</string>
-    <string name="activityTitle.examCreateConfirm">Share</string>
+    <string name="activityTitle.examCreateConfirm"></string>
 
     <string name="activityTitle.examAnswering"></string>
     <string name="activityTitle.questionAnswering">Question</string>
     <string name="activityTitle.examAnsweringConfirm">Review</string>
 
+    <string name="activityTitle.examManaging"></string>
+    <string name="activityTitle.examManagingStudents">Students</string>
+    <string name="activityTitle.examManagingStudentInspect"></string>
 
-    <!-- * Action buttons * -->
-    <string name="actionButton.examCreate.next">Add questions</string>
-    <string name="actionButton.questionCreate.share">Finish</string>
-    <string name="actionButton.examCreateConfirm.finish">Share exam</string>
+    <string name="activityTitle.disconnected">Yukon</string>
 
-    <string name="actionButton.examAnswering.start">Start the exam</string>
-    <string name="actionButton.examAnsweringConfirm.send">Send to teacher</string>
+
+
+    <!--
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * Output
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    -->
+    <string name="output.grade.notSet.text">Not set</string>
+    <string name="output.grade.notSet.symbol">-</string>
+
+    <string name="output.answerCorrection.studentAnswer">Student answer</string>
+    <string name="output.answerCorrection.correctAnswer">Correct answer</string>
+
+    <string name="output.answerCorrection.studentDidntAnswered">Student didn\'t answer yet!</string>
 
     <!-- * List labels * -->
-    <string name="listLabel.main.my">My</string>
-    <string name="listLabel.main.shared">Shared with me</string>
+    <string name="listLabel.main.my">Created by me</string>
+    <string name="listLabel.main.shared">Exams</string>
+
+    <!-- * Dialog title * -->
+    <string name="dialogTitle.deliveryDate">@string/inputHint.examCreate.deliveryDate</string>
+    <string name="dialogTitle.alternativeAnswer">@string/inputHint.questionCreate.alternatives</string>
+    <string name="dialogTitle.studentPicker">@string/inputHint.examCreateConfirm.students</string>
+    <string name="dialogTitle.answerCorrection">Answer</string>
 
 
-    <!-- * Input hints * -->
+
+    <!--
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * Input
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    -->
+    <!-- * Hints * -->
     <string name="inputHint.examCreate.title">Title</string>
+    <string name="inputHint.examCreate.description">Description</string>
     <string name="inputHint.examCreate.subject">Subject</string>
     <string name="inputHint.examCreate.deliveryDate">Delivery date</string>
 
@@ -37,20 +66,50 @@
 
     <string name="inputHint.questionCreate.alternativeDialog.answerRow">Type a possible answer</string>
 
+    <string name="inputHint.examCreateConfirm.students">Students</string>
+
+    <string name="inputHint.studentPickerDialog.student">Student e-mail</string>
+
+
+
+    <!--
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * Button
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    -->
+    <string name="button.examManagingStudentInspect.acceptGrade">Accept grade</string>
+
+    <!-- * Action buttons * -->
+    <string name="actionButton.examCreate.next">Add questions</string>
+    <string name="actionButton.questionCreate.share">Finish</string>
+    <string name="actionButton.examCreateConfirm.finish">Share exam</string>
+
+    <string name="actionButton.examAnswering.start">Start the exam</string>
+    <string name="actionButton.examAnsweringConfirm.send">Send to teacher</string>
 
     <!-- * Dialog Buttons * -->
     <string name="dialog.confirm">Confirm</string>
     <string name="dialog.cancel">Cancel</string>
+    <string name="dialog.ok">OK</string>
 
+    <string name="dialog.answerCorrection.needsCorrection.correct">it\'s correct</string>
+    <string name="dialog.answerCorrection.needsCorrection.incorrect">Incorrect</string>
 
-    <!-- * Spinner options * -->
+    <!--
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * Spinner
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    -->
     <string name="spinner.answerType.dissertative">Dissertative</string>
     <string name="spinner.answerType.singleChoice">Single choice</string>
     <string name="spinner.answerType.multipleChoice">Multiple choice</string>
 
 
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_disconnected">DisconnectedActivity</string>
 
-    <string name="hello_world">Hello world!</string>
+
+
+
+
+    <string name="action_settings">Settings</string>
+
 </resources>

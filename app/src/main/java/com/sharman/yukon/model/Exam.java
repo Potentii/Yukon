@@ -19,6 +19,7 @@ public class Exam extends JSONObject{
      */
     protected enum ExamJSONKeys{
         TITLE("title"),
+        DESCRIPTION("description"),
         DELIVER_DATE("deliverDate"),
         TEACHER_ID("teacherId"),
         SUBJECT("subject"),
@@ -39,10 +40,11 @@ public class Exam extends JSONObject{
      *  * Constructor:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public Exam(String title, Date deliverDate, String teacherId, String subject, Question[] questionArray){
+    public Exam(String title, String description, Date deliverDate, String teacherId, String subject, Question[] questionArray){
         super();
         try {
             this.setTitle(title);
+            this.setDescription(description);
             this.setDeliverDate(deliverDate);
             this.setTeacherId(teacherId);
             this.setSubject(subject);
@@ -81,6 +83,14 @@ public class Exam extends JSONObject{
     }
     public void setDeliverDate(Date deliverDate) throws JSONException{
         super.putOpt(ExamJSONKeys.DELIVER_DATE.getKey(), new SimpleDateFormat("dd/MM/yyyy").format(deliverDate));
+    }
+
+    // *Description:
+    public String getDescription(){
+        return super.optString(ExamJSONKeys.DESCRIPTION.getKey());
+    }
+    public void setDescription(String description) throws JSONException{
+        super.putOpt(ExamJSONKeys.DESCRIPTION.getKey(), description);
     }
 
     // *TeacherId:

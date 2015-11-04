@@ -1,7 +1,6 @@
-package com.sharman.yukon.view.activities;
+package com.sharman.yukon.view.activities.answering;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -17,13 +15,11 @@ import android.widget.TextView;
 import com.sharman.yukon.R;
 import com.sharman.yukon.model.Answer;
 import com.sharman.yukon.model.AnswerBox;
-import com.sharman.yukon.model.DissertativeAnswer;
 import com.sharman.yukon.model.Exam;
-import com.sharman.yukon.model.MultipleChoiceAnswer;
 import com.sharman.yukon.model.Question;
-import com.sharman.yukon.model.SingleChoiceAnswer;
 import com.sharman.yukon.model.StudentAnswers;
 import com.sharman.yukon.model.util.EMultipleAnswerType;
+import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 
 import org.json.JSONException;
 
@@ -60,8 +56,13 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
 
             question = exam.getQuestionArray()[questionIndex];
 
-            // *Setting the title of the actionBar:
-            getSupportActionBar().setTitle(getResources().getString(R.string.activityTitle_questionAnswering) + questionIndex + "/" + exam.getQuestionArray().length);
+
+            try {
+                // *Setting the title of the actionBar:
+                getSupportActionBar().setTitle(getResources().getString(R.string.activityTitle_questionAnswering) + " " + (questionIndex+1) + "/" + exam.getQuestionArray().length);
+            } catch (NullPointerException e){
+                e.printStackTrace();
+            }
 
             //TODO change the button icon if it is the last question
 
@@ -125,7 +126,7 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
         Answer answer;
 
         if(eMultipleAnswerType == null){
-            answer = new DissertativeAnswer(((EditText) answerViewList.get(0)).getText().toString());
+            answer = new Answer(new String[]{((EditText) answerViewList.get(0)).getText().toString()});
         } else {
             switch (eMultipleAnswerType) {
                 default:
@@ -140,7 +141,7 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
                         }
                     }
 
-                    answer = new SingleChoiceAnswer(indexSelected);
+                    answer = new Answer(Answer.convertIntArray_AlphabetArray(new int[]{indexSelected}));
                     break;
 
                 case MULTIPLE_CHOICE:
@@ -162,7 +163,7 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
                         }
                     }
 
-                    answer = new MultipleChoiceAnswer(indexSelectedArray);
+                    answer = new Answer(Answer.convertIntArray_AlphabetArray(indexSelectedArray));
                     break;
             }
         }
@@ -179,6 +180,8 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
 
         try {
             studentAnswers.setAnswerArray(answerArrayNEW);
+
+            System.out.println("STUDENT_ANSWERS: " + studentAnswers.toString());
         } catch (JSONException e){
             e.printStackTrace();
         }
@@ -196,7 +199,6 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
             examAnsweringIntent.putExtra("studentAnswerFileId", studentAnswerFileId);
             examAnsweringIntent.putExtra("exam", exam.toString());
             startActivity(examAnsweringIntent);
-            //finish();
         } else {
             updateStudentAnswers();
             Intent questionAnsweringIntent = new Intent(this, QuestionAnsweringActivity.class);
@@ -205,7 +207,6 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
             questionAnsweringIntent.putExtra("studentAnswerFileId", studentAnswerFileId);
             questionAnsweringIntent.putExtra("exam", exam.toString());
             startActivity(questionAnsweringIntent);
-            //finish();
         }
     }
 

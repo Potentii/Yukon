@@ -1,5 +1,6 @@
 package com.sharman.yukon.model;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,7 +16,8 @@ public class Grade extends JSONObject {
     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
     */
     protected enum GradeJSONKeys{
-        GRADE("grade");
+        GRADE("grade"),
+        CORRECTION_ARRAY("correctionArray");
 
         private String key;
         private GradeJSONKeys(String key){
@@ -32,10 +34,11 @@ public class Grade extends JSONObject {
      *  * Constructor:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public Grade(double grade){
+    public Grade(double grade, Boolean[] correctionArray){
         super();
         try {
             this.setGrade(grade);
+            this.setCorrectionArray(correctionArray);
         } catch (JSONException e){
             e.printStackTrace();
         }
@@ -56,5 +59,22 @@ public class Grade extends JSONObject {
     }
     public void setGrade(double grade) throws JSONException{
         super.putOpt(GradeJSONKeys.GRADE.getKey(), grade);
+    }
+
+    // *CorrectionArray:
+    public Boolean[] getCorrectionArray(){
+        JSONArray correctionJSONArray = super.optJSONArray(GradeJSONKeys.CORRECTION_ARRAY.getKey());
+        Boolean[] correctionArray = new Boolean[correctionJSONArray.length()];
+        for(int i=0; i<correctionJSONArray.length(); i++){
+            try {
+                correctionArray[i] = correctionJSONArray.getBoolean(i);
+            }catch (JSONException | NullPointerException e){
+                correctionArray[i] = null;
+            }
+        }
+        return correctionArray;
+    }
+    public void setCorrectionArray(Boolean[] correctionArray) throws JSONException{
+        super.putOpt(GradeJSONKeys.CORRECTION_ARRAY.getKey(), new JSONArray(correctionArray));
     }
 }

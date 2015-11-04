@@ -1,6 +1,4 @@
-package com.sharman.yukon.view.activities.util;
-
-import com.sharman.yukon.model.Exam;
+package com.sharman.yukon.view.activities.util.recycler;
 
 /**
  * Created by poten on 11/10/2015.

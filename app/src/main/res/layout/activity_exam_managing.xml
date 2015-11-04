@@ -1,0 +1,49 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.sharman.yukon.view.activities.managing.ExamManagingActivity">
+
+    <Toolbar
+        android:id="@+id/toolbar"
+        style="@style/toolbar">
+
+        <include
+            android:id="@+id/infoPhotoHeader"
+            layout="@layout/action_info_photo"
+            style="@style/infoPhotoInclude"/>
+    </Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar">
+
+        <LinearLayout
+            style="@style/inputListLinearLayout">
+
+            <LinearLayout
+                style="@style/inputContainer">
+
+                <ImageView
+                    style="@style/imageLabelMultiline"
+                    android:src="@drawable/ic_description_24dp" />
+
+                <TextView
+                    style="@style/labeledSpanMultiline"
+                    android:id="@+id/descriptionOut"/>
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Students"
+        android:id="@+id/studentsBtn"
+        android:layout_alignParentBottom="true"
+        android:onClick="studentsBtn_onClick" />
+</RelativeLayout>

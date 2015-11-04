@@ -1,4 +1,4 @@
-package com.sharman.yukon.view.activities;
+package com.sharman.yukon.view.activities.creation;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,27 +8,22 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.sharman.yukon.R;
 import com.sharman.yukon.model.Answer;
 import com.sharman.yukon.model.AnswerBox;
-import com.sharman.yukon.model.DissertativeAnswer;
 import com.sharman.yukon.model.Exam;
-import com.sharman.yukon.model.MultipleChoiceAnswer;
 import com.sharman.yukon.model.Question;
-import com.sharman.yukon.model.SingleChoiceAnswer;
 import com.sharman.yukon.model.TeacherAnswers;
 import com.sharman.yukon.model.WeightTypeAnswerStruct;
 import com.sharman.yukon.model.util.EMultipleAnswerType;
+import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 import com.sharman.yukon.view.activities.dialog.AlternativeAnswerDialog;
 import com.sharman.yukon.view.activities.util.AnswerAlternativePair;
 import com.sharman.yukon.view.activities.util.DialogCallback;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -40,6 +35,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
 
     private EMultipleAnswerType eMultipleAnswerType;
     private View alternativesRow;
+
 
 
     @Override
@@ -72,18 +68,25 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
                 } else{
                     alternativesRow.setVisibility(View.VISIBLE);
                 }
-
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         });
 
 
-
         try {
             exam = new Exam(getIntent().getExtras().getString("exam"));
+
+            try {
+                // *Setting the title of the actionBar:
+                getSupportActionBar().setTitle(getResources().getString(R.string.activityTitle_questionCreate) + " " + (exam.getQuestionArray().length+1));
+            } catch (NullPointerException e){
+                e.printStackTrace();
+            }
+
         } catch (NullPointerException | JSONException e){
             // TODO error
             e.printStackTrace();
@@ -94,46 +97,17 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
         } catch (NullPointerException | JSONException e){
             teacherAnswers = new TeacherAnswers(new WeightTypeAnswerStruct[]{});
         }
-
-        //TODO System.out.println();
-        System.out.println(">> EXAM: " + exam.toString());
-        System.out.println(">> TEACHER_ANSWERS: " + teacherAnswers.toString());
     }
-
-
-
-
-
-    @Override
-    public void onPositive() {
-        // TODO mostrar um preview das alternativas
-    }
-
-    @Override
-    public void onNegative() {}
-
-    @Override
-    public void onNeutral() {}
-
-
-
-
-
-    public void radioButton_onClick(View view){
-        alternativeAnswerDialog.radioButton_onClick(view);
-    }
-
-    public void questionAlternativesIn_onCLick(View view){
-        alternativeAnswerDialog.setEMultipleAnswerType(eMultipleAnswerType);
-        alternativeAnswerDialog.show(getSupportFragmentManager(), "alternatives_dialog");
-    }
-
-
 
 
 
     /*
-     * *Updates the exam object, adding the question to its question array:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Class methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    /**
+     * Updates the exam object, adding the question to its question array
      */
     public void updateExam(){
         EditText questionTitleIn = (EditText) findViewById(R.id.questionTitleIn);
@@ -175,8 +149,8 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
     }
 
 
-    /*
-     * *Updates the teacherAnswers object, adding the answer to its answer array:
+    /**
+     * Updates the teacherAnswers object, adding the answer to its answer array
      */
     public void updateTeacherAnswers(){
         EditText questionWeightIn = (EditText) findViewById(R.id.questionWeightIn);
@@ -184,11 +158,8 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
         Answer answer;
 
         if(eMultipleAnswerType == null){
-
-            answer = new DissertativeAnswer("");
-
+            answer = new Answer(new String[]{});
         } else {
-
             switch (eMultipleAnswerType) {
                 default:
                 case SINGLE_CHOICE:
@@ -198,7 +169,8 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
                             indexCorrect = i;
                         }
                     }
-                    answer = new SingleChoiceAnswer(indexCorrect);
+
+                    answer = new Answer(Answer.convertIntArray_AlphabetArray(new int[]{indexCorrect}));
                     break;
 
                 case MULTIPLE_CHOICE:
@@ -218,10 +190,9 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
                         }
                     }
 
-                    answer = new MultipleChoiceAnswer(indexCorrectArray);
+                    answer = new Answer(Answer.convertIntArray_AlphabetArray(indexCorrectArray));
                     break;
             }
-
         }
 
         WeightTypeAnswerStruct weightTypeAnswerStruct = new WeightTypeAnswerStruct(
@@ -247,6 +218,41 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
 
 
 
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * DialogCallback methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    @Override
+    public void onPositive() {
+        // TODO mostrar um preview das alternativas
+    }
+
+    @Override
+    public void onNegative() {
+
+    }
+
+    @Override
+    public void onNeutral() {
+
+    }
+
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Listeners methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    public void radioButton_onClick(View view){
+        alternativeAnswerDialog.radioButton_onClick(view);
+    }
+
+    public void questionAlternativesIn_onCLick(View view){
+        alternativeAnswerDialog.setEMultipleAnswerType(eMultipleAnswerType);
+        alternativeAnswerDialog.show(getFragmentManager(), "alternatives_dialog");
+    }
 
     public void addQuestionBtn_onClick(View view){
         updateExam();
@@ -256,9 +262,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
         addQuestionIntent.putExtra("exam", exam.toString());
         addQuestionIntent.putExtra("teacherAnswers", teacherAnswers.toString());
         startActivity(addQuestionIntent);
-        //finish();
     }
-
 
     public void questionCreateShareActionButton_onClick() {
         updateExam();
@@ -268,10 +272,15 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
         examCreateConfirmIntent.putExtra("exam", exam.toString());
         examCreateConfirmIntent.putExtra("teacherAnswers", teacherAnswers.toString());
         startActivity(examCreateConfirmIntent);
-        //finish();
     }
 
 
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * ActionBar methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_question_create, menu);
@@ -288,6 +297,4 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
                 return super.onOptionsItemSelected(item);
         }
     }
-
-
 }
