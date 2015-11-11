@@ -25,16 +25,13 @@ android {
     }
 }
 
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
     // *Android Dependencies:
-    compile 'com.android.support:appcompat-v7:21.0.0'
-    compile 'com.android.support:recyclerview-v7:21.0.0'
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:recyclerview-v7:21.0.3'
 
     // *Google Dependencies:
     compile('com.google.api-client:google-api-client-android:1.20.0') {

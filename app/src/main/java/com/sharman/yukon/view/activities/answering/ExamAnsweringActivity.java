@@ -2,10 +2,7 @@ package com.sharman.yukon.view.activities.answering;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,13 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.api.services.plus.model.Person;
 import com.sharman.yukon.R;
 import com.sharman.yukon.io.drive.DriveIOHandler;
 import com.sharman.yukon.io.drive.callback.FileReadCallback;
-import com.sharman.yukon.io.plus.PlusIOHandler;
-import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
-import com.sharman.yukon.io.plus.callback.PersonReadCallback;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.Grade;
 import com.sharman.yukon.model.StudentConfigs;

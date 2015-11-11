@@ -37,12 +37,16 @@ import com.sharman.yukon.view.activities.MainActivity;
 import com.sharman.yukon.view.activities.dialog.StudentPickerDialog;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.DialogCallback;
+import com.sharman.yukon.view.activities.util.EExamCreationFlags;
+import com.sharman.yukon.view.activities.util.FlaggedEvent;
+import com.sharman.yukon.view.activities.util.FlaggedEventCallback;
 import com.sharman.yukon.view.activities.util.StudentConfigFilePair;
 
 import org.json.JSONException;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 
@@ -66,6 +70,8 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
     private StudentPickerDialog studentPickerDialog;
 
 
+    private FlaggedEvent<EExamCreationFlags> flaggedEvent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +81,26 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
         onCreationFailOrSuccessCalled = false;
         studentFoldersCreated = 0;
         studentPickerDialog = new StudentPickerDialog();
+
+
+        try {
+            flaggedEvent = new FlaggedEvent<>(EExamCreationFlags.class, new FlaggedEventCallback<EExamCreationFlags>() {
+                @Override
+                public void onSuccess() {
+                    System.out.println("Success");
+                }
+
+                @Override
+                public void onFailure(EnumSet<EExamCreationFlags> failedEvents) {
+                    System.out.println("Failure");
+                }
+            });
+
+        } catch (ClassCastException e){
+            flaggedEvent = null;
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -190,6 +216,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
         new DriveIOHandler(getCredential()).createFolder("", exam.getTitle(), "Yukon exam folder", new FolderCreateCallback() {
             @Override
             public void onSuccess(String folderId) {
+                flaggedEvent.registerFlag(EExamCreationFlags.EXAM_FOLDER, true);
                 examRootFolderId = folderId;
 
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
@@ -197,6 +224,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                 new DriveIOHandler(getCredential()).createFolder(folderId, "TeacherFiles", "", new FolderCreateCallback() {
                     @Override
                     public void onSuccess(String folderId) {
+                        flaggedEvent.registerFlag(EExamCreationFlags.TEACHER_FOLDER, true);
                         teacherFilesFolderId = folderId;
 
                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
@@ -204,13 +232,15 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                         new DriveIOHandler(getCredential()).createFile(folderId, "CorrectAnswers", "", EMimeType.JSON.getMimeType(), teacherAnswers.toString(), new FileCreateCallback() {
                             @Override
                             public void onSuccess(String fileId) {
+                                flaggedEvent.registerFlag(EExamCreationFlags.TEACHER_ANSWERS, true);
                                 correctAnswersFileId = fileId;
                             }
 
                             @Override
                             public void onFailure(String errorMessage) {
                                 // TODO Error: CorrectAnswers file
-                                onCreationFail();
+                                flaggedEvent.registerFlag(EExamCreationFlags.TEACHER_ANSWERS, false);
+                                //onCreationFail();
                             }
                         });
                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
@@ -220,7 +250,8 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                     @Override
                     public void onFailure(String errorMessage) {
                         // TODO Error: TeacherFiles folder
-                        onCreationFail();
+                        flaggedEvent.registerFlag(EExamCreationFlags.TEACHER_FOLDER, false);
+                        //onCreationFail();
                     }
                 });
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
@@ -231,6 +262,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                 new DriveIOHandler(getCredential()).createFile(folderId, "Exam", "Exam file", EMimeType.JSON.getMimeType(), exam.toString(), new FileCreateCallback() {
                     @Override
                     public void onSuccess(String fileId) {
+                        flaggedEvent.registerFlag(EExamCreationFlags.EXAM, true);
                         examFileId = fileId;
 
                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
@@ -238,6 +270,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                         new DriveIOHandler(getCredential()).createFolder(examRootFolderId, "StudentFiles", "", new FolderCreateCallback() {
                             @Override
                             public void onSuccess(String folderId) {
+                                flaggedEvent.registerFlag(EExamCreationFlags.STUDENTS_FOLDER, true);
                                 studentFilesFolderId = folderId;
 
                                 PermissionStruct[] permissionStructArray = new PermissionStruct[studentConfigFilePairArray.length];
@@ -256,13 +289,15 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                                 new DriveIOHandler(getCredential()).shareFile(examFileId, null, permissionStructArray, new FileShareCallback() {
                                     @Override
                                     public void onSuccess() {
+                                        flaggedEvent.registerFlag(EExamCreationFlags.EXAM_SHARE, true);
 
                                     }
 
                                     @Override
                                     public void onFailure(String errorMessage) {
                                         // TODO Error: Exam file share
-                                        onCreationFail();
+                                        flaggedEvent.registerFlag(EExamCreationFlags.EXAM_SHARE, false);
+                                        //onCreationFail();
                                     }
                                 });
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
@@ -272,7 +307,8 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                             @Override
                             public void onFailure(String errorMessage) {
                                 // TODO Error: StudentFiles folder
-                                onCreationFail();
+                                flaggedEvent.registerFlag(EExamCreationFlags.STUDENTS_FOLDER, false);
+                                //onCreationFail();
                             }
                         });
                         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
@@ -282,7 +318,8 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                     @Override
                     public void onFailure(String errorMessage) {
                         // TODO Error: Exam file
-                        onCreationFail();
+                        flaggedEvent.registerFlag(EExamCreationFlags.EXAM, false);
+                        //onCreationFail();
                     }
                 });
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
@@ -292,7 +329,8 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
             @Override
             public void onFailure(String errorMessage) {
                 // TODO Error: ExamRoot folder
-                onCreationFail();
+                flaggedEvent.registerFlag(EExamCreationFlags.EXAM_FOLDER, false);
+                //onCreationFail();
             }
         });
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
@@ -496,7 +534,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
 
 
     private void examCreateConfirmFinishActionButton_onClick(){
-        if(!isConnected() || idList.isEmpty() || teacherId == null){
+        if(!isConnected() || idList.isEmpty() || teacherId == null || flaggedEvent == null){
             return;
         }
 

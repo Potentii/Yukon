@@ -1,8 +1,10 @@
 <android.support.v4.widget.DrawerLayout
+    android:id="@+id/drawerLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -10,9 +12,22 @@
         tools:context="com.sharman.yukon.view.activities.MainActivity">
 
 
+        <!-- * App Bar * -->
+        <LinearLayout
+            android:id="@+id/appBarContainer"
+            style="@style/appBarContainer" >
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/actionToolbar"
+                style="@style/actionToolbar">
+            </android.support.v7.widget.Toolbar>
+        </LinearLayout>
+
+
         <ScrollView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/appBarContainer">
 
             <LinearLayout
                 android:orientation="vertical"
@@ -21,19 +36,21 @@
 
                 <ImageView
                     android:layout_width="wrap_content"
-                    android:layout_height="160dp"
+                    android:layout_height="110dp"
                     android:id="@+id/topImg"
-                    android:src="@mipmap/yukon_top"
-                    android:scaleType="fitEnd" />
+                    android:src="@drawable/yukon_logo"
+                    android:scaleType="fitCenter"
+                    android:padding="8dp" />
 
                 <!-- First recyclerView -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#d4d4d4"
+                    android:background="#e7e7e7"
                     android:paddingStart="16dp"
                     android:paddingTop="6dp"
-                    android:paddingBottom="6dp">
+                    android:paddingBottom="6dp"
+                    android:elevation="4dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -54,10 +71,11 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#d4d4d4"
+                    android:background="#e7e7e7"
                     android:paddingStart="16dp"
                     android:paddingTop="6dp"
-                    android:paddingBottom="6dp">
+                    android:paddingBottom="6dp"
+                    android:elevation="4dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -89,15 +107,21 @@
             style="@style/floatingActionButtonContainer"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="false"
-            android:layout_marginLeft="16dp"
-            android:backgroundTint="#d23"
+            android:layout_marginStart="16dp"
             android:clickable="true">
             <Button
                 style="@style/floatingActionButton"
                 android:onClick="disconnectBtn_onClick"
-
-                android:text="D" />
+                android:text="[D]" />
         </RelativeLayout>
-
     </RelativeLayout>
+
+    <fragment
+        android:id="@+id/navigationDrawer"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:layout="@layout/fragment_main_navigation_drawer"
+        tools:layout="@layout/fragment_main_navigation_drawer"
+        android:name="com.sharman.yukon.view.activities.MainNavigationDrawerFragment"/>
 </android.support.v4.widget.DrawerLayout>

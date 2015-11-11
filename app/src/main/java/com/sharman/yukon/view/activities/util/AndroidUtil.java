@@ -3,6 +3,7 @@ package com.sharman.yukon.view.activities.util;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -209,7 +210,7 @@ public class AndroidUtil {
                     final ImageView infoImg = (ImageView) toolbar.findViewById(R.id.infoImg);
                     formatPersonImageView_AndroidContacts(infoImg, photoUri);
                     fillInfoPhotoToolbar(toolbar, primaryInfoText, secondaryInfoText, tertiaryInfoText);
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -225,5 +226,20 @@ public class AndroidUtil {
         primaryInfoOut.setText(primaryInfoText);
         secondaryInfoOut.setText(secondaryInfoText);
         tertiaryInfoOut.setText(tertiaryInfoText);
+    }
+
+
+
+    public void writeToSharedPreferences(@NonNull String file, @NonNull String key, String value){
+        SharedPreferences sharedPreferences = activity.getSharedPreferences(file, activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(key, value);
+        editor.commit();
+    }
+
+    @Nullable
+    public String readFromSharedPreferences(@NonNull String file, @NonNull String key, @Nullable String defaultValue){
+        SharedPreferences sharedPreferences = activity.getSharedPreferences(file, activity.MODE_PRIVATE);
+        return sharedPreferences.getString(key, defaultValue);
     }
 }

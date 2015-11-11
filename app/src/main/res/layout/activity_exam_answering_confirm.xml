@@ -5,9 +5,23 @@
     android:layout_height="match_parent"
     tools:context="com.sharman.yukon.view.activities.answering.ExamAnsweringConfirmActivity">
 
+
+    <!-- * App Bar * -->
+    <LinearLayout
+        android:id="@+id/appBarContainer"
+        style="@style/appBarContainer" >
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/actionToolbar"
+            style="@style/actionToolbar">
+        </android.support.v7.widget.Toolbar>
+    </LinearLayout>
+
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/appBarContainer">
 
         <LinearLayout
             style="@style/inputListLinearLayout">

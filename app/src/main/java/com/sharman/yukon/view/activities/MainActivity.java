@@ -2,8 +2,10 @@ package com.sharman.yukon.view.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
@@ -51,6 +53,12 @@ public class MainActivity extends GoogleRestConnectActivity {
 
         myExamRVInfoVector = new Vector<>();
         sharedExamRVInfoVector = new Vector<>();
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.actionToolbar);
+
+        MainNavigationDrawerFragment mainNavigationDrawerFragment = (MainNavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigationDrawer);
+        mainNavigationDrawerFragment.setUp(R.id.navigationDrawer, (DrawerLayout) findViewById(R.id.drawerLayout), toolbar);
+
 
         myExamRVAdapter = new ExamRVAdapter(this, getCredential(), myExamRVInfoVector, new OnExamRVItemClickListener() {
             @Override

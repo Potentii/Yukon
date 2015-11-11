@@ -11,8 +11,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/yukon_launcher"
+        android:icon="@mipmap/yukon_launcher_v2"
         android:label="@string/appName"
+        android:supportsRtl="true"
         android:theme="@style/YukonMainTheme" >
 
         <meta-data
@@ -28,7 +29,6 @@
             android:label="@string/activityTitle.disconnected" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
