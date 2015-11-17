@@ -1,7 +1,9 @@
 <resources>
 
-    <color name="primary">#277a55</color>
-    <color name="primary_dark">#195038</color>
+    <!-- Teal 500 -->
+    <color name="primary">#009688</color>
+    <!-- Teal 700 -->
+    <color name="primary_dark">#00796B</color>
 
     <color name="primary_grey">#f7f7f7</color>
     <color name="primary_grey_dark">#454d49</color>

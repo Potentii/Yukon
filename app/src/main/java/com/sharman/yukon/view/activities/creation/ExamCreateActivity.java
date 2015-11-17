@@ -33,10 +33,8 @@ public class ExamCreateActivity extends GoogleRestConnectActivity implements Dia
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exam_create);
 
-
         deliveryDateDialog = new DeliveryDateDialog();
         deliveryDateDialog.setDialogCallback(this);
-
 
         examTitleIn = (EditText) findViewById(R.id.examTitleIn);
         examDescriptionIn = (EditText) findViewById(R.id.examDescriptionIn);

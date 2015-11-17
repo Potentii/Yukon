@@ -57,12 +57,7 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
             question = exam.getQuestionArray()[questionIndex];
 
 
-            try {
-                // *Setting the title of the actionBar:
-                getSupportActionBar().setTitle(getResources().getString(R.string.activityTitle_questionAnswering) + " " + (questionIndex+1) + "/" + exam.getQuestionArray().length);
-            } catch (NullPointerException e){
-                e.printStackTrace();
-            }
+
 
             //TODO change the button icon if it is the last question
 
@@ -80,6 +75,17 @@ public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
         }
     }
 
+    @Override
+    protected void onConnectOnce() {
+        super.onConnectOnce();
+
+        try {
+            // *Setting the title of the actionBar:
+            getActionToolbar().setTitle(getResources().getString(R.string.activityTitle_questionAnswering) + " " + (questionIndex+1) + "/" + exam.getQuestionArray().length);
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
+    }
 
     private void buildAnswerDiv(){
         AnswerBox answerBox = question.getAnswerBox();

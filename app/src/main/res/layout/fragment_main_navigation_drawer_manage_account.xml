@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/navigationDrawerGroupListContainer">
+
+    <!-- * Group 01 * -->
+    <LinearLayout
+        style="@style/navigationDrawerGroup">
+
+        <!-- * As student * -->
+        <LinearLayout
+            style="@style/navigationDrawerGroupItem"
+            android:onClick="addAccountBtn_onClick">
+
+            <ImageView
+                style="@style/navigationDrawerGroupItemIcon"
+                android:src="@drawable/ic_add_24dp"/>
+
+            <TextView
+                style="@style/navigationDrawerGroupItemLabel"
+                android:text="Add account" />
+        </LinearLayout>
+
+        <!-- * As teacher * -->
+        <LinearLayout
+            style="@style/navigationDrawerGroupItem">
+
+            <ImageView
+                style="@style/navigationDrawerGroupItemIcon"
+                android:src="@drawable/ic_arrow_back_24dp"/>
+
+            <TextView
+                style="@style/navigationDrawerGroupItemLabel"
+                android:text="Disconnect" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

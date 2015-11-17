@@ -2,35 +2,60 @@
 
 
 
-    <!-- * Main * -->
-    <style name="YukonMainTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:actionBarStyle" tools:ignore="NewApi">@style/ActionBar</item>
-        <item name="actionBarStyle">@style/ActionBar</item>
-
+    <!--
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * Main
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    -->
+    <style name="YukonMainTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:colorPrimary">@color/primary</item>
         <item name="android:colorPrimaryDark">@color/primary_dark</item>
         <item name="android:colorBackground">@color/primary_grey</item>
         <item name="android:colorForeground">#ff00ff</item>
         <item name="android:colorForegroundInverse">#ff00ff</item>
-    </style>
-
-
-    <!-- * Actionbar * -->
-    <style name="ActionBar" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="android:background" tools:ignore="NewApi">@color/primary</item>
-        <item name="background">@color/primary</item>
-
-        <item name="android:elevation" tools:ignore="NewApi">0dp</item>
-        <item name="elevation">0dp</item>
+        <item name="android:colorAccent">@color/primary</item>
     </style>
 
 
 
     <!--
     *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-    *   * Toolbar
+    *   * App Bar
     *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
     -->
+    <!-- * App Bar Container * -->
+    <style name="appBarContainer">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:outlineProvider">bounds</item>
+    </style>
+
+    <!-- * Action Toolbar * -->
+    <style name="actionToolbar">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:maxHeight">?android:attr/actionBarSize</item>
+
+        <item name="android:background">@color/primary</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:colorForeground">#ffffff</item>
+        <item name="android:theme">@style/actionToolbarTheme</item>
+    </style>
+
+    <!-- * Action Toolbar Theme * -->
+    <style name="actionToolbarTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:textColorPrimary">@color/primary_grey</item>
+        <item name="android:textColorPrimaryInverse">@color/primary_grey_dark</item>
+        <!-- Action button text color -->
+        <item name="actionMenuTextColor">@color/primary_grey</item>
+        <item name="android:actionMenuTextAppearance">?android:attr/textAppearanceMedium</item>
+        <!-- Menu icon color -->
+        <item name="android:textColorSecondary">@color/primary_grey</item>
+    </style>
+
+
     <!-- * Toolbar * -->
     <style name="toolbar">
         <item name="android:layout_height">wrap_content</item>
@@ -41,20 +66,22 @@
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingRight">0dp</item>
         <item name="android:paddingBottom">8dp</item>
-        <item name="android:elevation">0dp</item>
+        <item name="android:layout_below">@id/actionToolbar</item>
     </style>
 
-    <!-- * input * -->
+    <!-- * Toolbar input * -->
     <style name="toolbarInput">
         <item name="android:textColor">#eee</item>
         <item name="android:backgroundTint">#eee</item>
         <item name="android:textColorHint">#9eee</item>
+        <item name="android:textCursorDrawable">@null</item>
     </style>
 
-    <!-- * output * -->
+    <!-- * Toolbar output * -->
     <style name="toolbarOutput">
         <item name="android:textColor">@color/primary_grey</item>
     </style>
+
 
 
     <!--
@@ -126,8 +153,12 @@
 
 
 
-
-    <!-- * Floating Action Button Container * -->
+    <!--
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * Floating Action Button
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    -->
+    <!-- * Container * -->
     <style name="floatingActionButtonContainer">
         <item name="android:layout_width">@dimen/floating_action_button_size</item>
         <item name="android:layout_height">@dimen/floating_action_button_size</item>
@@ -139,8 +170,7 @@
         <item name="android:layout_marginBottom">@dimen/activity_vertical_margin</item>
     </style>
 
-
-    <!-- * Floating Action Button * -->
+    <!-- * Button * -->
     <style name="floatingActionButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -154,8 +184,11 @@
 
 
 
-
-    <!-- * Info Photo * -->
+    <!--
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * Info Photo
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    -->
     <!-- * Include * -->
     <style name="infoPhotoInclude">
         <item name="android:layout_width">match_parent</item>
@@ -169,59 +202,61 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <!--
-    <style name="YukonMainTheme" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:colorPrimary">@color/primary</item>
-        <item name="android:colorPrimaryDark">@color/primary_dark</item>
-        <item name="android:colorBackground">@color/primary_grey</item>
-
-        <item name="android:toolbarStyle">@style/toolbar</item>
-    </style>
-
-    <style name="toolbar" parent="android:ThemeOverlay.Material.ActionBar">
-        <item name="android:background">@color/primary</item>
-        <item name="android:titleTextAppearance">@style/toolbar_title</item>
-    </style>
-
-    <style name="toolbar_title" parent="TextAppearance.AppCompat.Title.Inverse">
-        <item name="android:textColorPrimary">@color/primary_grey</item>
-    </style>
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * Navigation Drawer
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
     -->
-
-    <!--
-    <style name="YukonMainTheme" parent="android:Theme.Material.Light.DarkActionBar">
-        <item name="android:colorPrimary">@color/primary</item>
-        <item name="android:colorPrimaryDark">@color/primary_dark</item>
-        <item name="android:colorBackground">@color/primary_grey</item>
-
-
-        <item name="android:toolbarStyle">@style/toolbar</item>
+    <!-- * Group List Container * -->
+    <style name="navigationDrawerGroupListContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:showDividers">middle</item>
+        <item name="android:divider">@drawable/divider_vertical</item>
+        <item name="android:dividerPadding">0dp</item>
     </style>
 
-    <style name="toolbar" parent="android:ThemeOverlay.Material.ActionBar">
-        <item name="android:background">@color/primary</item>
+    <!-- * Group * -->
+    <style name="navigationDrawerGroup">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
     </style>
-    -->
 
+    <!-- * Group Item * -->
+    <style name="navigationDrawerGroupItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/navigationDrawer.line.height</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+    </style>
 
+    <!-- * Group Item Icon * -->
+    <style name="navigationDrawerGroupItemIcon">
+        <item name="android:layout_width">@dimen/navigationDrawer.line.icon.size</item>
+        <item name="android:layout_height">@dimen/navigationDrawer.line.icon.size</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:tint">#000000</item>
+        <item name="android:alpha">0.54</item>
+    </style>
+
+    <!-- * Group Item Label * -->
+    <style name="navigationDrawerGroupItemLabel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textAlignment">gravity</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:alpha">0.94</item>
+        <item name="android:textColor">#000000</item>
+    </style>
 </resources>
