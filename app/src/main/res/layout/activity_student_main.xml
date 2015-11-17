@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    android:id="@+id/drawerLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.sharman.yukon.view.activities.StudentMainActivity">
+
+
+        <!-- * App Bar * -->
+        <LinearLayout
+            android:id="@+id/appBarContainer"
+            style="@style/appBarContainer" >
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/actionToolbar"
+                style="@style/actionToolbar">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:src="@drawable/yukon_logo_toolbar"
+                    android:scaleType="fitStart"/>
+            </android.support.v7.widget.Toolbar>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/appBarContainer">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#eaeaea"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:elevation="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.9"
+                    android:textColor="@color/primary_grey_dark"
+                    android:textSize="20sp"
+                    android:text="@string/listLabel.main"
+                    android:id="@+id/textView2" />
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/examRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </android.support.v7.widget.RecyclerView>
+
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <fragment
+        android:id="@+id/navigationDrawer"
+        android:layout_width="@dimen/navigationDrawer.width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:layout="@layout/fragment_main_navigation_drawer"
+        tools:layout="@layout/fragment_main_navigation_drawer"
+        android:name="com.sharman.yukon.view.activities.MainNavigationDrawerFragment"/>
+</android.support.v4.widget.DrawerLayout>

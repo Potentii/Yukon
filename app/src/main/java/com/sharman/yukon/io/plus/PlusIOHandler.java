@@ -19,6 +19,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 /**
  * Created by poten on 12/10/2015.
  */
@@ -44,7 +46,7 @@ public final class PlusIOHandler {
     }
 
 
-    public void readPerson(final String userId, final PersonReadCallback personReadCallback){
+    public void readPerson(@Nonnull final String userId, @Nonnull final PersonReadCallback personReadCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -62,20 +64,77 @@ public final class PlusIOHandler {
     }
 
 
-    public void readPersonImg(final Person person, final PersonImgReadCallback personImgReadCallback){
+
+    public void readPersonImg(@Nonnull final Person person, @Nonnull final PersonImgReadCallback personImgReadCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(person.getImage().getUrl()).getContent());
                     personImgReadCallback.onSuccess(bitmap);
-                } catch(IOException e) {
+                } catch(NullPointerException | IOException e) {
                     e.printStackTrace();
                     personImgReadCallback.onFailure(e.getMessage());
                 }
             }
         }).start();
     }
+
+
+
+    public void readPersonImg(@Nonnull final String userId, @Nonnull final PersonImgReadCallback personImgReadCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                com.google.api.services.plus.Plus service = getPlusService();
+
+                try {
+                    Person person = service.people().get(userId).execute();
+                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(person.getImage().getUrl()).getContent());
+                    personImgReadCallback.onSuccess(bitmap);
+                } catch(NullPointerException | IOException e) {
+                    e.printStackTrace();
+                    personImgReadCallback.onFailure(e.getMessage());
+                }
+            }
+        }).start();
+    }
+
+
+
+    public void readPersonCoverImg(@Nonnull final Person person, @Nonnull final PersonImgReadCallback personImgReadCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(person.getCover().getCoverPhoto().getUrl()).getContent());
+                    personImgReadCallback.onSuccess(bitmap);
+                } catch(NullPointerException | IOException e) {
+                    e.printStackTrace();
+                    personImgReadCallback.onFailure(e.getMessage());
+                }
+            }
+        }).start();
+    }
+
+    public void readPersonCoverImg(@Nonnull final String userId, @Nonnull final PersonImgReadCallback personImgReadCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                com.google.api.services.plus.Plus service = getPlusService();
+
+                try {
+                    Person person = service.people().get(userId).execute();
+                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(person.getCover().getCoverPhoto().getUrl()).getContent());
+                    personImgReadCallback.onSuccess(bitmap);
+                } catch(NullPointerException | IOException e) {
+                    e.printStackTrace();
+                    personImgReadCallback.onFailure(e.getMessage());
+                }
+            }
+        }).start();
+    }
+
 
 
     public void listPersonContacts(final String userId, final PersonContactsListCallback personContactsListCallback){

@@ -5,9 +5,24 @@
     android:layout_height="match_parent"
     tools:context="com.sharman.yukon.view.activities.answering.QuestionAnsweringActivity">
 
+
+    <!-- * App Bar * -->
+    <LinearLayout
+        android:id="@+id/appBarContainer"
+        style="@style/appBarContainer" >
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/actionToolbar"
+            style="@style/actionToolbar">
+        </android.support.v7.widget.Toolbar>
+    </LinearLayout>
+
+
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/appBarContainer">
 
         <LinearLayout
             android:orientation="vertical"
@@ -57,7 +72,8 @@
         <ImageButton
             android:onClick="questionAnsweringNextButton_onClick"
             android:id="@+id/nextBtn"
-            android:src="@drawable/ic_chevron_right_64dp"
-            style="@style/floatingActionButton" />
+            android:src="@drawable/ic_chevron_right_48dp"
+            style="@style/floatingActionButton"
+            android:scaleType="center"/>
     </RelativeLayout>
 </RelativeLayout>

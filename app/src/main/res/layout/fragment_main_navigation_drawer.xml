@@ -1,0 +1,139 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_grey"
+    tools:context="com.sharman.yukon.view.activities.MainNavigationDrawerFragment"
+    android:elevation="@dimen/navigationDrawer.elevation">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="180dp">
+
+                <!-- TODO criar um cover default e colocar aqui -->
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/mainAccountCoverImg"
+                    android:scaleType="centerCrop" />
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="bottom">
+
+
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+                        <ImageView
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:id="@+id/mainAccountImg"
+                            android:scaleType="centerCrop" />
+
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/horizontalScrollView"
+                            android:layout_marginStart="64dp"
+                            android:fillViewport="true">
+
+
+                            <LinearLayout
+                                android:orientation="horizontal"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:paddingTop="12dp"
+                                android:paddingBottom="12dp"
+                                android:gravity="end"
+                                android:id="@+id/secondaryAccountImgContainer">
+
+                            </LinearLayout>
+                        </HorizontalScrollView>
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:orientation="horizontal"
+                        android:paddingEnd="16dp"
+                        android:paddingStart="16dp"
+                        android:gravity="center_vertical">
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Guilherme Reginaldo Ruella"
+                                android:id="@+id/mainAccountNameOut"
+                                android:textColor="#ffffff"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="potentii@gmail.com"
+                                android:id="@+id/mainAccountEmailOut"
+                                android:textColor="#ffffff"
+                                android:alpha="0.8"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="24dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1">
+
+                            <ImageButton
+                                android:layout_width="24dp"
+                                android:layout_height="match_parent"
+                                android:id="@+id/manageAccountsBtn"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:src="@drawable/ic_arrow_drop_down_24dp"
+                                android:background="@color/transparent"
+                                android:scaleType="fitCenter"
+                                android:tint="#ffffff"
+                                android:alpha="0.7" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </RelativeLayout>
+
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/contentContainer">
+
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

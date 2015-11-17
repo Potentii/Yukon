@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/navigationDrawerGroupListContainer">
+
+    <!-- * Group 01 * -->
+    <LinearLayout
+        style="@style/navigationDrawerGroup">
+
+        <!-- * As student * -->
+        <LinearLayout
+            style="@style/navigationDrawerGroupItem"
+            android:onClick="asStudentBtn_onClick">
+
+            <ImageView
+                style="@style/navigationDrawerGroupItemIcon"
+                android:src="@drawable/ic_school_24dp"/>
+
+            <TextView
+                style="@style/navigationDrawerGroupItemLabel"
+                android:text="@string/navigationDrawer.studentContext" />
+        </LinearLayout>
+
+        <!-- * As teacher * -->
+        <LinearLayout
+            style="@style/navigationDrawerGroupItem"
+            android:onClick="asTeacherBtn_onClick">
+
+            <ImageView
+                style="@style/navigationDrawerGroupItemIcon"
+                android:src="@drawable/ic_supervisor_account_24dp"/>
+
+            <TextView
+                style="@style/navigationDrawerGroupItemLabel"
+                android:text="@string/navigationDrawer.teacherContext" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <!-- * Group 02 * -->
+    <LinearLayout
+        style="@style/navigationDrawerGroup">
+
+        <!-- * Settings * -->
+        <LinearLayout
+            style="@style/navigationDrawerGroupItem"
+            android:onClick="settings_onClick">
+
+            <ImageView
+                style="@style/navigationDrawerGroupItemIcon"
+                android:src="@drawable/ic_settings_24dp"/>
+
+            <TextView
+                style="@style/navigationDrawerGroupItemLabel"
+                android:text="@string/navigationDrawer.settings" />
+        </LinearLayout>
+
+        <!-- * Help & feedback * -->
+        <LinearLayout
+            style="@style/navigationDrawerGroupItem"
+            android:onClick="helpAndFeedback_onClick">
+
+            <ImageView
+                style="@style/navigationDrawerGroupItemIcon"
+                android:src="@drawable/ic_help_24dp"/>
+
+            <TextView
+                style="@style/navigationDrawerGroupItemLabel"
+                android:text="@string/navigationDrawer.helpAndFeedback" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
