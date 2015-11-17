@@ -17,6 +17,7 @@ import com.sharman.yukon.R;
 import com.sharman.yukon.io.plus.PlusIOHandler;
 import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
 import com.sharman.yukon.io.plus.callback.PersonReadCallback;
+import com.sharman.yukon.view.activities.util.AndroidUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Vector;
@@ -29,7 +30,8 @@ public class ExamRVAdapter extends RecyclerView.Adapter<ExamRVAdapter.ViewHolder
     private Vector<ExamRVInfo> examRVInfoVector = new Vector<>();
     private OnExamRVItemClickListener onExamRVItemClickListener;
     private GoogleAccountCredential credential;
-    final private Activity context;
+    private Activity context;
+    private AndroidUtil androidUtil;
 
     public ExamRVAdapter(Activity context, GoogleAccountCredential credential, Vector<ExamRVInfo> examRVInfoVector, OnExamRVItemClickListener onExamRVItemClickListener) {
         layoutInflater = LayoutInflater.from(context);
@@ -37,6 +39,7 @@ public class ExamRVAdapter extends RecyclerView.Adapter<ExamRVAdapter.ViewHolder
         this.credential = credential;
         this.examRVInfoVector = examRVInfoVector;
         this.onExamRVItemClickListener = onExamRVItemClickListener;
+        androidUtil = new AndroidUtil(context);
     }
 
 
@@ -57,38 +60,7 @@ public class ExamRVAdapter extends RecyclerView.Adapter<ExamRVAdapter.ViewHolder
         viewHolder.examDeliverDateSpan.setText(new SimpleDateFormat("dd/MM/yyyy").format(currentExamRVInfo.getExamDeliveryDate()));
         viewHolder.examRVInfo = currentExamRVInfo;
 
-        final PlusIOHandler plusIOHandler = new PlusIOHandler(credential);
-        plusIOHandler.readPerson(currentExamRVInfo.getTeacherId(), new PersonReadCallback() {
-            @Override
-            public void onSuccess(Person person) {
-                plusIOHandler.readPersonImg(person, new PersonImgReadCallback() {
-                    @Override
-                    public void onSuccess(final Bitmap bitmap) {
-                        context.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(context.getResources(), bitmap);
-                                roundedBitmapDrawable.setCornerRadius(Math.max(bitmap.getWidth(), bitmap.getHeight()) / 2.0f);
-                                roundedBitmapDrawable.setAntiAlias(true);
-                                viewHolder.teacherImg.setImageDrawable(roundedBitmapDrawable);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        //TODO
-                        //onFailure(errorMessage);
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(Exception exception) {
-                // TODO
-                System.out.println(exception.getMessage());
-            }
-        });
+        androidUtil.formatPersonImageView_GPlus(viewHolder.teacherImg, credential, currentExamRVInfo.getTeacherId());
     }
 
     @Override

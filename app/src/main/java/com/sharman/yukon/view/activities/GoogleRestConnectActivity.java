@@ -1,9 +1,7 @@
 package com.sharman.yukon.view.activities;
 
 import android.accounts.AccountManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +15,10 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.plus.PlusScopes;
+import com.google.api.services.plus.model.Person;
 import com.sharman.yukon.R;
+import com.sharman.yukon.io.plus.PlusIOHandler;
+import com.sharman.yukon.io.plus.callback.PersonReadCallback;
 import com.sharman.yukon.model.YukonAccount;
 import com.sharman.yukon.model.YukonAccountKeeper;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
@@ -25,8 +26,11 @@ import com.sharman.yukon.view.activities.util.AndroidUtil;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class GoogleRestConnectActivity extends AppCompatActivity {
@@ -36,6 +40,12 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
     protected static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     protected static final String ACCOUNT_KEEPER_KEY = "accountKeeper";
     protected static final String ACCOUNT_FILE = "accounts";
+    protected static final String CONFIG_FILE = "appConfigs";
+    protected static final String CONFIG_FAV_ROLE_KEY = "favRole";
+    protected static final String CONFIG_FAV_ROLE_STUDENT = "student";
+    protected static final String CONFIG_FAV_ROLE_TEACHER = "teacher";
+
+    protected YukonAccountKeeper yukonAccountKeeper;
 
     protected static final String[] SCOPES = {
             DriveScopes.DRIVE,
@@ -74,19 +84,17 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
             setSupportActionBar(actionToolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         } catch (NullPointerException e){
-            e.printStackTrace();
+            System.err.println("No actionBar");
         }
 
+        try {
+            yukonAccountKeeper = getYukonAccountKeeperRegister();
+        } catch (NullPointerException | JSONException e) {
+            yukonAccountKeeper = new YukonAccountKeeper(null, new YukonAccount[]{});
+        }
 
-        String yukonAccountKeeper_Str = new AndroidUtil(this).readFromSharedPreferences(ACCOUNT_FILE, ACCOUNT_KEEPER_KEY, null);
-
-        if(yukonAccountKeeper_Str!=null){
-            try {
-                if(new YukonAccountKeeper(yukonAccountKeeper_Str).getMainAccount() != null) {
-                    //System.out.println(">> ACCOUNTS: " + yukonAccountKeeper_Str);
-                    tryToConnect();
-                }
-            } catch (NullPointerException | JSONException e){}
+        if(yukonAccountKeeper.getMainAccount() != null){
+            tryToConnect();
         }
     }
 
@@ -101,14 +109,11 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
     protected GoogleAccountCredential generateCredential(){
         String accountName;
 
-        try {
-            String yukonAccountKeeper_Str = new AndroidUtil(this).readFromSharedPreferences(ACCOUNT_FILE, ACCOUNT_KEEPER_KEY, null);
-            YukonAccountKeeper yukonAccountKeeper = new YukonAccountKeeper(yukonAccountKeeper_Str);
+        try{
             accountName = yukonAccountKeeper.getMainAccount().getEmail();
-        }catch (NullPointerException | JSONException e){
+        }catch (NullPointerException e){
             accountName = null;
         }
-
 
         GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff())
@@ -165,6 +170,8 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
         System.out.println(">> CONNECTED ONCE <<");
         try {
             System.out.println(credential.getSelectedAccountName());
+            System.out.println(yukonAccountKeeper.toString());
+            System.out.println(getYukonAccountKeeperRegister().toString());
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -232,20 +239,23 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
     }
 
 
+    private boolean addingAccount = false;
+
+
+    protected void switchAccount(@Nonnull String accountEmail){
+        onAccountChoose(accountEmail);
+    }
+
+    protected void addAccount(){
+        addingAccount = true;
+        chooseAccount();
+    }
+
+
 
 
     private void requestAuthorization(){
-        if(getCredential() != null && getCredential().getSelectedAccountName() != null && !getCredential().getSelectedAccountName().equals("")) {
-            final StringBuilder sb = new StringBuilder();
-
-            sb.append("oauth2:");
-            for (int i = 0; i < SCOPES.length; i++) {
-                sb.append(SCOPES[i]);
-                if (i != SCOPES.length - 1) {
-                    sb.append(" ");
-                }
-            }
-
+        if(getCredential() != null && getCredential().getSelectedAccountName() != null && !getCredential().getSelectedAccountName().trim().equals("")) {
             new Thread(new Runnable() {
 
                 @Override
@@ -309,45 +319,11 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
                     String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
                         // *If the user authorize:
-                        getCredential().setSelectedAccountName(accountName);
-
-                        AndroidUtil androidUtil = new AndroidUtil(this);
-                        try {
-                            YukonAccountKeeper yukonAccountKeeper = new YukonAccountKeeper(androidUtil.readFromSharedPreferences(ACCOUNT_FILE, ACCOUNT_KEEPER_KEY, null));
-
-                            // *Changes the last main account to a secondary account:
-                            if(yukonAccountKeeper.getMainAccount() != null){
-                                YukonAccount[] secondaryAccountArray_OLD = yukonAccountKeeper.getSecondaryAccountArray();
-                                YukonAccount[] secondaryAccountArray_NEW;
-
-                                if(secondaryAccountArray_OLD == null || secondaryAccountArray_OLD.length==0){
-                                    secondaryAccountArray_NEW = new YukonAccount[1];
-                                } else{
-                                    secondaryAccountArray_NEW = new YukonAccount[secondaryAccountArray_OLD.length+1];
-
-                                    for(int i=0; i<secondaryAccountArray_OLD.length; i++){
-                                        secondaryAccountArray_NEW[i] = secondaryAccountArray_OLD[i];
-                                    }
-                                }
-
-                                secondaryAccountArray_NEW[secondaryAccountArray_NEW.length] = yukonAccountKeeper.getMainAccount();
-                                yukonAccountKeeper.setSecondaryAccountArray(secondaryAccountArray_NEW);
-                            }
-
-                            yukonAccountKeeper.setMainAccount(new YukonAccount(null, accountName, null));
-                            androidUtil.writeToSharedPreferences(ACCOUNT_FILE, ACCOUNT_KEEPER_KEY, yukonAccountKeeper.toString());
-                        } catch (NullPointerException | JSONException e) {
-                            e.printStackTrace();
-                            YukonAccountKeeper yukonAccountKeeper = new YukonAccountKeeper(new YukonAccount(null, accountName, null), new YukonAccount[]{});
-                            androidUtil.writeToSharedPreferences(ACCOUNT_FILE, ACCOUNT_KEEPER_KEY, yukonAccountKeeper.toString());
-                        }
-
-
-                        requestAuthorization();
+                        onAccountChoose(accountName);
                     }
                 } else if (resultCode == RESULT_CANCELED) {
                     System.out.println("REQUEST_ACCOUNT_PICKER NOT OK");
-                    disconnectFlag();
+                    onAccountNotChoose();
                 }
                 break;
 
@@ -369,9 +345,98 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
 
 
 
+
+    private void onAccountChoose(String accountName){
+        try {
+            YukonAccount[] secondaryAccountArray = yukonAccountKeeper.getSecondaryAccountArray();
+
+            if(!addingAccount){
+                secondaryAccountArray = removeSecondaryAccount(secondaryAccountArray, accountName);
+            }
+            secondaryAccountArray = addSecondaryAccount(secondaryAccountArray, yukonAccountKeeper.getMainAccount());
+
+            yukonAccountKeeper.setSecondaryAccountArray(secondaryAccountArray);
+            yukonAccountKeeper.setMainAccount(new YukonAccount(null, accountName, null));
+
+            commitYukonAccountKeeperRegister();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        generateCredential();
+        requestAuthorization();
+
+        if(addingAccount) {
+            addingAccount = false;
+            Intent refreshIntent = new Intent(this, getClass());
+            startActivity(refreshIntent);
+            finish();
+        }
+    }
+
+    private void onAccountNotChoose(){
+        // *If the user is just adding new accounts:
+        if(addingAccount){
+            addingAccount = false;
+            return;
+        }
+
+        disconnectFlag();
+    }
+
+
+    private YukonAccount[] addSecondaryAccount(YukonAccount[] originalArray, YukonAccount newAccount){
+        if(newAccount == null){
+            return originalArray;
+        }
+
+        originalArray = originalArray == null
+                ? new YukonAccount[]{}
+                : originalArray;
+        final int initialSize = originalArray.length;
+
+        try {
+            for(YukonAccount yukonAccount : originalArray){
+                if(yukonAccount.getEmail().equals(newAccount.getEmail())){
+                    return originalArray;
+                }
+            }
+        } catch (NullPointerException e){
+            return originalArray;
+        }
+
+        YukonAccount[] newArray = new YukonAccount[initialSize+1];
+        System.arraycopy(originalArray, 0, newArray, 0, initialSize);
+        newArray[initialSize] = newAccount;
+
+        return newArray;
+    }
+
+    private YukonAccount[] removeSecondaryAccount(YukonAccount[] originalArray, String accountName){
+        originalArray = originalArray == null
+                ? new YukonAccount[]{}
+                : originalArray;
+        final int initialSize = originalArray.length;
+
+        List<YukonAccount> yukonAccountList = new ArrayList<>();
+
+        for(int i=0; i<initialSize; i++){
+            if(!originalArray[i].getEmail().equals(accountName)){
+                yukonAccountList.add(originalArray[i]);
+            }
+        }
+
+        return yukonAccountList.toArray(new YukonAccount[yukonAccountList.size()]);
+    }
+
+
+
+
     private void chooseAccount() {
         startActivityForResult(getCredential().newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
     }
+
+
 
     protected boolean isGooglePlayServicesAvailable() {
         final int connectionStatusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -387,11 +452,74 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
         return true;
     }
 
-    void showGooglePlayServicesAvailabilityErrorDialog(final int connectionStatusCode) {
+    private void showGooglePlayServicesAvailabilityErrorDialog(final int connectionStatusCode) {
         GooglePlayServicesUtil.getErrorDialog(connectionStatusCode, GoogleRestConnectActivity.this, REQUEST_GOOGLE_PLAY_SERVICES).show();
     }
 
 
+
+    protected void updateMainAccountInfo(){
+        try {
+            YukonAccount mainAccount = yukonAccountKeeper.getMainAccount();
+
+            if(mainAccount.getUserId() == null || mainAccount.getUserId().trim().isEmpty()) {
+                new PlusIOHandler(getCredential()).readPerson("me", new PersonReadCallback() {
+                    @Override
+                    public void onSuccess(final Person person) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    YukonAccount mainAccount = yukonAccountKeeper.getMainAccount();
+
+                                    mainAccount.setUserId(person.getId());
+                                    mainAccount.setDisplayName(person.getDisplayName());
+
+                                    yukonAccountKeeper.setMainAccount(mainAccount);
+                                    commitYukonAccountKeeperRegister();
+
+                                    onMainAccountInfoUpdateSuccess(yukonAccountKeeper);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    onFailure(e);
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(Exception exception) {
+                        onMainAccountInfoUpdateFail(yukonAccountKeeper);
+                    }
+                });
+            } else{
+                onMainAccountInfoUpdateSuccess(yukonAccountKeeper);
+            }
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
+    }
+
+    protected void onMainAccountInfoUpdateSuccess(YukonAccountKeeper yukonAccountKeeper){
+
+    }
+    protected void onMainAccountInfoUpdateFail(YukonAccountKeeper yukonAccountKeeper){
+
+    }
+
+
+
+    protected void commitYukonAccountKeeperRegister(){
+        try {
+            new AndroidUtil(this).writeToSharedPreferences(ACCOUNT_FILE, ACCOUNT_KEEPER_KEY, yukonAccountKeeper.toString());
+        } catch (NullPointerException e){
+            new AndroidUtil(this).writeToSharedPreferences(ACCOUNT_FILE, ACCOUNT_KEEPER_KEY, null);
+        }
+    }
+
+    protected YukonAccountKeeper getYukonAccountKeeperRegister() throws JSONException, NullPointerException {
+        return new YukonAccountKeeper(new AndroidUtil(this).readFromSharedPreferences(ACCOUNT_FILE, ACCOUNT_KEEPER_KEY, null));
+    }
 
     /*
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *

@@ -2,7 +2,6 @@ package com.sharman.yukon.view.activities.util;
 
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -20,15 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.services.plus.model.Person;
 import com.sharman.yukon.R;
 import com.sharman.yukon.io.plus.PlusIOHandler;
 import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
-import com.sharman.yukon.io.plus.callback.PersonReadCallback;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -107,6 +103,7 @@ public class AndroidUtil {
     }
 
 
+
     public Bitmap getBitmapFromURI(Uri uri) {
         InputStream input = null;
 
@@ -123,6 +120,28 @@ public class AndroidUtil {
     }
 
 
+
+    /**
+     * Sets the {@code bitmap} to the given {@code imageView}, and format it on a circular shape.
+     * @param imageView the {@link ImageView} that will be formatted.
+     * @param bitmap the {@link Bitmap} that will be displayed, if it's null will be replaced with a default one.
+     */
+    public void formatPersonImageView(@NonNull final ImageView imageView, @Nullable final Bitmap bitmap){
+        try {
+            // *Try to format the image:
+            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(activity.getResources(), bitmap);
+            roundedBitmapDrawable.setCornerRadius(Math.max(bitmap.getWidth(), bitmap.getHeight()) / 2.0f);
+            roundedBitmapDrawable.setAntiAlias(true);
+            imageView.setImageDrawable(roundedBitmapDrawable);
+        } catch (Exception e){
+            // *Loading default person picture:
+            Drawable drawable = activity.getResources().getDrawable(R.drawable.default_person_rounded);
+            imageView.setImageDrawable(drawable);
+        }
+    }
+
+
+    /*
     public void formatPersonImageView_AndroidContacts(@NonNull final ImageView imageView, @Nullable final String imageUri){
         activity.runOnUiThread(new Runnable() {
             @Override
@@ -142,46 +161,66 @@ public class AndroidUtil {
             }
         });
     }
+    */
 
-
-
-    public void formatPersonImageView_GPlus(@NonNull final ImageView imageView, @NonNull GoogleAccountCredential credential, final String userId){
-        final PlusIOHandler plusIOHandler = new PlusIOHandler(credential);
-        plusIOHandler.readPerson(userId, new PersonReadCallback() {
+    public void formatPersonImageView_AndroidContacts(@NonNull final ImageView imageView, @Nullable final String imageUri){
+        activity.runOnUiThread(new Runnable() {
             @Override
-            public void onSuccess(Person person) {
-                plusIOHandler.readPersonImg(person, new PersonImgReadCallback() {
-                    @Override
-                    public void onSuccess(final Bitmap bitmap) {
-                        activity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(activity.getResources(), bitmap);
-                                roundedBitmapDrawable.setCornerRadius(Math.max(bitmap.getWidth(), bitmap.getHeight()) / 2.0f);
-                                roundedBitmapDrawable.setAntiAlias(true);
-                                imageView.setImageDrawable(roundedBitmapDrawable);
-                            }
-                        });
-                    }
+            public void run() {
+                try {
+                    // *Try to get the image:
+                    Bitmap bitmap = getBitmapFromURI(Uri.parse(imageUri));
+                    formatPersonImageView(imageView, bitmap);
+                } catch (Exception e){
+                    // *Loading default person picture:
+                    formatPersonImageView(imageView, null);
+                }
+            }
+        });
+    }
 
+
+    public void formatPersonImageView_GPlus(@NonNull final ImageView imageView, @NonNull final GoogleAccountCredential credential, @Nullable final String userId){
+        if(userId == null || userId.trim().isEmpty()){
+            // *Apply the default photo:
+            formatPersonImageView(imageView, null);
+            return;
+        }
+
+        ResourceCache resourceCache = new ResourceCache(activity);
+        resourceCache.getResource_GPlusProfilePhoto(userId, new GetResourceCacheCallback<Bitmap>() {
+            @Override
+            public void onFound(final Bitmap resource) {
+                activity.runOnUiThread(new Runnable() {
                     @Override
-                    public void onFailure(String errorMessage) {
-                        // *Loading default person picture:
-                        Drawable drawable = activity.getResources().getDrawable(R.drawable.default_person_rounded);
-                        imageView.setImageDrawable(drawable);
+                    public void run() {
+                        formatPersonImageView(imageView, resource);
                     }
                 });
             }
 
             @Override
-            public void onFailure(Exception exception) {
-                // *Loading default person picture:
-                Drawable drawable = activity.getResources().getDrawable(R.drawable.default_person_rounded);
-                imageView.setImageDrawable(drawable);
+            public void onNotFound(final RegisterResourceCacheCallback<Bitmap> registerResourceCacheCallback) {
+
+                new PlusIOHandler(credential).readPersonImg(userId, new PersonImgReadCallback() {
+                    @Override
+                    public void onSuccess(Bitmap bitmap) {
+                        // *Save this image on cache:
+                        registerResourceCacheCallback.register(bitmap);
+
+                        // *Apply the found photo:
+                        onFound(bitmap);
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        // *Apply the default photo:
+                        onFound(null);
+                    }
+                });
             }
         });
     }
-
 
 
 
@@ -199,7 +238,6 @@ public class AndroidUtil {
                 }
             }
         });
-
     }
 
     public void fillInfoPhotoToolbar_AndroidContactsImage(@NonNull final View toolbar, final String photoUri, final String primaryInfoText, final String secondaryInfoText, final String tertiaryInfoText){

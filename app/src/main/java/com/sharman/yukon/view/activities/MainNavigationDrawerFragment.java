@@ -1,7 +1,8 @@
 package com.sharman.yukon.view.activities;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
@@ -11,25 +12,29 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.services.plus.model.Person;
 import com.sharman.yukon.R;
 import com.sharman.yukon.io.plus.PlusIOHandler;
-import com.sharman.yukon.io.plus.callback.PersonReadCallback;
+import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
+import com.sharman.yukon.model.YukonAccount;
+import com.sharman.yukon.model.YukonAccountKeeper;
+import com.sharman.yukon.view.activities.util.AndroidUtil;
+import com.sharman.yukon.view.activities.util.GetResourceCacheCallback;
+import com.sharman.yukon.view.activities.util.RegisterResourceCacheCallback;
+import com.sharman.yukon.view.activities.util.ResourceCache;
 
 public class MainNavigationDrawerFragment extends Fragment {
-    private static final String PREF_FILE_NAME = "drawer";
-    private static final String KEY_USER_LEARNED = "userLearned";
-
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
-    private View container;
-
-    private GoogleAccountCredential credential;
-
-    private boolean mUserLearned;
-    private boolean mFromSavedIntanceState;
+    private RelativeLayout contentContainer;
+    private LayoutInflater layoutInflater;
+    private boolean showingMainList;
 
 
 
@@ -41,26 +46,6 @@ public class MainNavigationDrawerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mUserLearned = Boolean.valueOf(readToSharedPreferences(getActivity(), KEY_USER_LEARNED, "false"));
-        if(savedInstanceState != null){
-            mFromSavedIntanceState = true;
-
-
-            final PlusIOHandler plusIOHandler = new PlusIOHandler(credential);
-            plusIOHandler.readPerson("me", new PersonReadCallback() {
-                @Override
-                public void onSuccess(Person person) {
-
-                }
-
-                @Override
-                public void onFailure(Exception exception) {
-
-                }
-            });
-
-        }
-
     }
 
     @Override
@@ -69,33 +54,119 @@ public class MainNavigationDrawerFragment extends Fragment {
     }
 
 
-    public void setUp(int fragmentId, DrawerLayout drawerLayout, Toolbar toolbar) {
-        container = getActivity().findViewById(fragmentId);
-
+    public void setUp(final GoogleRestConnectActivity activity, DrawerLayout drawerLayout, Toolbar toolbar, YukonAccountKeeper yukonAccountKeeper, final GoogleAccountCredential credential) {
         mDrawerLayout = drawerLayout;
-        mDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, toolbar, R.string.navigationDrawer_open, R.string.navigationDrawer_close){
+        mDrawerToggle = new ActionBarDrawerToggle(activity, mDrawerLayout, toolbar, R.string.navigationDrawer_open, R.string.navigationDrawer_close){
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-
-                if(!mUserLearned){
-                    mUserLearned = true;
-                    writeToSharedPreferences(getActivity(), KEY_USER_LEARNED, mUserLearned+"");
-                }
-
-                getActivity().invalidateOptionsMenu();
+                activity.invalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-
-                getActivity().invalidateOptionsMenu();
+                activity.invalidateOptionsMenu();
             }
         };
 
-        if(!mUserLearned && !mFromSavedIntanceState){
-            mDrawerLayout.openDrawer(container);
+
+        final AndroidUtil androidUtil = new AndroidUtil(activity);
+
+        try {
+            View view = getView();
+            layoutInflater = activity.getLayoutInflater();
+            final ImageView mainAccountPhotoImg = (ImageView) view.findViewById(R.id.mainAccountImg);
+            final ImageView mainAccountCoverImg = (ImageView) view.findViewById(R.id.mainAccountCoverImg);
+            final TextView mainAccountNameOut = (TextView) view.findViewById(R.id.mainAccountNameOut);
+            final TextView mainAccountEmailOut = (TextView) view.findViewById(R.id.mainAccountEmailOut);
+            final ImageButton manageAccountsBtn = (ImageButton) view.findViewById(R.id.manageAccountsBtn);
+            final LinearLayout secondaryAccountImgContainer = (LinearLayout) view.findViewById(R.id.secondaryAccountImgContainer);
+            contentContainer = (RelativeLayout) view.findViewById(R.id.contentContainer);
+
+            secondaryAccountImgContainer.removeAllViews();
+            contentContainer.removeAllViews();
+
+
+            final YukonAccount[] secondaryAccountArray = yukonAccountKeeper.getSecondaryAccountArray();
+            final YukonAccount mainAccount = yukonAccountKeeper.getMainAccount();
+
+            mainAccountNameOut.setText(mainAccount.getDisplayName());
+            mainAccountEmailOut.setText(mainAccount.getEmail());
+
+
+            // *Filling the secondary account container:
+            if (secondaryAccountArray != null) {
+                for (int i = 0; i < secondaryAccountArray.length; i++) {
+                    final YukonAccount account = secondaryAccountArray[i];
+                    ImageView photo = (ImageView) layoutInflater.inflate(R.layout.secondary_account_img, null);
+                    System.out.println("Secondary: " + account.getUserId());
+                    androidUtil.formatPersonImageView_GPlus(photo, credential, account.getUserId());
+                    secondaryAccountImgContainer.addView(photo);
+
+                    photo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            activity.switchAccount(account.getEmail());
+
+                            Intent refreshIntent = new Intent(activity, activity.getClass());
+                            startActivity(refreshIntent);
+                            activity.finish();
+                        }
+                    });
+
+                }
+            }
+
+
+            androidUtil.formatPersonImageView_GPlus(mainAccountPhotoImg, credential, mainAccount.getUserId());
+
+
+            // *Try to get the user's G+ cover from cache, download otherwise:
+            new ResourceCache(activity).getResource_GPlusProfileCover(mainAccount.getUserId(), new GetResourceCacheCallback<Bitmap>() {
+                @Override
+                public void onFound(final Bitmap resource) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainAccountCoverImg.setImageBitmap(resource);
+                        }
+                    });
+                }
+
+                @Override
+                public void onNotFound(final RegisterResourceCacheCallback<Bitmap> registerResourceCacheCallback) {
+                    new PlusIOHandler(credential).readPersonCoverImg(mainAccount.getUserId(), new PersonImgReadCallback() {
+                        @Override
+                        public void onSuccess(Bitmap bitmap) {
+                            // *Save this image on cache:
+                            registerResourceCacheCallback.register(bitmap);
+
+                            // *Apply the found photo:
+                            onFound(bitmap);
+                        }
+
+                        @Override
+                        public void onFailure(String errorMessage) {
+                            // *Do nothing
+                        }
+                    });
+                }
+            });
+
+
+            layoutInflater.inflate(R.layout.fragment_main_navigation_drawer_list, contentContainer);
+            showingMainList = true;
+
+            manageAccountsBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    manageAccountsBtn_onClick(view);
+                }
+            });
+
+        } catch (NullPointerException e){
+            e.printStackTrace();
         }
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -108,17 +179,19 @@ public class MainNavigationDrawerFragment extends Fragment {
     }
 
 
+    public void manageAccountsBtn_onClick(View view){
+        if(contentContainer == null || layoutInflater == null){
+            return;
+        }
 
-    private static void writeToSharedPreferences(Context context, String key, String value){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(key, value);
-        editor.apply();
+        contentContainer.removeAllViews();
+
+        if(showingMainList){
+            layoutInflater.inflate(R.layout.fragment_main_navigation_drawer_manage_account, contentContainer);
+        } else{
+            layoutInflater.inflate(R.layout.fragment_main_navigation_drawer_list, contentContainer);
+        }
+
+        showingMainList = !showingMainList;
     }
-
-    private static String readToSharedPreferences(Context context, String key, String defaultValue){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, context.MODE_PRIVATE);
-        return sharedPreferences.getString(key, defaultValue);
-    }
-
 }

@@ -118,7 +118,7 @@
 
     <fragment
         android:id="@+id/navigationDrawer"
-        android:layout_width="280dp"
+        android:layout_width="@dimen/navigationDrawer.width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:layout="@layout/fragment_main_navigation_drawer"

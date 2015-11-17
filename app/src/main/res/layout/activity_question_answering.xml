@@ -72,7 +72,8 @@
         <ImageButton
             android:onClick="questionAnsweringNextButton_onClick"
             android:id="@+id/nextBtn"
-            android:src="@drawable/ic_chevron_right_64dp"
-            style="@style/floatingActionButton" />
+            android:src="@drawable/ic_chevron_right_48dp"
+            style="@style/floatingActionButton"
+            android:scaleType="center"/>
     </RelativeLayout>
 </RelativeLayout>

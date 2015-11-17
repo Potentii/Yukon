@@ -10,13 +10,18 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.api.services.drive.model.File;
+import com.google.api.services.plus.model.Person;
 import com.sharman.yukon.io.drive.util.EMimeType;
 import com.sharman.yukon.R;
 import com.sharman.yukon.io.drive.DriveIOHandler;
 import com.sharman.yukon.io.drive.callback.FileQueryCallback;
 import com.sharman.yukon.io.drive.callback.FileReadCallback;
+import com.sharman.yukon.io.plus.PlusIOHandler;
+import com.sharman.yukon.io.plus.callback.PersonReadCallback;
 import com.sharman.yukon.model.StudentConfigs;
 import com.sharman.yukon.model.TeacherConfigs;
+import com.sharman.yukon.model.YukonAccount;
+import com.sharman.yukon.model.YukonAccountKeeper;
 import com.sharman.yukon.view.activities.answering.ExamAnsweringActivity;
 import com.sharman.yukon.view.activities.creation.ExamCreateActivity;
 import com.sharman.yukon.view.activities.managing.ExamManagingActivity;
@@ -30,63 +35,18 @@ import java.util.List;
 import java.util.Vector;
 
 
-public class MainActivity extends GoogleRestConnectActivity {
-    private ExamRVAdapter myExamRVAdapter;
-    private ExamRVAdapter sharedExamRVAdapter;
+public abstract class MainActivity extends GoogleRestConnectActivity {
+    protected ExamRVAdapter examRVAdapter;
 
-    private RecyclerView myExamRecyclerView;
-    private RecyclerView sharedExamRecyclerView;
+    protected RecyclerView examRecyclerView;
 
-    private Vector<ExamRVInfo> myExamRVInfoVector;
-    private Vector<ExamRVInfo> sharedExamRVInfoVector;
+    protected Vector<ExamRVInfo> examRVInfoVector;
 
-    private int myExamLoaded;
-    private boolean onMyUpdateCalled;
-    private int sharedExamLoaded;
-    private boolean onSharedUpdateCalled;
+    protected int examLoaded;
+    protected boolean onUpdateCalled;
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        myExamRVInfoVector = new Vector<>();
-        sharedExamRVInfoVector = new Vector<>();
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.actionToolbar);
-
-        MainNavigationDrawerFragment mainNavigationDrawerFragment = (MainNavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigationDrawer);
-        mainNavigationDrawerFragment.setUp(R.id.navigationDrawer, (DrawerLayout) findViewById(R.id.drawerLayout), toolbar);
-
-
-        myExamRVAdapter = new ExamRVAdapter(this, getCredential(), myExamRVInfoVector, new OnExamRVItemClickListener() {
-            @Override
-            public void onClick(ExamRVInfo examRVInfo) {
-                Intent examManagingIntent = new Intent(getApplicationContext(), ExamManagingActivity.class);
-                examManagingIntent.putExtra("teacherConfigs", examRVInfo.getConfigs());
-                startActivity(examManagingIntent);
-            }
-        });
-
-        sharedExamRVAdapter = new ExamRVAdapter(this, getCredential(), sharedExamRVInfoVector, new OnExamRVItemClickListener() {
-            @Override
-            public void onClick(ExamRVInfo examRVInfo) {
-                Intent examAnsweringIntent = new Intent(getApplicationContext(), ExamAnsweringActivity.class);
-                examAnsweringIntent.putExtra("studentConfigs", examRVInfo.getConfigs());
-                startActivity(examAnsweringIntent);
-            }
-        });
-
-        myExamRecyclerView = (RecyclerView) findViewById(R.id.myExamRecyclerView);
-        myExamRecyclerView.setAdapter(myExamRVAdapter);
-        myExamRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        sharedExamRecyclerView = (RecyclerView) findViewById(R.id.sharedExamRecyclerView);
-        sharedExamRecyclerView.setAdapter(sharedExamRVAdapter);
-        sharedExamRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-    }
+    protected MainNavigationDrawerFragment mainNavigationDrawerFragment;
+    protected Toolbar toolbar;
 
 
 
@@ -94,205 +54,117 @@ public class MainActivity extends GoogleRestConnectActivity {
     protected void onConnectOnce(){
         super.onConnectOnce();
 
-        new AndroidUtil(this).showToast("Loading exams...", Toast.LENGTH_SHORT);
-        updateMyExamList();
-        updateSharedExamList();
+        try {
+            updateMainAccountInfo();
+
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
+
+        updateExamList();
     }
 
 
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Main account info callback methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    @Override
+    protected void onMainAccountInfoUpdateSuccess(YukonAccountKeeper yukonAccountKeeper){
+        super.onMainAccountInfoUpdateSuccess(yukonAccountKeeper);
+        try {
+            mainNavigationDrawerFragment.setUp(this, (DrawerLayout) findViewById(R.id.drawerLayout), toolbar, yukonAccountKeeper, getCredential());
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    protected void onMainAccountInfoUpdateFail(YukonAccountKeeper yukonAccountKeeper){
+        super.onMainAccountInfoUpdateFail(yukonAccountKeeper);
+        try {
+            mainNavigationDrawerFragment.setUp(this, (DrawerLayout) findViewById(R.id.drawerLayout), toolbar, yukonAccountKeeper, getCredential());
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+    }
+
+
+
+    protected abstract void updateExamList();
+
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Update callback methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    protected void onExamUpdateSuccess(){
+        /*
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!onUpdateCalled) {
+                    onUpdateCalled = true;
+                    examRecyclerView.getAdapter().notifyDataSetChanged();
+                    Toast.makeText(getApplicationContext(), "Updated", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        */
+    }
+    protected void onExamUpdateFailure(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!onUpdateCalled) {
+                    onUpdateCalled = true;
+                    Toast.makeText(getApplicationContext(), "Update failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Listeners methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     public void addExamBtn_onClick(View view) {
         Intent addExamIntent = new Intent(this, ExamCreateActivity.class);
         startActivity(addExamIntent);
     }
 
-    public void disconnectBtn_onClick(View view) {
-        tryToDisconnect();
+    public void asStudentBtn_onClick(View view){
+        if(!(this instanceof StudentMainActivity)){
+            new AndroidUtil(this).writeToSharedPreferences(CONFIG_FILE, CONFIG_FAV_ROLE_KEY, CONFIG_FAV_ROLE_STUDENT);
+            Intent asStudentIntent = new Intent(this, StudentMainActivity.class);
+            startActivity(asStudentIntent);
+        }
     }
 
-
-
-    /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * Update List:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
-    private void updateMyExamList(){
-        myExamLoaded = 0;
-        onMyUpdateCalled = false;
-        myExamRVInfoVector.clear();
-
-        final DriveIOHandler driveIOHandler = new DriveIOHandler(getCredential());
-        driveIOHandler.queryFiles("mimeType = '" + EMimeType.TEACHER_CONFIG.getMimeType() + "'", new FileQueryCallback() {
-            @Override
-            public void onResult(final List<File> driveFileList) {
-
-                for (int i = 0; i < driveFileList.size(); i++) {
-
-                    driveIOHandler.readFile(driveFileList.get(i), new FileReadCallback() {
-                        @Override
-                        public void onSuccess(String content) {
-                            try {
-                                TeacherConfigs teacherConfigs = new TeacherConfigs(content);
-
-                                myExamRVInfoVector.add(new ExamRVInfo(
-                                        teacherConfigs.getTeacherIdCache(),
-                                        teacherConfigs.getExamTitleCache(),
-                                        teacherConfigs.getExamSubjectCache(),
-                                        teacherConfigs.getExamDeliveryDateCache(),
-                                        content));
-                                /*
-                                myExamRVInfoVector.add(new ExamRVInfo(
-                                        teacherConfigs.getTeacherIdCache(),
-                                        teacherConfigs.getExamTitleCache(),
-                                        teacherConfigs.getExamSubjectCache(),
-                                        teacherConfigs.getExamDeliveryDateCache(),
-                                        teacherConfigs.getExamFileId(),
-                                        teacherConfigs.getCorrectAnswersFileId()));
-                                        */
-
-                                myExamLoaded++;
-                                if (myExamLoaded == driveFileList.size()) {
-                                    onMyExamUpdateSuccess();
-                                }
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                onFailure(e);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Exception exception) {
-                            // TODO Error Configs file
-                            onMyExamUpdateFailure();
-                        }
-                    });
-                }
-            }
-        });
+    public void asTeacherBtn_onClick(View view){
+        if(!(this instanceof TeacherMainActivity)){
+            new AndroidUtil(this).writeToSharedPreferences(CONFIG_FILE, CONFIG_FAV_ROLE_KEY, CONFIG_FAV_ROLE_TEACHER);
+            Intent asTeacherIntent = new Intent(this, TeacherMainActivity.class);
+            startActivity(asTeacherIntent);
+        }
     }
 
-
-    // *Shared:
-    private void updateSharedExamList() {
-        sharedExamLoaded = 0;
-        onSharedUpdateCalled = false;
-        sharedExamRVInfoVector.clear();
-
-        final DriveIOHandler driveIOHandler = new DriveIOHandler(getCredential());
-        driveIOHandler.queryFiles("mimeType = '" + EMimeType.STUDENT_CONFIG.getMimeType() + "' and sharedWithMe", new FileQueryCallback() {
-            @Override
-            public void onResult(final List<File> driveFileList) {
-
-                for (int i = 0; i < driveFileList.size(); i++) {
-                    driveIOHandler.readFile(driveFileList.get(i), new FileReadCallback() {
-                        @Override
-                        public void onSuccess(String content) {
-                            try {
-                                StudentConfigs studentConfigs = new StudentConfigs(content);
-
-                                sharedExamRVInfoVector.add(new ExamRVInfo(
-                                        studentConfigs.getTeacherIdCache(),
-                                        studentConfigs.getExamTitleCache(),
-                                        studentConfigs.getExamSubjectCache(),
-                                        studentConfigs.getExamDeliveryDateCache(),
-                                        content));
-                                /*
-                                sharedExamRVInfoVector.add(new ExamRVInfo(
-                                        studentConfigs.getTeacherIdCache(),
-                                        studentConfigs.getExamTitleCache(),
-                                        studentConfigs.getExamSubjectCache(),
-                                        studentConfigs.getExamDeliveryDateCache(),
-                                        studentConfigs.getExamFileId(),
-                                        studentConfigs.getAnswersFileId(),
-                                        studentConfigs.getGradeFileId()));
-                                        */
-
-                                sharedExamLoaded++;
-                                if (sharedExamLoaded == driveFileList.size()) {
-                                    onSharedExamUpdateSuccess();
-                                }
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                onFailure(e);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Exception exception) {
-                            // TODO Error Configs file
-                            onSharedExamUpdateFailure();
-                        }
-                    });
-                }
-            }
-        });
+    public void settings_onClick(View view){
     }
 
-
-
-
-    /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * OnUpdate:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
-    // *My:
-    private void onMyExamUpdateSuccess(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(!onMyUpdateCalled){
-                    onMyUpdateCalled = true;
-                    System.out.println("SUCCESS");
-                    myExamRecyclerView.getAdapter().notifyDataSetChanged();
-                    myExamRecyclerView.setAdapter(myExamRVAdapter);
-                    myExamRecyclerView.getLayoutParams().height = 138 * myExamRVInfoVector.size();
-                }
-            }
-        });
-    }
-    private void onMyExamUpdateFailure(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(!onMyUpdateCalled){
-                    onMyUpdateCalled = true;
-                    Toast.makeText(getApplicationContext(), "Update failed", Toast.LENGTH_SHORT).show();
-                    System.out.println("FAILURE");
-                }
-            }
-        });
+    public void helpAndFeedback_onClick(View view){
     }
 
-
-
-    // *Shared:
-    private void onSharedExamUpdateSuccess(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(!onSharedUpdateCalled){
-                    onSharedUpdateCalled = true;
-                    System.out.println("SUCCESS");
-                    sharedExamRecyclerView.getAdapter().notifyDataSetChanged();
-                    sharedExamRecyclerView.setAdapter(sharedExamRVAdapter);
-                    sharedExamRecyclerView.getLayoutParams().height = 138 * sharedExamRVInfoVector.size();
-                }
-            }
-        });
+    public void addAccountBtn_onClick(View view){
+        addAccount();
     }
-    private void onSharedExamUpdateFailure(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(!onSharedUpdateCalled){
-                    onSharedUpdateCalled = true;
-                    Toast.makeText(getApplicationContext(), "Update failed", Toast.LENGTH_SHORT).show();
-                    System.out.println("FAILURE");
-                }
-            }
-        });
-    }
+
 }

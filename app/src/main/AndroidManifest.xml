@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
 
     <application
         android:allowBackup="true"
@@ -15,11 +18,9 @@
         android:label="@string/appName"
         android:supportsRtl="true"
         android:theme="@style/YukonMainTheme" >
-
         <meta-data
             android:name="com.google.android.apps.drive.APP_ID"
             android:value="id=yukon-1085" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -29,6 +30,7 @@
             android:label="@string/activityTitle.disconnected" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -83,6 +85,14 @@
         <activity
             android:name=".view.activities.managing.ExamManagingStudentInspectActivity"
             android:label="@string/activityTitle.examManagingStudentInspect" >
+        </activity>
+        <activity
+            android:name=".view.activities.TeacherMainActivity"
+            android:label="@string/title_activity_teacher_main" >
+        </activity>
+        <activity
+            android:name=".view.activities.StudentMainActivity"
+            android:label="@string/title_activity_student_main" >
         </activity>
     </application>
 

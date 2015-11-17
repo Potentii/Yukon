@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 /**
  * Created by poten on 10/11/2015.
  */
+@Deprecated
 public class FlaggedEvent<T extends java.lang.Enum<T>> {
     private EnumSet<T> completeState;
     private EnumSet<T> failedEvents;
