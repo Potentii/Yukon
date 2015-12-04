@@ -96,6 +96,8 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
     private void loadInfo(){
         final DriveIOHandler driveIOHandler = new DriveIOHandler(getCredential());
 
+        startProgressFragment();
+        setProgressMessage(R.string.progress_examManagingStudentInspect_loadingGrade);
         driveIOHandler.readFile(gradeFileId, new FileReadCallback() {
             @Override
             public void onSuccess(final String content) {
@@ -104,25 +106,21 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
                     public void run() {
                         try {
                             grade = new Grade(content);
+                            // *Showing the grade of the student:
+                            TextView gradeOut = (TextView) findViewById(R.id.gradeOut);
 
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    // *Showing the grade of the student:
-                                    TextView gradeOut = (TextView) findViewById(R.id.gradeOut);
+                            double gradeGrade = grade.getGrade();
+                            if(gradeGrade<0){
+                                gradeOut.setText(getResources().getString(R.string.output_grade_notSet_text));
+                            } else{
+                                gradeOut.setText(Double.toString(gradeGrade));
+                            }
 
-                                    double gradeGrade = grade.getGrade();
-                                    if(gradeGrade<0){
-                                        gradeOut.setText(getResources().getString(R.string.output_grade_notSet_text));
-                                    } else{
-                                        gradeOut.setText(Double.toString(gradeGrade));
-                                    }
-                                }
-                            });
-
+                            setProgressMessage(R.string.progress_examManagingStudentInspect_loadingAnswers);
                             driveIOHandler.readFile(studentAnswerFileId, new FileReadCallback() {
                                 @Override
                                 public void onSuccess(String content) {
+                                    stopProgressFragment();
                                     try {
                                         studentAnswers = new StudentAnswers(content);
 
@@ -141,11 +139,13 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
                                 @Override
                                 public void onFailure(Exception exception) {
                                     // TODO error
+                                    stopProgressFragment();
                                 }
                             });
 
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            stopProgressFragment();
                         }
                     }
                 });
@@ -154,6 +154,7 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
             @Override
             public void onFailure(Exception exception) {
                 // TODO error
+                stopProgressFragment();
                 exception.printStackTrace();
             }
         });
@@ -349,63 +350,19 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
             return;
         }
 
-        new AndroidUtil(this).showToast("Working.", Toast.LENGTH_SHORT);
         final Activity activity = this;
-
+        startProgressFragment();
+        setProgressMessage(R.string.progress_examManagingStudentInspect_updatingGrade);
         new DriveIOHandler(getCredential()).editFile(gradeFileId, null, null, grade.toString(), new FileEditCallback() {
             @Override
             public void onSuccess() {
-                new AndroidUtil(activity).showToast("Grade set", Toast.LENGTH_SHORT);
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        /*
-                        Intent examManagingStudentsActivityIntent = new Intent(activity, ExamManagingStudentsActivity.class);
-                        startActivity(examManagingStudentsActivityIntent);
-                        finish();
-                        */
-                    }
-                });
+                new AndroidUtil(activity).showToast(R.string.toast_examManagingStudentInspect_gradeUpdated, Toast.LENGTH_SHORT);
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                new AndroidUtil(activity).showToast("Something went wrong, try again", Toast.LENGTH_SHORT);
+                new AndroidUtil(activity).showToast(R.string.toast_somethingWentWrong, Toast.LENGTH_SHORT);
             }
         });
-
-
-        System.out.println("E");
-
-    }
-
-
-
-    /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * ActionBar methods:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_exam_managing_student_inspect, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

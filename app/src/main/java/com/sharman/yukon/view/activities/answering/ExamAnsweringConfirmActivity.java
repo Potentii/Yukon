@@ -21,13 +21,14 @@ import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.StudentAnswers;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 import com.sharman.yukon.view.activities.MainActivity;
+import com.sharman.yukon.view.activities.StudentMainActivity;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 
 import org.json.JSONException;
 
 public class ExamAnsweringConfirmActivity extends GoogleRestConnectActivity {
     private String studentAnswerFileId;
-    private Exam exam; // TODO remover exam daqui
+    private Exam exam;
     private StudentAnswers studentAnswers;
 
     private boolean onAnsweringSuccess_called;
@@ -86,7 +87,7 @@ public class ExamAnsweringConfirmActivity extends GoogleRestConnectActivity {
         row.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO voltar para a questao
+                // TODO back to the selected question
             }
         });
 
@@ -100,12 +101,12 @@ public class ExamAnsweringConfirmActivity extends GoogleRestConnectActivity {
             onAnsweringSuccess_called = true;
 
             final Activity activity = this;
-            new AndroidUtil(this).showToast("Answer sent, good luck", Toast.LENGTH_SHORT);
+            new AndroidUtil(this).showToast(R.string.toast_examAnsweringConfirm_answerSent, Toast.LENGTH_SHORT);
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Intent mainIntent = new Intent(activity, MainActivity.class);
+                    Intent mainIntent = new Intent(activity, StudentMainActivity.class);
                     startActivity(mainIntent);
                     finish();
                 }
@@ -117,7 +118,7 @@ public class ExamAnsweringConfirmActivity extends GoogleRestConnectActivity {
     private synchronized void onAnsweringFailure(String errorMessage){
         if(!onAnsweringFailure_called) {
             onAnsweringFailure_called = true;
-            new AndroidUtil(this).showToast("Something went wrong, try again", Toast.LENGTH_SHORT);
+            new AndroidUtil(this).showToast(R.string.toast_somethingWentWrong, Toast.LENGTH_SHORT);
         }
     }
 
@@ -136,11 +137,10 @@ public class ExamAnsweringConfirmActivity extends GoogleRestConnectActivity {
         onAnsweringSuccess_called = false;
         onAnsweringFailure_called = false;
 
-        new AndroidUtil(this).showToast("Working...", Toast.LENGTH_LONG);
-
-
         final DriveIOHandler driveIOHandler = new DriveIOHandler(getCredential());
 
+        startProgressFragment();
+        setProgressMessage(R.string.progress_examAnsweringConfirm_sendingAnswers);
         driveIOHandler.editFile(studentAnswerFileId, null, null, studentAnswers.toString(), new FileEditCallback() {
             @Override
             public void onSuccess() {

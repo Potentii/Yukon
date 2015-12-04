@@ -2,13 +2,10 @@ package com.sharman.yukon.view.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.api.services.drive.model.File;
 import com.sharman.yukon.R;
@@ -16,19 +13,19 @@ import com.sharman.yukon.io.drive.DriveIOHandler;
 import com.sharman.yukon.io.drive.callback.FileQueryCallback;
 import com.sharman.yukon.io.drive.callback.FileReadCallback;
 import com.sharman.yukon.io.drive.util.EMimeType;
-import com.sharman.yukon.model.StudentConfigs;
 import com.sharman.yukon.model.TeacherConfigs;
-import com.sharman.yukon.model.YukonAccountKeeper;
-import com.sharman.yukon.view.activities.answering.ExamAnsweringActivity;
 import com.sharman.yukon.view.activities.creation.ExamCreateActivity;
 import com.sharman.yukon.view.activities.managing.ExamManagingActivity;
+import com.sharman.yukon.view.activities.util.StepByStepEvent;
 import com.sharman.yukon.view.activities.util.recycler.ExamRVAdapter;
 import com.sharman.yukon.view.activities.util.recycler.ExamRVInfo;
 import com.sharman.yukon.view.activities.util.recycler.OnExamRVItemClickListener;
 
 import org.json.JSONException;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 public class TeacherMainActivity extends MainActivity {
@@ -63,8 +60,6 @@ public class TeacherMainActivity extends MainActivity {
 
     @Override
     protected void updateExamList() {
-        examLoaded = 0;
-        onUpdateCalled = false;
         examRVInfoVector.clear();
 
         final DriveIOHandler driveIOHandler = new DriveIOHandler(getCredential());
@@ -72,7 +67,18 @@ public class TeacherMainActivity extends MainActivity {
             @Override
             public void onResult(final List<File> driveFileList) {
 
+                Set<String> loadingExamsSet = new HashSet<String>();
                 for (int i = 0; i < driveFileList.size(); i++) {
+                    loadingExamsSet.add(String.valueOf(i));
+                }
+
+                final StepByStepEvent stepByStepEvent_loadingExams = new StepByStepEvent(loadingExamsSet)
+                        .setFinishStepCallback(finishStepByStepEventCallback)
+                        .setRegisterStepCallback(registerStepByStepEventCallback);
+
+
+                for (int i = 0; i < driveFileList.size(); i++) {
+                    final int index = i;
                     driveIOHandler.readFile(driveFileList.get(i), new FileReadCallback() {
                         @Override
                         public void onSuccess(String content) {
@@ -85,19 +91,7 @@ public class TeacherMainActivity extends MainActivity {
                                         teacherConfigs.getExamSubjectCache(),
                                         teacherConfigs.getExamDeliveryDateCache(),
                                         content));
-
-                                examLoaded++;
-                                if (examLoaded == driveFileList.size()) {
-                                    onExamUpdateSuccess();
-                                }
-
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        examRecyclerView.getAdapter().notifyDataSetChanged();
-                                    }
-                                });
-
+                                stepByStepEvent_loadingExams.registerStep(String.valueOf(index), true);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                                 onFailure(e);
@@ -106,8 +100,7 @@ public class TeacherMainActivity extends MainActivity {
 
                         @Override
                         public void onFailure(Exception exception) {
-                            // TODO Error Configs file
-                            onExamUpdateFailure();
+                            stepByStepEvent_loadingExams.registerStep(String.valueOf(index), false);
                         }
                     });
                 }

@@ -52,7 +52,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
         answerTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                // TODO fix this logic:
+                // FIXME fix this logic:
                 if(i==0){
                     eMultipleAnswerType = null;
                 } else if(i==1){
@@ -225,7 +225,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
      */
     @Override
     public void onPositive() {
-        // TODO mostrar um preview das alternativas
+        // TODO show a preview of the alternatives
     }
 
     @Override

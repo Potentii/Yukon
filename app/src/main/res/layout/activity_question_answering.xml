@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sharman.yukon.view.activities.answering.QuestionAnsweringActivity">
+    tools:context="com.sharman.yukon.view.activities.answering.QuestionAnsweringActivity"
+    android:id="@+id/rootLayout">
 
 
     <!-- * App Bar * -->

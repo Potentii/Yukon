@@ -116,11 +116,39 @@
     <string name="navigationDrawer.settings">Settings</string>
     <string name="navigationDrawer.helpAndFeedback">Help &amp; feedback</string>
 
-
-
-    
     <string name="navigationDrawer.open">Open</string>
     <string name="navigationDrawer.close">Close</string>
+
+
+
+    <!--
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * Toast
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    -->
+    <string name="toast.requiredFields">There are fields empty</string>
+    <string name="toast.examsNotLoaded">Not all exams loaded</string>
+    <string name="toast.somethingWentWrong">Something went wrong, try again</string>
+
+    <string name="toast.examAnsweringConfirm.answerSent">Answer sent, good luck</string>
+    <string name="toast.examCreateConfirm.examCreated">Exam created</string>
+    <string name="toast.examManagingStudentInspect.gradeUpdated">Grade updated</string>
+    <string name="toast.examManagingStudent.allStudentsLoaded">All students loaded</string>
+
+
+    <!--
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * Progress
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    -->
+    <string name="progress.examManagingStudentInspect.loadingGrade">Loading student\'s grade</string>
+    <string name="progress.examManagingStudentInspect.loadingAnswers">Loading student\'s answers</string>
+    <string name="progress.examManagingStudentInspect.updatingGrade">Updating student\'s grade</string>
+    <string name="progress.examManagingStudent.loadingStudents">Loading students</string>
+    <string name="progress.examAnsweringConfirm.sendingAnswers">Sending your answers</string>
+    <string name="progress.main.loadingExams">Loading exams</string>
+
+
 
     <string name="action_settings">Settings</string>
 

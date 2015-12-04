@@ -39,7 +39,7 @@ import com.sharman.yukon.view.activities.dialog.StudentPickerDialog;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.DialogCallback;
 import com.sharman.yukon.view.activities.util.StepByStepEvent;
-import com.sharman.yukon.view.activities.util.StepByStepEventCallback;
+import com.sharman.yukon.view.activities.util.FinishStepByStepEventCallback;
 import com.sharman.yukon.view.activities.util.StudentConfigFilePair;
 
 import org.json.JSONException;
@@ -135,40 +135,57 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
         steps_examCreation.add(EExamCreationStep.TEACHER_CONFIGS_FILE_CREATION.getName());
         steps_examCreation.add(EExamCreationStep.TEACHER_ANSWERS_FILE_CREATION.getName());
 
-        stepByStepEvent_examCreation = new StepByStepEvent(steps_examCreation, new StepByStepEventCallback() {
-            @Override
-            public void onSuccess() {
-
-                Set<String> steps_examSharing = new HashSet<>();
-                for (int i = 0; i < studentConfigFilePairArray.length; i++) {
-                    steps_examSharing.add("student_" + i);
-                }
-
-                stepByStepEvent_examSharing = new StepByStepEvent(steps_examSharing, new StepByStepEventCallback() {
+        stepByStepEvent_examCreation = new StepByStepEvent(steps_examCreation)
+                .setFinishStepCallback(new FinishStepByStepEventCallback() {
                     @Override
                     public void onSuccess() {
 
-                        String[] studentConfigsFileIdArray = new String[studentConfigFilePairArray.length];
-
-                        for(int i=0; i<studentConfigFilePairArray.length; i++){
-                            studentConfigsFileIdArray[i] = studentConfigFilePairArray[i].getConfigFileId();
+                        Set<String> steps_examSharing = new HashSet<>();
+                        for (int i = 0; i < studentConfigFilePairArray.length; i++) {
+                            steps_examSharing.add("student_" + i);
                         }
 
-                        TeacherConfigs teacherConfigs = new TeacherConfigs(studentConfigsFileIdArray, correctAnswersFileId, examFileId, exam.getTitle(), exam.getDeliverDate(), exam.getSubject(), exam.getTeacherId());
+                        stepByStepEvent_examSharing = new StepByStepEvent(steps_examSharing)
+                                .setFinishStepCallback(new FinishStepByStepEventCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        setProgressMessage("Finishing");
 
-                        new DriveIOHandler(getCredential()).editFile(teacherConfigsFileId, null, null, teacherConfigs.toString(), new FileEditCallback() {
-                            @Override
-                            public void onSuccess() {
-                                onCreationSuccess();
-                            }
+                                        String[] studentConfigsFileIdArray = new String[studentConfigFilePairArray.length];
 
-                            @Override
-                            public void onFailure(String errorMessage) {
-                                Set<String> failedSteps = new HashSet<>();
-                                failedSteps.add("teacher_configs_file_edit");
-                                onCreationFailure(failedSteps);
-                            }
-                        });
+                                        for(int i=0; i<studentConfigFilePairArray.length; i++){
+                                            studentConfigsFileIdArray[i] = studentConfigFilePairArray[i].getConfigFileId();
+                                        }
+
+                                        TeacherConfigs teacherConfigs = new TeacherConfigs(studentConfigsFileIdArray, correctAnswersFileId, examFileId, exam.getTitle(), exam.getDeliverDate(), exam.getSubject(), exam.getTeacherId());
+
+                                        new DriveIOHandler(getCredential()).editFile(teacherConfigsFileId, null, null, teacherConfigs.toString(), new FileEditCallback() {
+                                            @Override
+                                            public void onSuccess() {
+                                                onCreationSuccess();
+                                            }
+
+                                            @Override
+                                            public void onFailure(String errorMessage) {
+                                                Set<String> failedSteps = new HashSet<>();
+                                                failedSteps.add("teacher_configs_file_edit");
+                                                onCreationFailure(failedSteps);
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFailure(Set<String> failedSteps) {
+                                        onCreationFailure(failedSteps);
+                                    }
+                                });
+
+
+                        setProgressMessage("Sharing exam");
+                        for (int i = 0; i < studentConfigFilePairArray.length; i++) {
+                            createEachStudentFolderAndShare(studentFilesFolderId, studentConfigFilePairArray[i], i);
+                        }
+
                     }
 
                     @Override
@@ -176,19 +193,6 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                         onCreationFailure(failedSteps);
                     }
                 });
-
-
-                for (int i = 0; i < studentConfigFilePairArray.length; i++) {
-                    createEachStudentFolderAndShare(studentFilesFolderId, studentConfigFilePairArray[i], i);
-                }
-
-            }
-
-            @Override
-            public void onFailure(Set<String> failedSteps) {
-                onCreationFailure(failedSteps);
-            }
-        });
 
     }
 
@@ -214,10 +218,13 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
             secondaryInfoOut.setText(exam.getSubject());
             tertiaryInfoOut.setText(new SimpleDateFormat("dd/MM/yyyy").format(exam.getDeliverDate()));
 
+            startProgressFragment();
+            setProgressMessage("Loading data");
             final PlusIOHandler plusIOHandler = new PlusIOHandler(getCredential());
             plusIOHandler.readPerson("me", new PersonReadCallback() {
                 @Override
                 public void onSuccess(Person person) {
+
                     teacherId = person.getId();
 
                     try {
@@ -230,6 +237,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                     plusIOHandler.readPersonImg(person, new PersonImgReadCallback() {
                         @Override
                         public void onSuccess(final Bitmap bitmap) {
+                            stopProgressFragment();
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -244,6 +252,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                         @Override
                         public void onFailure(String errorMessage) {
                             //TODO error
+                            stopProgressFragment();
                         }
                     });
                 }
@@ -251,6 +260,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                 @Override
                 public void onFailure(Exception exception) {
                     // TODO error
+                    stopProgressFragment();
                 }
             });
 
@@ -270,8 +280,9 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
      */
 
     private void onCreationSuccess(){
+        stopProgressFragment();
         System.out.println(">> Creation Success");
-        new AndroidUtil(this).showToast("Success", Toast.LENGTH_SHORT);
+        new AndroidUtil(this).showToast(R.string.toast_examCreateConfirm_examCreated, Toast.LENGTH_SHORT);
         final Activity activity = this;
 
         runOnUiThread(new Runnable() {
@@ -285,6 +296,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
     }
 
     private void onCreationFailure(Set<String> failedSteps){
+        stopProgressFragment();
         System.out.print(">> Creation Failed");
 
         System.out.print(">> Failed steps: [");
@@ -297,13 +309,14 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
         }
         System.out.print("]");
 
-        new AndroidUtil(this).showToast("Fail", Toast.LENGTH_SHORT);
+        new AndroidUtil(this).showToast(R.string.toast_somethingWentWrong, Toast.LENGTH_SHORT);
     }
 
 
 
     private void createExamOnDrive(){
-        new AndroidUtil(this).showToast("Working...", Toast.LENGTH_LONG);
+        startProgressFragment();
+        setProgressMessage("Creating exam on drive");
 
 
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
@@ -311,6 +324,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
         new DriveIOHandler(getCredential()).createFolder("", exam.getTitle(), "Yukon exam folder \n(All the actions that you may need to make with this folder/exam has to be done under the Yukon App interface)\n(Do not share this folder with any of your students)\n(Do not delete, change or move any file inside this folder)", new FolderCreateCallback() {
             @Override
             public void onSuccess(String folderId) {
+                setProgressDetailMessage("Exam folder created");
                 examRootFolderId = folderId;
                 stepByStepEvent_examCreation.registerStep(EExamCreationStep.EXAM_FOLDER_CREATION.getName(), true);
 
@@ -319,6 +333,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                 new DriveIOHandler(getCredential()).createFolder(folderId, "TeacherFiles", "", new FolderCreateCallback() {
                     @Override
                     public void onSuccess(String folderId) {
+                        setProgressDetailMessage("Teacher folder created");
                         //teacherFilesFolderId = folderId;
                         stepByStepEvent_examCreation.registerStep(EExamCreationStep.TEACHER_FOLDER_CREATION.getName(), true);
 
@@ -327,6 +342,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                         new DriveIOHandler(getCredential()).createFile(folderId, "CorrectAnswers", "", EMimeType.JSON.getMimeType(), teacherAnswers.toString(), new FileCreateCallback() {
                             @Override
                             public void onSuccess(String fileId) {
+                                setProgressDetailMessage("Correct answers file created");
                                 correctAnswersFileId = fileId;
                                 stepByStepEvent_examCreation.registerStep(EExamCreationStep.TEACHER_ANSWERS_FILE_CREATION.getName(), true);
                             }
@@ -345,6 +361,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                         new DriveIOHandler(getCredential()).createFile(folderId, "Configs", "Teacher's configuration file", EMimeType.TEACHER_CONFIG.getMimeType(), "", new FileCreateCallback() {
                             @Override
                             public void onSuccess(String fileId) {
+                                setProgressDetailMessage("Teacher configs file created");
                                 teacherConfigsFileId = fileId;
                                 stepByStepEvent_examCreation.registerStep(EExamCreationStep.TEACHER_CONFIGS_FILE_CREATION.getName(), true);
                             }
@@ -373,6 +390,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                 new DriveIOHandler(getCredential()).createFile(folderId, "Exam", exam.getDescription(), EMimeType.JSON.getMimeType(), exam.toString(), new FileCreateCallback() {
                     @Override
                     public void onSuccess(String fileId) {
+                        setProgressDetailMessage("Exam file created");
                         examFileId = fileId;
                         stepByStepEvent_examCreation.registerStep(EExamCreationStep.EXAM_FILE_CREATION.getName(), true);
 
@@ -381,6 +399,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                         new DriveIOHandler(getCredential()).createFolder(examRootFolderId, "StudentFiles", "", new FolderCreateCallback() {
                             @Override
                             public void onSuccess(String folderId) {
+                                setProgressDetailMessage("Students folder created");
                                 studentFilesFolderId = folderId;
                                 stepByStepEvent_examCreation.registerStep(EExamCreationStep.STUDENTS_FOLDER_CREATION.getName(), true);
 
@@ -395,6 +414,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                                 new DriveIOHandler(getCredential()).shareFile(examFileId, null, permissionStructArray, new FileShareCallback() {
                                     @Override
                                     public void onSuccess() {
+                                        setProgressDetailMessage("Exam file shared");
                                         stepByStepEvent_examCreation.registerStep(EExamCreationStep.EXAM_FILE_SHARING.getName(), true);
                                     }
 
@@ -443,17 +463,19 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
         final String type = "user";
 
 
-        final StepByStepEvent stepByStepEvent_studentFilesAndSharing = new StepByStepEvent(steps_studentFilesAndSharing, new StepByStepEventCallback() {
-            @Override
-            public void onSuccess() {
-                stepByStepEvent_examSharing.registerStep("student_" + index, true);
-            }
+        final StepByStepEvent stepByStepEvent_studentFilesAndSharing = new StepByStepEvent(steps_studentFilesAndSharing)
+                .setFinishStepCallback(new FinishStepByStepEventCallback() {
+                    @Override
+                    public void onSuccess() {
+                        setProgressDetailMessage("Shared with " + studentConfigFilePair.getUserId());
+                        stepByStepEvent_examSharing.registerStep("student_" + index, true);
+                    }
 
-            @Override
-            public void onFailure(Set<String> failedSteps) {
-                stepByStepEvent_examSharing.registerStep("student_" + index, false);
-            }
-        });
+                    @Override
+                    public void onFailure(Set<String> failedSteps) {
+                        stepByStepEvent_examSharing.registerStep("student_" + index, false);
+                    }
+                });
 
 
         // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *

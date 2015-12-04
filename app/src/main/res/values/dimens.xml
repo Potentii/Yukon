@@ -16,4 +16,6 @@
     <dimen name="navigationDrawer.elevation">16dp</dimen>
     <dimen name="navigationDrawer.line.height">48dp</dimen>
     <dimen name="navigationDrawer.line.icon.size">24dp</dimen>
+
+    <dimen name="progressBar.size">48dp</dimen>
 </resources>

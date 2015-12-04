@@ -1,0 +1,54 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.sharman.yukon.view.activities.ProgressFragment"
+    android:background="#77f7f7f7">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ProgressBar
+                android:layout_width="0dp"
+                android:layout_height="@dimen/progressBar.size"
+                android:id="@+id/progressBar"
+                android:layout_weight="1"
+                android:indeterminate="true" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:id="@+id/messageOut"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:id="@+id/messageDetailOut"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_horizontal"
+                android:singleLine="true" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>

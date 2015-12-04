@@ -10,7 +10,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.sharman.yukon.view.activities.TeacherMainActivity">
+        tools:context="com.sharman.yukon.view.activities.TeacherMainActivity"
+        android:id="@+id/rootLayout">
 
 
         <!-- * App Bar * -->

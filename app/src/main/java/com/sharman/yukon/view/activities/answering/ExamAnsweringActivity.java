@@ -44,7 +44,8 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
     protected void onConnectOnce(){
         super.onConnectOnce();
 
-        new AndroidUtil(this).showToast("Loading exam...", Toast.LENGTH_SHORT);
+
+        //new AndroidUtil(this).showToast("Loading exam...", Toast.LENGTH_SHORT);
 
         try {
             // *Gets the studentConfigs from intent:
@@ -66,6 +67,8 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
         final DriveIOHandler driveIOHandler = new DriveIOHandler(getCredential());
         final Activity activity = this;
 
+        startProgressFragment();
+        setProgressMessage("Loading exam");
         driveIOHandler.readFile(examFileId, new FileReadCallback() {
             @Override
             public void onSuccess(String content) {
@@ -93,9 +96,30 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
                         }
                     });
 
+                    setProgressMessage("Loading grade");
                     driveIOHandler.readFile(gradeFileId, new FileReadCallback() {
                         @Override
                         public void onSuccess(String content) {
+
+                            setProgressMessage("Loading answers");
+                            driveIOHandler.readFile(gradeFileId, new FileReadCallback() {
+                                @Override
+                                public void onSuccess(String content) {
+                                    stopProgressFragment();
+                                    // TODO mostrar respostas do aluno caso ele ja respondeu
+                                    // TODO e não permitir que ele responda o exam
+
+                                    allFilesLoaded = true;
+                                }
+
+                                @Override
+                                public void onFailure(Exception exception) {
+                                    //TODO error
+                                    stopProgressFragment();
+                                }
+                            });
+
+
                             try {
                                 final Grade grade = new Grade(content);
 
@@ -118,16 +142,14 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
                                 e.printStackTrace();
                                 onFailure(e);
                             }
-
-                            allFilesLoaded = true;
                         }
 
                         @Override
                         public void onFailure(Exception exception) {
                             //TODO error
+                            stopProgressFragment();
                         }
                     });
-
 
                 } catch (JSONException e){
                     e.printStackTrace();
@@ -138,6 +160,7 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
             @Override
             public void onFailure(Exception exception) {
                 //TODO error
+                stopProgressFragment();
             }
         });
     }
