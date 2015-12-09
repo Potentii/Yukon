@@ -37,6 +37,8 @@
 
     <string name="output.answerCorrection.studentDidntAnswered">Student didn\'t answer yet!</string>
 
+    <string name="output.examCreate.emptyQuestions">None questions added</string>
+
     <!-- * List labels * -->
     <string name="listLabel.main.my">Created by me</string>
     <string name="listLabel.main.shared">Exams</string>
@@ -45,7 +47,7 @@
     <!-- * Dialog title * -->
     <string name="dialogTitle.deliveryDate">@string/inputHint.examCreate.deliveryDate</string>
     <string name="dialogTitle.alternativeAnswer">@string/inputHint.questionCreate.alternatives</string>
-    <string name="dialogTitle.studentPicker">@string/inputHint.examCreateConfirm.students</string>
+    <string name="dialogTitle.studentPicker">@string/inputHint.examCreate.students</string>
     <string name="dialogTitle.answerCorrection">Answer</string>
 
 
@@ -67,10 +69,12 @@
 
     <string name="inputHint.questionCreate.alternativeDialog.answerRow">Type a possible answer</string>
 
-    <string name="inputHint.examCreateConfirm.students">Students</string>
+    <string name="inputHint.examCreate.students">Students</string>
 
     <string name="inputHint.studentPickerDialog.student">Student e-mail</string>
 
+    <string name="input.questionCreate.alternativesSelected.singular">alternative</string>
+    <string name="input.questionCreate.alternativesSelected.plural">alternatives</string>
 
 
     <!--
@@ -127,6 +131,7 @@
     *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
     -->
     <string name="toast.requiredFields">There are fields empty</string>
+    <string name="toast.invalidFields">There are invalid fields</string>
     <string name="toast.examsNotLoaded">Not all exams loaded</string>
     <string name="toast.somethingWentWrong">Something went wrong, try again</string>
 

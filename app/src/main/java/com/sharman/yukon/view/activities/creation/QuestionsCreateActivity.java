@@ -1,40 +1,54 @@
 package com.sharman.yukon.view.activities.creation;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.sharman.yukon.R;
 import com.sharman.yukon.model.Answer;
 import com.sharman.yukon.model.AnswerBox;
-import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.Question;
-import com.sharman.yukon.model.TeacherAnswers;
 import com.sharman.yukon.model.WeightTypeAnswerStruct;
 import com.sharman.yukon.model.util.EMultipleAnswerType;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 import com.sharman.yukon.view.activities.dialog.AlternativeAnswerDialog;
+import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.AnswerAlternativePair;
 import com.sharman.yukon.view.activities.util.DialogCallback;
+import com.sharman.yukon.view.activities.util.FormValidator;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 
-public class QuestionsCreateActivity extends GoogleRestConnectActivity implements DialogCallback {
-    private Exam exam;
-    private TeacherAnswers teacherAnswers;
+public class QuestionsCreateActivity extends GoogleRestConnectActivity {
+    public static final String QUESTION_INTENT_KEY = "question";
+    public static final String WTA_STRUCT_INTENT_KEY = "weightTypeAnswerStruct";
+    public static final String QUESTION_INDEX_INTENT_KEY = "questionIndex";
+
+    private Question question;
+    private WeightTypeAnswerStruct weightTypeAnswerStruct;
+    private EMultipleAnswerType eMultipleAnswerType;
+    private List<AnswerAlternativePair> answerAlternativePairList = new ArrayList<>();
+    private int questionIndex;
 
     private AlternativeAnswerDialog alternativeAnswerDialog;
 
-    private EMultipleAnswerType eMultipleAnswerType;
-    private View alternativesRow;
+    private EditText questionTitleIn;
+    private EditText questionWeightIn;
+    private Spinner answerTypeSpinner;
+    private EditText questionAlternativesIn;
+    private View alternativesField;
+
+    private FormValidator formValidator;
 
 
 
@@ -43,12 +57,116 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questions_create);
 
+
+
+        // *Fields:
+        alternativesField = findViewById(R.id.alternativesField);
+        questionTitleIn = (EditText) findViewById(R.id.questionTitleIn);
+        questionWeightIn = (EditText) findViewById(R.id.questionWeightIn);
+        answerTypeSpinner = (Spinner) findViewById(R.id.answerTypeSpinner);
+        questionAlternativesIn = (EditText) findViewById(R.id.questionAlternativesIn);
+
+
+
+        // *Validator:
+        formValidator = new FormValidator()
+                .addField(questionTitleIn, EnumSet.of(FormValidator.EValidation.REQUIRED))
+                .addField(questionWeightIn, EnumSet.of(FormValidator.EValidation.REQUIRED, FormValidator.EValidation.FLOAT));
+
+
+
+        // *Dialogs:
         alternativeAnswerDialog = new AlternativeAnswerDialog();
-        alternativeAnswerDialog.setDialogCallback(this);
+        alternativeAnswerDialog.setAnswerAlternativePairList(answerAlternativePairList);
+        alternativeAnswerDialog.setDialogCallback(new DialogCallback() {
+            @Override
+            public void onPositive() {
+                // Showing the number of registered alternatives:
+                answerAlternativePairList = alternativeAnswerDialog.getAnswerAlternativePairList();
+                questionAlternativesIn_formatTxt();
+            }
 
-        alternativesRow = findViewById(R.id.alternativesRow);
+            @Override
+            public void onNegative() {}
 
-        Spinner answerTypeSpinner = (Spinner) findViewById(R.id.answerTypeSpinner);
+            @Override
+            public void onNeutral() {}
+        });
+
+
+
+        // *Intent data:
+        int requestCode = getIntent().getExtras().getInt(ExamCreateActivity.REQUEST_CODE_INTENT_KEY);
+        questionIndex = getIntent().getExtras().getInt(ExamCreateActivity.QUESTION_INDEX_INTENT_KEY);
+
+        if(requestCode == ExamCreateActivity.ADD_QUESTION_REQUEST){
+            question = new Question("", 0, new AnswerBox());
+            weightTypeAnswerStruct = new WeightTypeAnswerStruct(0, null, new Answer(new String[0]));
+        } else if(requestCode == ExamCreateActivity.EDIT_QUESTION_REQUEST){
+            String questionStr = getIntent().getExtras().getString(ExamCreateActivity.QUESTION_INTENT_KEY);
+            String wtaStructStr = getIntent().getExtras().getString(ExamCreateActivity.WTA_STRUCT_INTENT_KEY);
+            try {
+                question = new Question(questionStr);
+                weightTypeAnswerStruct = new WeightTypeAnswerStruct(wtaStructStr);
+
+                eMultipleAnswerType = weightTypeAnswerStruct.getEMultipleAnswerType();
+
+                // *Setting new answerAlternativePairList based on given Question:
+                String[] titleArray = question.getAnswerBox().getTitleArray();
+                String[] answerArray = weightTypeAnswerStruct.getAnswer().getAnswerArray();
+                int[] correctAlternativesArray = Answer.convertAlphabetArray_IntArray(answerArray);
+
+
+                if(titleArray.length >= correctAlternativesArray.length){
+                    answerAlternativePairList.clear();
+                    for (int i = 0; i<titleArray.length; i++) {
+                        boolean correct = false;
+                        for (int j = 0; j < correctAlternativesArray.length; j++) {
+                            if(correctAlternativesArray[j] == i){
+                                correct = true;
+                                break;
+                            }
+                        }
+                        answerAlternativePairList.add(new AnswerAlternativePair(correct, titleArray[i]));
+                    }
+                }
+
+
+                alternativeAnswerDialog.setAnswerAlternativePairList(answerAlternativePairList);
+
+
+                questionTitleIn.setText(question.getTitle());
+                questionWeightIn.setText(String.valueOf(weightTypeAnswerStruct.getWeight()));
+                if(eMultipleAnswerType == null){
+                    answerTypeSpinner.setSelection(0);
+                } else if(eMultipleAnswerType == EMultipleAnswerType.SINGLE_CHOICE){
+                    answerTypeSpinner.setSelection(1);
+                } else{
+                    answerTypeSpinner.setSelection(2);
+                }
+                questionAlternativesIn_formatTxt();
+
+            } catch (JSONException | NullPointerException e) {
+                e.printStackTrace();
+                question = new Question("", 0, new AnswerBox());
+                weightTypeAnswerStruct = new WeightTypeAnswerStruct(0, null, new Answer(new String[0]));
+                answerAlternativePairList.clear();
+            }
+        } else{
+            question = new Question("", 0, new AnswerBox());
+            weightTypeAnswerStruct = new WeightTypeAnswerStruct(0, null, new Answer(new String[0]));
+        }
+
+
+        eMultipleAnswerType = weightTypeAnswerStruct.getEMultipleAnswerType();
+
+
+        try {
+            getActionToolbar().setTitle(getResources().getString(R.string.activityTitle_questionCreate) + " " + (questionIndex+1));
+        } catch (NullPointerException e){}
+
+
+        // *Spinner listener:
         answerTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -64,40 +182,174 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
                 }
 
                 if(eMultipleAnswerType == null){
-                    alternativesRow.setVisibility(View.INVISIBLE);
+                    alternativesField.setVisibility(View.INVISIBLE);
+                    // *Remove from validation process:
+                    formValidator.removeComplexField(alternativeAnswerDialog);
                 } else{
-                    alternativesRow.setVisibility(View.VISIBLE);
+                    alternativesField.setVisibility(View.VISIBLE);
+                    // *Add to validation process:
+                    formValidator.addComplexField(alternativeAnswerDialog);
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) {}
         });
+    }
 
 
-        try {
-            exam = new Exam(getIntent().getExtras().getString("exam"));
 
-            try {
-                // *Setting the title of the actionBar:
-                getActionToolbar().setTitle(getResources().getString(R.string.activityTitle_questionCreate) + " " + (exam.getQuestionArray().length+1));
-            } catch (NullPointerException e){
-                e.printStackTrace();
-            }
-
-        } catch (NullPointerException | JSONException e){
-            // TODO error
-            e.printStackTrace();
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Listeners methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    public void confirmFAB_onClick(View view){
+        if(!formValidator.isValid()){
+            new AndroidUtil(this).showToast(R.string.toast_invalidFields, Toast.LENGTH_LONG);
+            return;
         }
 
-        try {
-            teacherAnswers = new TeacherAnswers(getIntent().getExtras().getString("teacherAnswers"));
-        } catch (NullPointerException | JSONException e){
-            teacherAnswers = new TeacherAnswers(new WeightTypeAnswerStruct[]{});
+        List<AnswerAlternativePair> answerAlternativePairList = alternativeAnswerDialog.getAnswerAlternativePairList();
+
+
+        // *Setting the answerBox:
+        AnswerBox answerBox;
+        if(eMultipleAnswerType == null) {
+            answerBox = new AnswerBox();
+        } else{
+            String[] alternativeArray = new String[answerAlternativePairList.size()];
+
+            for(int i=0; i<alternativeArray.length; i++){
+                alternativeArray[i] = answerAlternativePairList.get(i).getAlternative();
+            }
+            answerBox = new AnswerBox(alternativeArray, eMultipleAnswerType);
+        }
+
+
+        // *Setting the answer:
+        Answer answer;
+        if(eMultipleAnswerType == null){
+            answer = new Answer(new String[]{});
+        } else {
+            switch (eMultipleAnswerType) {
+                default:
+                case SINGLE_CHOICE:
+                    int indexCorrect = -1;
+                    for (int i = 0; i < answerAlternativePairList.size(); i++) {
+                        if (answerAlternativePairList.get(i).isCorrect()) {
+                            indexCorrect = i;
+                        }
+                    }
+                    answer = new Answer(Answer.convertIntArray_AlphabetArray(new int[]{indexCorrect}));
+                    break;
+
+                case MULTIPLE_CHOICE:
+                    int indexCorrectCount = 0;
+                    for (int i = 0; i < answerAlternativePairList.size(); i++) {
+                        if (answerAlternativePairList.get(i).isCorrect()) {
+                            indexCorrectCount++;
+                        }
+                    }
+                    int[] indexCorrectArray = new int[indexCorrectCount];
+                    int index = 0;
+                    for (int i = 0; i < answerAlternativePairList.size(); i++) {
+                        if (answerAlternativePairList.get(i).isCorrect()) {
+                            indexCorrectArray[index] = i;
+                            index++;
+                        }
+                    }
+                    answer = new Answer(Answer.convertIntArray_AlphabetArray(indexCorrectArray));
+                    break;
+            }
+        }
+
+
+        // *Creating the WeightTypeAnswerStruct object:
+        weightTypeAnswerStruct = new WeightTypeAnswerStruct(
+                Double.parseDouble(questionWeightIn.getText().toString()),
+                eMultipleAnswerType,
+                answer);
+
+
+        // *Creating the Question object:
+        question = new Question(
+                questionTitleIn.getText().toString(),
+                Double.parseDouble(questionWeightIn.getText().toString()),
+                answerBox);
+
+
+        // *Sending the OK result intent:
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra(QUESTION_INTENT_KEY, question.toString());
+        resultIntent.putExtra(WTA_STRUCT_INTENT_KEY, weightTypeAnswerStruct.toString());
+        resultIntent.putExtra(QUESTION_INDEX_INTENT_KEY, questionIndex);
+        if (getParent() == null) {
+            setResult(Activity.RESULT_OK, resultIntent);
+        } else {
+            getParent().setResult(Activity.RESULT_OK, resultIntent);
+        }
+        finish();
+    }
+
+
+    public void questionAlternativesIn_onCLick(View view){
+
+
+        alternativeAnswerDialog.setAnswerAlternativePairList(answerAlternativePairList);
+        alternativeAnswerDialog.seteMultipleAnswerType(eMultipleAnswerType);
+        alternativeAnswerDialog.show(getFragmentManager(), "alternative_answer_dialog");
+    }
+
+
+
+
+    private void questionAlternativesIn_formatTxt(){
+        if(answerAlternativePairList.size() == 0){
+            questionAlternativesIn.setText("");
+        } else if(answerAlternativePairList.size() == 1){
+            questionAlternativesIn.setText(answerAlternativePairList.size() + " " + getResources().getString(R.string.input_questionCreate_alternativesSelected_singular));
+        } else{
+            questionAlternativesIn.setText(answerAlternativePairList.size() + " " + getResources().getString(R.string.input_questionCreate_alternativesSelected_plural));
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -109,9 +361,8 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
     /**
      * Updates the exam object, adding the question to its question array
      */
+    /*
     public void updateExam(){
-        EditText questionTitleIn = (EditText) findViewById(R.id.questionTitleIn);
-        EditText questionWeightIn = (EditText) findViewById(R.id.questionWeightIn);
         AnswerBox answerBox;
 
         if(eMultipleAnswerType == null) {
@@ -121,7 +372,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
             String[] alternativeArray = new String[answerAlternativePairList.size()];
 
             for(int i=0; i<alternativeArray.length; i++){
-                alternativeArray[i] = answerAlternativePairList.get(i).getQuestion();
+                alternativeArray[i] = answerAlternativePairList.get(i).getAlternative();
             }
 
             answerBox = new AnswerBox(alternativeArray, eMultipleAnswerType);
@@ -147,13 +398,16 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
             e.printStackTrace();
         }
     }
+    */
+
 
 
     /**
      * Updates the teacherAnswers object, adding the answer to its answer array
      */
+    /*
     public void updateTeacherAnswers(){
-        EditText questionWeightIn = (EditText) findViewById(R.id.questionWeightIn);
+
         List<AnswerAlternativePair> answerAlternativePairList = alternativeAnswerDialog.getAnswerAlternativePairList();
         Answer answer;
 
@@ -200,6 +454,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
                 eMultipleAnswerType,
                 answer);
 
+
         WeightTypeAnswerStruct[] weightTypeAnswerStructArrayOLD = teacherAnswers.getWeightTypeAnswerStructArray();
         WeightTypeAnswerStruct[] weightTypeAnswerStructArrayNEW = new WeightTypeAnswerStruct[weightTypeAnswerStructArrayOLD.length+1];
 
@@ -215,36 +470,21 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
             e.printStackTrace();
         }
     }
+    */
 
 
 
+
+
+
+
+
+
+
+
+    // TODO tenho que colocar esses metodos dos radios em outro lugar
     /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * DialogCallback methods:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
-    @Override
-    public void onPositive() {
-        // TODO show a preview of the alternatives
-    }
 
-    @Override
-    public void onNegative() {
-
-    }
-
-    @Override
-    public void onNeutral() {
-
-    }
-
-
-
-    /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * Listeners methods:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
     public void radioButton_onClick(View view){
         alternativeAnswerDialog.radioButton_onClick(view);
     }
@@ -253,8 +493,16 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
         alternativeAnswerDialog.setEMultipleAnswerType(eMultipleAnswerType);
         alternativeAnswerDialog.show(getFragmentManager(), "alternatives_dialog");
     }
+    */
 
+
+    /*
     public void addQuestionBtn_onClick(View view){
+        if(!formValidator.isValid()){
+            new AndroidUtil(this).showToast(R.string.toast_invalidFields, Toast.LENGTH_LONG);
+            return;
+        }
+
         updateExam();
         updateTeacherAnswers();
 
@@ -265,6 +513,11 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
     }
 
     public void questionCreateShareActionButton_onClick() {
+        if(!formValidator.isValid()){
+            new AndroidUtil(this).showToast(R.string.toast_invalidFields, Toast.LENGTH_LONG);
+            return;
+        }
+
         updateExam();
         updateTeacherAnswers();
 
@@ -274,6 +527,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
         startActivity(examCreateConfirmIntent);
     }
 
+    */
 
 
     /*
@@ -281,6 +535,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
      *  * ActionBar methods:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_question_create, menu);
@@ -297,4 +552,5 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity implement
                 return super.onOptionsItemSelected(item);
         }
     }
+    */
 }

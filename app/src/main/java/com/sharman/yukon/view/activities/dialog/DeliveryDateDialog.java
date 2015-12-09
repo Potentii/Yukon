@@ -11,6 +11,7 @@ import android.widget.DatePicker;
 
 import com.sharman.yukon.R;
 import com.sharman.yukon.view.activities.util.DialogCallback;
+import com.sharman.yukon.view.activities.util.Validatable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,8 +20,8 @@ import java.util.Date;
 /**
  * Created by poten on 16/10/2015.
  */
-public class DeliveryDateDialog extends DialogFragment {
-    private Date date = new Date();
+public class DeliveryDateDialog extends DialogFragment implements Validatable {
+    private Date date;
     private DialogCallback dialogCallback;
 
     @Override
@@ -78,5 +79,11 @@ public class DeliveryDateDialog extends DialogFragment {
 
     public void setDialogCallback(DialogCallback dialogCallback) {
         this.dialogCallback = dialogCallback;
+    }
+
+
+    @Override
+    public boolean isValid() {
+        return date != null;
     }
 }

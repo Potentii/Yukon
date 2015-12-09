@@ -15,7 +15,9 @@ import com.sharman.yukon.io.drive.callback.FileReadCallback;
 import com.sharman.yukon.io.drive.util.EMimeType;
 import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.view.activities.creation.ExamCreateActivity;
+import com.sharman.yukon.view.activities.dialog.AlertDialog;
 import com.sharman.yukon.view.activities.managing.ExamManagingActivity;
+import com.sharman.yukon.view.activities.util.DialogCallback;
 import com.sharman.yukon.view.activities.util.StepByStepEvent;
 import com.sharman.yukon.view.activities.util.recycler.ExamRVAdapter;
 import com.sharman.yukon.view.activities.util.recycler.ExamRVInfo;
@@ -66,6 +68,35 @@ public class TeacherMainActivity extends MainActivity {
         driveIOHandler.queryFiles("mimeType = '" + EMimeType.TEACHER_CONFIG.getMimeType() + "'", new FileQueryCallback() {
             @Override
             public void onResult(final List<File> driveFileList) {
+
+                // TODO fazer tratamento para exceptions de servidor e de internet como essa, de um jeito mais automatizado
+                if(driveFileList == null){
+                    AlertDialog alertDialog = new AlertDialog();
+                    alertDialog.setTitleTxt("Internet error");
+                    alertDialog.setContentTxt("Do you want to try again?");
+                    alertDialog.setPositiveBtnTxt("Try again");
+                    alertDialog.setNegativeBtnTxt("No");
+                    alertDialog.setDialogCallback(new DialogCallback() {
+                        @Override
+                        public void onPositive() {
+                            Intent i = new Intent(getApplicationContext(), TeacherMainActivity.class);
+                            startActivity(i);
+                            finish();
+                        }
+
+                        @Override
+                        public void onNegative() {
+
+                        }
+
+                        @Override
+                        public void onNeutral() {
+
+                        }
+                    });
+                    alertDialog.show(getFragmentManager(), "alert_dialog_internet_error");
+                    return;
+                }
 
                 Set<String> loadingExamsSet = new HashSet<String>();
                 for (int i = 0; i < driveFileList.size(); i++) {

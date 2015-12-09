@@ -74,7 +74,7 @@
 
             <LinearLayout
                 style="@style/inputContainer"
-                android:id="@+id/alternativesRow">
+                android:id="@+id/alternativesField">
 
                 <ImageView
                     style="@style/imageLabel"
@@ -93,13 +93,17 @@
     </ScrollView>
 
 
-    <RelativeLayout
-        style="@style/floatingActionButtonContainer">
-        <Button
-            style="@style/floatingActionButton"
-            android:onClick="addQuestionBtn_onClick"
-            android:text="+" />
-    </RelativeLayout>
+    <!-- * Floating action buttons * -->
+    <LinearLayout
+        style="@style/fabContainer">
+        <RelativeLayout
+            style="@style/fabItem_normal">
+            <ImageButton
+                style="@style/fabItemImageButton"
+                android:src="@drawable/ic_done_24dp"
+                android:onClick="confirmFAB_onClick"/>
+        </RelativeLayout>
+    </LinearLayout>
 
 
 </RelativeLayout>

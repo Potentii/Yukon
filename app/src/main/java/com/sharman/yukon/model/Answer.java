@@ -81,6 +81,11 @@ public class Answer extends JSONObject {
     }
 
 
+    /**
+     * Receives an array of indexes (starting at 0), and return a same size array of {@code String} containing the alphabitical equivalent.
+     * @param indexArray the array of indexes
+     * @return The equivalents in alphabetical form
+     */
     public static String[] convertIntArray_AlphabetArray(int[] indexArray){
         String[] alphabetArray = new String[indexArray.length];
 
@@ -91,6 +96,17 @@ public class Answer extends JSONObject {
         return alphabetArray;
     }
 
+    /**
+     * Transforms an index (starting at 0) into an equivalent in its alphabetical form. Examples:
+     * <pre>
+     * index = 0,  returns A
+     * index = 25, returns Z
+     * index = 26, returns AA
+     * index = 51, returns ZZ
+     * </pre>
+     * @param index The index to be transformed
+     * @return The alphabetical form of the given index
+     */
     public static String convertInt_Alphabet(int index){
         String stringIndex = "";
         if(index>=0){
@@ -104,6 +120,34 @@ public class Answer extends JSONObject {
         }
 
         return stringIndex;
+    }
+
+
+
+
+    public static int[] convertAlphabetArray_IntArray(String[] alphabetArray){
+        int[] indexArray = new int[alphabetArray.length];
+
+        for(int i=0; i<indexArray.length; i++){
+            indexArray[i] = convertAlphabet_Int(alphabetArray[i]);
+        }
+
+        return indexArray;
+    }
+
+    public static int convertAlphabet_Int(String alphabetArray){
+        alphabetArray = alphabetArray.trim().toUpperCase();
+        if(alphabetArray.length() == 0){
+            return -1;
+        }
+
+        char[] charArray = alphabetArray.toCharArray();
+        if(charArray[0] < 65 || charArray[0] > 90){
+            return -1;
+        }
+
+        int index = ((charArray.length-1) * 26) + (charArray[0] - 64 - 1);
+        return index;
     }
 
 

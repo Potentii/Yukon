@@ -9,13 +9,14 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#dddddd"
-        android:padding="16dp" >
+        android:background="#eeeeee"
+        android:padding="16dp"
+        android:layout_marginBottom="8dp">
 
         <ImageView
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/ic_list_24dp" />
+            android:src="@drawable/ic_debug_24dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -26,16 +27,29 @@
             android:layout_marginStart="@dimen/input_start_margin" />
     </LinearLayout>
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/alternativeIn"
+        android:hint="@string/inputHint.questionCreate.alternativeDialog.answerRow"
+        android:layout_margin="16dp"
+        android:gravity="top"
+        android:imeOptions="actionDone"
+        android:singleLine="true" />
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView8" >
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/alternativeAnswerDiv"
-            android:layout_margin="@dimen/activity_horizontal_margin">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:id="@+id/rowContainer"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
         </LinearLayout>
     </ScrollView>
