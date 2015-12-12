@@ -3,10 +3,13 @@ package com.sharman.yukon.view.activities.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -16,6 +19,7 @@ import com.sharman.yukon.R;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.DialogCallback;
 import com.sharman.yukon.view.activities.util.StudentContact;
+import com.sharman.yukon.view.activities.util.Validatable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +33,7 @@ import android.widget.TextView;
 /**
  * Created by poten on 25/10/2015.
  */
-public class StudentPickerDialog extends DialogFragment {
+public class StudentPickerDialog extends DialogFragment implements Validatable{
     // *Holds the student data (name, email, picture) to build the list
     private List<StudentContact> studentContactList = new ArrayList<>();
     private List<String> idList;
@@ -42,7 +46,10 @@ public class StudentPickerDialog extends DialogFragment {
     private ArrayAdapter<String> studentsArrayAdapter;
     private AutoCompleteTextView studentIn;
 
-    private boolean idListChanged = false;
+    private Context context;
+
+    private String invalidText = "";
+
 
 
     @Override
@@ -63,8 +70,8 @@ public class StudentPickerDialog extends DialogFragment {
 
 
 
-        // *If the idList was changed:
-        if(idListChanged && idList != null){
+        // *If the idList isn't null:
+        if(idList != null){
             // *The idList may contain ids which are not on the contacts list
 
             container.removeAllViews();
@@ -87,8 +94,6 @@ public class StudentPickerDialog extends DialogFragment {
                     addRow(id);
                 }
             }
-
-            idListChanged = false;
         }
 
 
@@ -133,6 +138,26 @@ public class StudentPickerDialog extends DialogFragment {
                         break;
                     }
                 }
+            }
+        });
+
+
+
+        // *When the user hit the DONE button on keyboard:
+        studentIn.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    // *The user finished to edit the text:
+                    String text = studentIn.getText().toString();
+                    StudentContact studentContact = new StudentContact(text, text, null);
+
+                    addRow(studentContact);
+                    idList.add(studentContact.getId());
+                    studentIn.setText("");
+                    return true;
+                }
+                return false;
             }
         });
 
@@ -199,7 +224,11 @@ public class StudentPickerDialog extends DialogFragment {
 
 
 
-
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Getters and setters:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     public List<StudentContact> getStudentContactList() {
         return studentContactList;
     }
@@ -211,11 +240,39 @@ public class StudentPickerDialog extends DialogFragment {
         return idList;
     }
     public void setIdList(List<String> idList) {
-        idListChanged = true;
-        this.idList = idList;
+        this.idList = new ArrayList<>(idList);
     }
 
     public void setDialogCallback(DialogCallback dialogCallback) {
         this.dialogCallback = dialogCallback;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Validatable methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    @Override
+    public boolean isValid() {
+        if(idList == null || idList.size()==0){
+            try {
+                invalidText = context.getResources().getString(R.string.output_invalidField_studentPicker_empty);
+            } catch (NullPointerException e){
+                e.printStackTrace();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String getInvalidText() {
+        return invalidText;
     }
 }

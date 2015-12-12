@@ -15,13 +15,13 @@ public class StepByStepEvent {
     private Map<String, Boolean> currentSteps;
     private Set<String> allSteps;
     private Set<String> failedSteps;
-    private StepByStepEventCallback callback;
+    private FinishStepByStepEventCallback finishStepByStepEventCallback;
+    private RegisterStepByStepEventCallback registerStepByStepEventCallback;
     private boolean alreadyFinished;
 
 
-    public StepByStepEvent(@Nonnull Set<String> allSteps, @Nonnull StepByStepEventCallback callback) {
+    public StepByStepEvent(@Nonnull Set<String> allSteps) {
         this.allSteps = allSteps;
-        this.callback = callback;
         currentSteps = new HashMap<>();
         failedSteps = new HashSet<>();
         alreadyFinished = false;
@@ -41,13 +41,23 @@ public class StepByStepEvent {
             failedSteps.add(step);
         }
 
-        if(!alreadyFinished) {
+        if(registerStepByStepEventCallback!=null){
+            if(success){
+                registerStepByStepEventCallback.onRegisterSuccess(step);
+            } else{
+                registerStepByStepEventCallback.onRegisterFailure(step);
+            }
+        }
+
+        if (!alreadyFinished) {
             if (isCompleted()) {
                 alreadyFinished = true;
-                if (isSuccessful()) {
-                    callback.onSuccess();
-                } else {
-                    callback.onFailure(failedSteps);
+                if(finishStepByStepEventCallback!=null) {
+                    if (isSuccessful()) {
+                        finishStepByStepEventCallback.onSuccess();
+                    } else {
+                        finishStepByStepEventCallback.onFailure(failedSteps);
+                    }
                 }
             }
         }
@@ -73,6 +83,18 @@ public class StepByStepEvent {
 
 
 
+    public StepByStepEvent setRegisterStepCallback(@Nonnull RegisterStepByStepEventCallback registerStepByStepEventCallback){
+        this.registerStepByStepEventCallback = registerStepByStepEventCallback;
+        return this;
+    }
+
+    public StepByStepEvent setFinishStepCallback(@Nonnull FinishStepByStepEventCallback finishStepByStepEventCallback){
+        this.finishStepByStepEventCallback = finishStepByStepEventCallback;
+        if(allSteps.size()==0){
+            finishStepByStepEventCallback.onSuccess();
+        }
+        return this;
+    }
 
     public Map<String, Boolean> getCurrentSteps() {
         return currentSteps;

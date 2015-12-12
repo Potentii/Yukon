@@ -27,72 +27,85 @@
 
         <activity
             android:name=".view.activities.DisconnectedActivity"
-            android:label="@string/activityTitle.disconnected" >
+            android:label="@string/activityTitle.disconnected"
+            android:screenOrientation="nosensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".view.activities.MainActivity"
-            android:label="@string/activityTitle.main" >
+            android:name=".view.activities.TeacherMainActivity"
+            android:label="@string/activityTitle.main"
+            android:screenOrientation="nosensor" >
         </activity>
+
+        <activity
+            android:name=".view.activities.StudentMainActivity"
+            android:label="@string/activityTitle.main"
+            android:screenOrientation="nosensor" >
+        </activity>
+
+
 
         <!-- * Exam Creation Activities * -->
         <activity
             android:name=".view.activities.creation.ExamCreateActivity"
             android:label="@string/activityTitle.examCreate"
-            android:parentActivityName=".view.activities.MainActivity" >
+            android:parentActivityName=".view.activities.TeacherMainActivity"
+            android:screenOrientation="nosensor" >
         </activity>
+
         <activity
             android:name=".view.activities.creation.QuestionsCreateActivity"
             android:label="@string/activityTitle.questionCreate"
-            android:parentActivityName=".view.activities.creation.ExamCreateActivity" >
+            android:screenOrientation="nosensor" >
         </activity>
-        <activity
-            android:name=".view.activities.creation.ExamCreateConfirmActivity"
-            android:label="@string/activityTitle.examCreateConfirm" >
-        </activity>
+
+
 
         <!-- * Exam Answering Activities * -->
         <activity
             android:name=".view.activities.answering.ExamAnsweringActivity"
             android:label="@string/activityTitle.examAnswering"
-            android:parentActivityName=".view.activities.MainActivity" >
+            android:parentActivityName=".view.activities.StudentMainActivity"
+            android:screenOrientation="nosensor" >
         </activity>
+
         <activity
             android:name=".view.activities.answering.QuestionAnsweringActivity"
             android:label="@string/activityTitle.questionAnswering"
-            android:parentActivityName=".view.activities.answering.ExamAnsweringActivity" >
+            android:screenOrientation="nosensor" >
         </activity>
+
         <activity
             android:name=".view.activities.answering.ExamAnsweringConfirmActivity"
-            android:label="@string/activityTitle.examAnsweringConfirm" >
+            android:label="@string/activityTitle.examAnsweringConfirm"
+            android:screenOrientation="nosensor" >
         </activity>
+
+
 
         <!-- * Exam Managing Activities * -->
         <activity
             android:name=".view.activities.managing.ExamManagingActivity"
             android:label="@string/activityTitle.examManaging"
-            android:parentActivityName=".view.activities.MainActivity" >
+            android:parentActivityName=".view.activities.TeacherMainActivity"
+            android:screenOrientation="nosensor" >
         </activity>
+
         <activity
             android:name=".view.activities.managing.ExamManagingStudentsActivity"
             android:label="@string/activityTitle.examManagingStudents"
-            android:parentActivityName=".view.activities.managing.ExamManagingActivity" >
+            android:screenOrientation="nosensor" >
         </activity>
+
         <activity
             android:name=".view.activities.managing.ExamManagingStudentInspectActivity"
-            android:label="@string/activityTitle.examManagingStudentInspect" >
-        </activity>
-        <activity
-            android:name=".view.activities.TeacherMainActivity"
-            android:label="@string/title_activity_teacher_main" >
-        </activity>
-        <activity
-            android:name=".view.activities.StudentMainActivity"
-            android:label="@string/title_activity_student_main" >
+            android:label="@string/activityTitle.examManagingStudentInspect"
+            android:screenOrientation="nosensor" >
         </activity>
     </application>
 

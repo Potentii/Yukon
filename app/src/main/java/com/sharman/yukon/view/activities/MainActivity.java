@@ -26,27 +26,53 @@ import com.sharman.yukon.view.activities.answering.ExamAnsweringActivity;
 import com.sharman.yukon.view.activities.creation.ExamCreateActivity;
 import com.sharman.yukon.view.activities.managing.ExamManagingActivity;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
+import com.sharman.yukon.view.activities.util.FinishStepByStepEventCallback;
+import com.sharman.yukon.view.activities.util.RegisterStepByStepEventCallback;
 import com.sharman.yukon.view.activities.util.recycler.ExamRVAdapter;
 import com.sharman.yukon.view.activities.util.recycler.ExamRVInfo;
 import com.sharman.yukon.view.activities.util.recycler.OnExamRVItemClickListener;
 import org.json.JSONException;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 
 public abstract class MainActivity extends GoogleRestConnectActivity {
     protected ExamRVAdapter examRVAdapter;
-
     protected RecyclerView examRecyclerView;
-
     protected Vector<ExamRVInfo> examRVInfoVector;
-
-    protected int examLoaded;
-    protected boolean onUpdateCalled;
 
     protected MainNavigationDrawerFragment mainNavigationDrawerFragment;
     protected Toolbar toolbar;
+
+    protected FinishStepByStepEventCallback finishStepByStepEventCallback = new FinishStepByStepEventCallback() {
+        @Override
+        public void onSuccess() {
+            stopProgressFragment();
+        }
+
+        @Override
+        public void onFailure(Set<String> failedSteps) {
+            new AndroidUtil(getActivity()).showToast(R.string.toast_examsNotLoaded, Toast.LENGTH_SHORT);
+            onSuccess();
+        }
+    };
+
+    protected RegisterStepByStepEventCallback registerStepByStepEventCallback = new RegisterStepByStepEventCallback() {
+        @Override
+        public void onRegisterSuccess(String succeededStep) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    examRecyclerView.getAdapter().notifyDataSetChanged();
+                }
+            });
+        }
+
+        @Override
+        public void onRegisterFailure(String failedStep) {}
+    };
 
 
 
@@ -61,6 +87,8 @@ public abstract class MainActivity extends GoogleRestConnectActivity {
             e.printStackTrace();
         }
 
+        startProgressFragment();
+        setProgressMessage(R.string.progress_main_loadingExams);
         updateExamList();
     }
 
@@ -103,8 +131,9 @@ public abstract class MainActivity extends GoogleRestConnectActivity {
      *  * Update callback methods:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
+    /*
     protected void onExamUpdateSuccess(){
-        /*
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -115,9 +144,10 @@ public abstract class MainActivity extends GoogleRestConnectActivity {
                 }
             }
         });
-        */
+
     }
     protected void onExamUpdateFailure(){
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -127,7 +157,9 @@ public abstract class MainActivity extends GoogleRestConnectActivity {
                 }
             }
         });
+
     }
+    */
 
 
 

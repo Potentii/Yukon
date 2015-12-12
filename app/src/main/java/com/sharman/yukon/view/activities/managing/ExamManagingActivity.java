@@ -54,9 +54,12 @@ public class ExamManagingActivity extends GoogleRestConnectActivity {
         final DriveIOHandler driveIOHandler = new DriveIOHandler(getCredential());
         final Activity activity = this;
 
+        startProgressFragment();
+        setProgressMessage("Loading data");
         driveIOHandler.readFile(teacherConfigs.getExamFileId(), new FileReadCallback() {
             @Override
             public void onSuccess(String content) {
+                stopProgressFragment();
                 try {
                     final Exam exam = new Exam(content);
 
@@ -87,6 +90,7 @@ public class ExamManagingActivity extends GoogleRestConnectActivity {
             @Override
             public void onFailure(Exception exception) {
                 //TODO error
+                stopProgressFragment();
                 exception.printStackTrace();
             }
         });
@@ -107,34 +111,5 @@ public class ExamManagingActivity extends GoogleRestConnectActivity {
         examManagingStudentsIntent.putExtra("teacherAnswerFileId", teacherConfigs.getCorrectAnswersFileId());
         */
         startActivity(examManagingStudentsIntent);
-    }
-
-
-
-    /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * ActionBar methods:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_exam_managing, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

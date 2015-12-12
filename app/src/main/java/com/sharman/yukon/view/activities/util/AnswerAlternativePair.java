@@ -5,11 +5,11 @@ package com.sharman.yukon.view.activities.util;
  */
 public class AnswerAlternativePair {
     private boolean correct;
-    private String question;
+    private String alternative;
 
-    public AnswerAlternativePair(boolean correct, String question) {
+    public AnswerAlternativePair(boolean correct, String alternative) {
         this.correct = correct;
-        this.question = question;
+        this.alternative = alternative;
     }
 
     public boolean isCorrect() {
@@ -18,10 +18,10 @@ public class AnswerAlternativePair {
     public void setCorrect(boolean correct) {
         this.correct = correct;
     }
-    public String getQuestion() {
-        return question;
+    public String getAlternative() {
+        return alternative;
     }
-    public void setQuestion(String question) {
-        this.question = question;
+    public void setAlternative(String alternative) {
+        this.alternative = alternative;
     }
 }

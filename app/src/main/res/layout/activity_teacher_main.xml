@@ -10,7 +10,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.sharman.yukon.view.activities.TeacherMainActivity">
+        tools:context="com.sharman.yukon.view.activities.TeacherMainActivity"
+        android:id="@+id/rootLayout">
 
 
         <!-- * App Bar * -->
@@ -66,14 +67,14 @@
 
         </LinearLayout>
 
-        <RelativeLayout
-            style="@style/floatingActionButtonContainer">
+        <!-- * Floating action buttons * -->
+        <LinearLayout
+            style="@style/FABList">
             <ImageButton
-                style="@style/floatingActionButton"
+                style="@style/FABItem_normal"
                 android:onClick="addExamBtn_onClick"
-                android:src="@drawable/ic_add_24dp"
-                android:scaleType="center"/>
-        </RelativeLayout>
+                android:src="@drawable/ic_add_24dp"/>
+        </LinearLayout>
     </RelativeLayout>
 
     <fragment

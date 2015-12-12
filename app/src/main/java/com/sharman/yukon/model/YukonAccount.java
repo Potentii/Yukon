@@ -16,8 +16,6 @@ public class YukonAccount extends JSONObject {
         DISPLAY_NAME("displayName"),
         EMAIL("email"),
         USER_ID("userId");
-        // TODO photo
-        // TODO cover
 
         private String key;
         private YukonAccountJSONKeys(String key){
