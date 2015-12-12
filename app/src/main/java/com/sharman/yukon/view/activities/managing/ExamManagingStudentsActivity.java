@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -120,9 +118,14 @@ public class ExamManagingStudentsActivity extends GoogleRestConnectActivity impl
         final DriveIOHandler driveIOHandler = new DriveIOHandler(getCredential());
         final Activity activity = this;
 
+        startProgressFragment();
+        setProgressMessage(R.string.progress_examManagingStudent_loadingStudents);
         driveIOHandler.readMultipleFiles(teacherConfigs.getStudentConfigsFileIdArray(), new MultipleFilesReadCallback() {
             @Override
             public void onSuccess(String[] contentArray) {
+                stopProgressFragment();
+                new AndroidUtil(activity).showToast(R.string.toast_examManagingStudent_allStudentsLoaded, Toast.LENGTH_SHORT);
+
                 for(String content : contentArray){
                     try{
                         StudentConfigs studentConfigs = new StudentConfigs(content);
@@ -149,7 +152,8 @@ public class ExamManagingStudentsActivity extends GoogleRestConnectActivity impl
 
             @Override
             public void onFailure(String errorMessage) {
-                new AndroidUtil(activity).showToast("Error", Toast.LENGTH_SHORT);
+                stopProgressFragment();
+                new AndroidUtil(activity).showToast(R.string.toast_somethingWentWrong, Toast.LENGTH_SHORT);
             }
         });
     }
@@ -193,34 +197,5 @@ public class ExamManagingStudentsActivity extends GoogleRestConnectActivity impl
         studentPickerDialog.setIdList(idList);
 
         studentPickerDialog.show(getFragmentManager(), "student_picker_dialog");
-    }
-
-
-
-    /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * ActionBar methods:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_exam_managing_students, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

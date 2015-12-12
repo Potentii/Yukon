@@ -69,6 +69,7 @@
         <item name="android:layout_below">@id/actionToolbar</item>
     </style>
 
+
     <!-- * Toolbar input * -->
     <style name="toolbarInput">
         <item name="android:textColor">#eee</item>
@@ -102,6 +103,7 @@
     </style>
 
 
+
     <!-- * Input Container * -->
     <style name="inputContainer">
         <item name="android:layout_width">match_parent</item>
@@ -112,6 +114,12 @@
         <item name="android:layout_marginBottom">@dimen/input_container_bottom_margin</item>
     </style>
 
+    <!-- * Input Container List For error output * -->
+    <style name="inputContainerList_error">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
 
     <!-- * Input Image Label * -->
     <style name="imageLabel">
@@ -152,35 +160,52 @@
     </style>
 
 
+    <!-- * Labeled Input Error Output * -->
+    <style name="errorOutput">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/error_output</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginStart">@dimen/input_start_margin</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+
 
     <!--
     *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
     *   * Floating Action Button
     *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
     -->
-    <!-- * Container * -->
-    <style name="floatingActionButtonContainer">
-        <item name="android:layout_width">@dimen/floating_action_button_size</item>
-        <item name="android:layout_height">@dimen/floating_action_button_size</item>
-        <item name="android:layout_alignParentBottom">true</item>
+    <style name="FABList">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
         <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:padding">@dimen/FAB_group_padding</item>
+        <item name="android:clipToPadding">false</item>
+    </style>
+
+    <style name="FABItem">
         <item name="android:background">@drawable/circle</item>
-        <item name="android:elevation">@dimen/floating_action_button_elevation</item>
-        <item name="android:layout_marginEnd">@dimen/activity_horizontal_margin</item>
-        <item name="android:layout_marginBottom">@dimen/activity_vertical_margin</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:tint">#eee</item>
+        <item name="android:elevation">@dimen/FAB_elevation</item>
+        <item name="android:layout_marginTop">@dimen/FAB_margin</item>
     </style>
 
-    <!-- * Button * -->
-    <style name="floatingActionButton">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/transparent</item>
-        <item name="android:textColor">#eeeeee</item>
-        <item name="android:tint">#eeeeee</item>
-        <item name="android:scaleType">fitCenter</item>
-        <item name="android:textSize">@dimen/floating_action_button_text_size</item>
+    <style name="FABItem_normal" parent="FABItem">
+        <item name="android:layout_width">@dimen/FAB_size_normal</item>
+        <item name="android:layout_height">@dimen/FAB_size_normal</item>
     </style>
 
+    <style name="FABItem_small" parent="FABItem">
+        <item name="android:layout_width">@dimen/FAB_size_small</item>
+        <item name="android:layout_height">@dimen/FAB_size_small</item>
+    </style>
 
 
 

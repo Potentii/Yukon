@@ -8,6 +8,7 @@ import android.widget.TextView;
 /**
  * Created by poten on 04/11/2015.
  */
+@Deprecated
 public abstract class TextValidator implements TextWatcher {
     private final TextView textView;
 

@@ -10,7 +10,17 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.sharman.yukon.view.activities.StudentMainActivity">
+        tools:context="com.sharman.yukon.view.activities.StudentMainActivity"
+        android:id="@+id/rootLayout">
+
+        <!--
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.sharman.yukon.view.activities.ProgressFragment"
+            android:id="@+id/progressFragment"
+            tools:layout="@layout/fragment_progress" />
+            -->
 
 
         <!-- * App Bar * -->
@@ -36,6 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/appBarContainer">
+
 
             <RelativeLayout
                 android:layout_width="match_parent"

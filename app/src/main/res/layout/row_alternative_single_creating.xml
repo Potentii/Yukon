@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:longClickable="true"
+    android:background="?attr/selectableItemBackground"
+    android:padding="16dp">
+
+    <RadioButton
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:id="@+id/compoundBtn"
+        android:layout_weight="1"
+        android:singleLine="false"
+        android:textSize="18sp"
+        android:textColor="@color/primary_grey_dark"
+        android:maxLines="2" />
+
+    <ImageButton
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:id="@+id/removeBtn"
+        android:background="@color/transparent"
+        android:src="@drawable/ic_cancel_24dp"
+        android:tint="@color/icon_dark"
+        android:scaleType="fitCenter"
+        android:padding="12dp" />
+</LinearLayout>

@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -179,6 +180,10 @@ public final class DriveIOHandler {
                     } while (request.getPageToken() != null && request.getPageToken().length() > 0);
 
                     fileQueryCallback.onResult(driveFileList);
+                }  catch (SocketTimeoutException e){
+                    e.printStackTrace();
+                    fileQueryCallback.onResult(null);
+                    return;
                 } catch (IOException e){
                     e.printStackTrace();
                     fileQueryCallback.onResult(driveFileList);

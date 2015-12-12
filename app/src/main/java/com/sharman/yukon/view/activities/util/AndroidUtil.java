@@ -102,6 +102,14 @@ public class AndroidUtil {
         });
     }
 
+    public void showToast(int textId, int duration){
+        try {
+            showToast(activity.getResources().getString(textId), duration);
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
+    }
+
 
 
     public Bitmap getBitmapFromURI(Uri uri) {

@@ -40,6 +40,7 @@
             android:id="@+id/contentOut"
             android:inputType="textMultiLine"
             android:padding="16dp"
+            android:textSize="18sp"
             android:singleLine="false" />
     </ScrollView>
 

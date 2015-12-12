@@ -3,6 +3,7 @@ package com.sharman.yukon.view.activities.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,17 +12,25 @@ import android.widget.DatePicker;
 
 import com.sharman.yukon.R;
 import com.sharman.yukon.view.activities.util.DialogCallback;
+import com.sharman.yukon.view.activities.util.Validatable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
  * Created by poten on 16/10/2015.
  */
-public class DeliveryDateDialog extends DialogFragment {
-    private Date date = new Date();
+public class DeliveryDateDialog extends DialogFragment implements Validatable {
+    private Date date;
     private DialogCallback dialogCallback;
+
+    private Context context;
+
+    private String invalidText = "";
+
+
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -48,9 +57,8 @@ public class DeliveryDateDialog extends DialogFragment {
                 try{
                     dialogCallback.onPositive();
                 }catch (NullPointerException e){
-                    e.printStackTrace();
+                    System.err.println("Forgot to set the DialogCallback");
                 }
-
             }
         });
 
@@ -59,7 +67,7 @@ public class DeliveryDateDialog extends DialogFragment {
                 try{
                     dialogCallback.onNegative();
                 }catch (NullPointerException e){
-                    e.printStackTrace();
+                    System.err.println("Forgot to set the DialogCallback");
                 }
             }
         });
@@ -69,6 +77,12 @@ public class DeliveryDateDialog extends DialogFragment {
     }
 
 
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Getters and setters:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     public Date getDate() {
         return date;
     }
@@ -78,5 +92,50 @@ public class DeliveryDateDialog extends DialogFragment {
 
     public void setDialogCallback(DialogCallback dialogCallback) {
         this.dialogCallback = dialogCallback;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Validatable methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    @Override
+    public boolean isValid() {
+        if(date != null){
+            Calendar currentDate = Calendar.getInstance();
+            Calendar selectedDate = Calendar.getInstance();
+            selectedDate.setTime(date);
+
+
+            long currentDateLong = (currentDate.get(Calendar.YEAR) * 10000) + (currentDate.get(Calendar.MONTH) * 100) + currentDate.get(Calendar.DAY_OF_MONTH);
+            long selectedDateLong = (selectedDate.get(Calendar.YEAR) * 10000) + (selectedDate.get(Calendar.MONTH) * 100) + selectedDate.get(Calendar.DAY_OF_MONTH);;
+
+            if(selectedDateLong < currentDateLong){
+                try {
+                    invalidText = context.getResources().getString(R.string.output_invalidField_datePicker_dateInPast);
+                } catch (NullPointerException e){
+                    e.printStackTrace();}
+
+                return false;
+            }
+        } else {
+            try {
+                invalidText = context.getResources().getString(R.string.output_invalidField_datePicker_empty);
+            } catch (NullPointerException e){
+                e.printStackTrace();
+            }
+        return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String getInvalidText() {
+        return invalidText;
     }
 }

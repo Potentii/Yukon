@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sharman.yukon.view.activities.answering.QuestionAnsweringActivity">
+    tools:context="com.sharman.yukon.view.activities.answering.QuestionAnsweringActivity"
+    android:id="@+id/rootLayout">
 
 
     <!-- * App Bar * -->
@@ -67,13 +68,16 @@
         </LinearLayout>
     </ScrollView>
 
-    <RelativeLayout
-        style="@style/floatingActionButtonContainer" >
+
+    <!-- * Floating action buttons * -->
+    <LinearLayout
+        style="@style/FABList" >
+
         <ImageButton
+            style="@style/FABItem_normal"
             android:onClick="questionAnsweringNextButton_onClick"
             android:id="@+id/nextBtn"
-            android:src="@drawable/ic_chevron_right_48dp"
-            style="@style/floatingActionButton"
-            android:scaleType="center"/>
-    </RelativeLayout>
+            android:src="@drawable/ic_chevron_right_48dp"/>
+
+    </LinearLayout>
 </RelativeLayout>

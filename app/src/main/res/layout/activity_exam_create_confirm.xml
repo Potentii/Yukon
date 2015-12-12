@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sharman.yukon.view.activities.creation.ExamCreateConfirmActivity">
+    tools:context="com.sharman.yukon.view.activities.creation.ExamCreateConfirmActivity"
+    android:id="@+id/rootLayout">
 
 
     <!-- * App Bar * -->
@@ -45,7 +46,7 @@
 
                 <android.widget.EditText
                     style="@style/labeledInput"
-                    android:hint="@string/inputHint.examCreateConfirm.students"
+                    android:hint="@string/inputHint.examCreate.students"
                     android:editable="false"
                     android:onClick="studentIn_onClick"
                     android:focusable="false" />

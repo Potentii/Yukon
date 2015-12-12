@@ -23,4 +23,5 @@ public enum EMultipleAnswerType {
     public String getName(){
         return this.name;
     }
+
 }

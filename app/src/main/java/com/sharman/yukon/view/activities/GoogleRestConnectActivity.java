@@ -1,6 +1,9 @@
 package com.sharman.yukon.view.activities;
 
 import android.accounts.AccountManager;
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -44,6 +47,7 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
     protected static final String CONFIG_FAV_ROLE_KEY = "favRole";
     protected static final String CONFIG_FAV_ROLE_STUDENT = "student";
     protected static final String CONFIG_FAV_ROLE_TEACHER = "teacher";
+    private ProgressFragment progressFragment;
 
     protected YukonAccountKeeper yukonAccountKeeper;
 
@@ -67,6 +71,9 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        progressFragment = new ProgressFragment();
+        progressFragment.setActivity(this);
 
         setConnected(false);
         connectedOnceCalled = false;
@@ -98,14 +105,17 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
         }
     }
 
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        removeProgressFragment();
+    }
 
     /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * Credential methods:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
+         *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+         *  * Credential methods:
+         *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+         */
     protected GoogleAccountCredential generateCredential(){
         String accountName;
 
@@ -521,6 +531,127 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
         return new YukonAccountKeeper(new AndroidUtil(this).readFromSharedPreferences(ACCOUNT_FILE, ACCOUNT_KEEPER_KEY, null));
     }
 
+
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Progress Fragment:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    /**
+     * Creates an instance of the Progress Fragment
+     */
+    private void instantiateProgressFragment(){
+        if(progressFragment==null){
+            return;
+        }
+        try {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.rootLayout, progressFragment, "progress_fragment")
+                    .hide(progressFragment)
+                    .commit();
+        } catch (Exception e){
+            progressFragment = null;
+        }
+    }
+
+
+    private void removeProgressFragment(){
+        if(progressFragment==null){
+            return;
+        }
+        try {
+            getFragmentManager().beginTransaction()
+                    .remove(progressFragment)
+                    .commit();
+        } catch (Exception e){
+            progressFragment = null;
+        }
+    }
+
+
+    /**
+     * Shows the Progress Fragment, and creates a new one if it's necessary
+     */
+    protected void startProgressFragment(){
+        if(progressFragment==null){
+            return;
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(!progressFragment.isInstantiated()) {
+                    instantiateProgressFragment();
+                }
+
+
+                try {
+                    getFragmentManager().beginTransaction()
+                            .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
+                            .show(progressFragment)
+                            .commit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
+     * Hides the Progress Fragment, and creates a new one if it's necessary
+     */
+    protected void stopProgressFragment(){
+        if(progressFragment==null){
+            return;
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(!progressFragment.isInstantiated()){
+                    instantiateProgressFragment();
+                }
+
+                try {
+                    getFragmentManager().beginTransaction()
+                            .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
+                            .hide(progressFragment)
+                            .commit();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    protected void setProgressMessage(int messageId){
+        if(progressFragment != null){
+            progressFragment.setProgressMessage(messageId);
+        }
+    }
+    protected void setProgressMessage(String message){
+        if(progressFragment != null){
+            progressFragment.setProgressMessage(message);
+        }
+    }
+
+    protected void setProgressDetailMessage(int messageId){
+        if(progressFragment != null){
+            progressFragment.setProgressDetailMessage(messageId);
+        }
+    }
+    protected void setProgressDetailMessage(String message){
+        if(progressFragment != null){
+            progressFragment.setProgressDetailMessage(message);
+        }
+    }
+
+
+
+
+
+
     /*
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      *  * Getters and Setters:
@@ -541,4 +672,9 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
     public ActionBar getActionToolbar(){
         return getSupportActionBar();
     }
+
+    public Activity getActivity(){
+        return this;
+    }
+
 }
