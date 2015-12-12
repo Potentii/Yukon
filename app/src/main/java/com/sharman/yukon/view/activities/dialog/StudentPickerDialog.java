@@ -3,10 +3,13 @@ package com.sharman.yukon.view.activities.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -42,6 +45,11 @@ public class StudentPickerDialog extends DialogFragment implements Validatable{
 
     private ArrayAdapter<String> studentsArrayAdapter;
     private AutoCompleteTextView studentIn;
+
+    private Context context;
+
+    private String invalidText = "";
+
 
 
     @Override
@@ -134,6 +142,26 @@ public class StudentPickerDialog extends DialogFragment implements Validatable{
         });
 
 
+
+        // *When the user hit the DONE button on keyboard:
+        studentIn.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    // *The user finished to edit the text:
+                    String text = studentIn.getText().toString();
+                    StudentContact studentContact = new StudentContact(text, text, null);
+
+                    addRow(studentContact);
+                    idList.add(studentContact.getId());
+                    studentIn.setText("");
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
         builder.setView(view);
 
 
@@ -196,7 +224,11 @@ public class StudentPickerDialog extends DialogFragment implements Validatable{
 
 
 
-
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Getters and setters:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     public List<StudentContact> getStudentContactList() {
         return studentContactList;
     }
@@ -215,9 +247,32 @@ public class StudentPickerDialog extends DialogFragment implements Validatable{
         this.dialogCallback = dialogCallback;
     }
 
+    public void setContext(Context context) {
+        this.context = context;
+    }
 
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Validatable methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     @Override
     public boolean isValid() {
-        return idList != null && idList.size()!=0;
+        if(idList == null || idList.size()==0){
+            try {
+                invalidText = context.getResources().getString(R.string.output_invalidField_studentPicker_empty);
+            } catch (NullPointerException e){
+                e.printStackTrace();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String getInvalidText() {
+        return invalidText;
     }
 }

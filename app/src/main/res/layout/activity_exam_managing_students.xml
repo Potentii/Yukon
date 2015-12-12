@@ -32,12 +32,15 @@
     </android.support.v7.widget.RecyclerView>
 
 
-    <RelativeLayout
-        style="@style/floatingActionButtonContainer">
-        <Button
-            style="@style/floatingActionButton"
-            android:onClick="addStudentBtn_onClick"
-            android:text="+" />
-    </RelativeLayout>
+    <!-- * Floating action buttons * -->
+    <LinearLayout
+        style="@style/FABList">
+
+        <ImageButton
+            style="@style/FABItem_normal"
+            android:src="@drawable/ic_add_24dp"
+            android:onClick="addStudentBtn_onClick"/>
+
+    </LinearLayout>
 
 </RelativeLayout>

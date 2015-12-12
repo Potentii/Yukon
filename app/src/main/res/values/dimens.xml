@@ -6,12 +6,11 @@
     <dimen name="input_container_bottom_margin">16dp</dimen>
     <dimen name="input_start_margin">12dp</dimen>
 
-    <dimen name="floating_action_button_size_normal">56dp</dimen>
-    <dimen name="floating_action_button_size_small">42dp</dimen>
-    <dimen name="floating_action_button_inner_margin">8dp</dimen>
-    <dimen name="floating_action_button_margin">16dp</dimen>
-    <dimen name="floating_action_button_elevation">8dp</dimen>
-    <dimen name="floating_action_button_text_size">24sp</dimen>
+    <dimen name="FAB_size_normal">56dp</dimen>
+    <dimen name="FAB_size_small">42dp</dimen>
+    <dimen name="FAB_group_padding">16dp</dimen>
+    <dimen name="FAB_margin">16dp</dimen>
+    <dimen name="FAB_elevation">8dp</dimen>
 
     <dimen name="toolbar_info_photo_height">72dp</dimen>
 

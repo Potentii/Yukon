@@ -23,13 +23,19 @@
             style="@style/toolbar">
 
             <!-- * Exam title * -->
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                style="@style/toolbarInput"
-                android:id="@+id/examTitleIn"
-                android:hint="@string/inputHint.examCreate.title"
-                android:textStyle="bold" />
+            <LinearLayout
+                style="@style/inputContainerList_error">
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    style="@style/toolbarInput"
+                    android:id="@+id/examTitleIn"
+                    android:hint="@string/inputHint.examCreate.title"
+                    android:textStyle="bold" />
+                <TextView
+                    style="@style/errorOutput"
+                    android:id="@+id/examTitleIn_errorOut"/>
+            </LinearLayout>
         </Toolbar>
     </LinearLayout>
 
@@ -51,11 +57,19 @@
                     style="@style/imageLabelMultiline"
                     android:src="@drawable/ic_description_24dp" />
 
-                <EditText
-                    style="@style/labeledInputMultiline"
-                    android:id="@+id/examDescriptionIn"
-                    android:hint="@string/inputHint.examCreate.description"
-                    android:lines="3" />
+                <LinearLayout
+                    style="@style/inputContainerList_error">
+
+                    <EditText
+                        style="@style/labeledInputMultiline"
+                        android:id="@+id/examDescriptionIn"
+                        android:hint="@string/inputHint.examCreate.description"
+                        android:lines="3" />
+                    <TextView
+                        style="@style/errorOutput"
+                        android:id="@+id/examDescriptionIn_errorOut"/>
+                </LinearLayout>
+
             </LinearLayout>
 
 
@@ -67,10 +81,16 @@
                     style="@style/imageLabel"
                     android:src="@drawable/ic_school_24dp" />
 
-                <EditText
-                    style="@style/labeledInput"
-                    android:id="@+id/examSubjectIn"
-                    android:hint="@string/inputHint.examCreate.subject" />
+                <LinearLayout
+                    style="@style/inputContainerList_error">
+                    <EditText
+                        style="@style/labeledInput"
+                        android:id="@+id/examSubjectIn"
+                        android:hint="@string/inputHint.examCreate.subject" />
+                    <TextView
+                        style="@style/errorOutput"
+                        android:id="@+id/examSubjectIn_errorOut"/>
+                </LinearLayout>
             </LinearLayout>
 
 
@@ -82,13 +102,19 @@
                     style="@style/imageLabel"
                     android:src="@drawable/ic_event_24dp"/>
 
-                <android.widget.EditText
-                    style="@style/labeledInput"
-                    android:id="@+id/examDeliveryDateIn"
-                    android:hint="@string/inputHint.examCreate.deliveryDate"
-                    android:editable="false"
-                    android:focusable="false"
-                    android:onClick="deliveryDateIn_onClick" />
+                <LinearLayout
+                    style="@style/inputContainerList_error">
+                    <android.widget.EditText
+                        style="@style/labeledInput"
+                        android:id="@+id/examDeliveryDateIn"
+                        android:hint="@string/inputHint.examCreate.deliveryDate"
+                        android:editable="false"
+                        android:focusable="false"
+                        android:onClick="deliveryDateIn_onClick" />
+                    <TextView
+                        style="@style/errorOutput"
+                        android:id="@+id/examDeliveryDateIn_errorOut"/>
+                </LinearLayout>
             </LinearLayout>
 
 
@@ -100,13 +126,19 @@
                     style="@style/imageLabel"
                     android:src="@drawable/ic_people_24dp"/>
 
-                <android.widget.EditText
-                    style="@style/labeledInput"
-                    android:id="@+id/examStudentsIn"
-                    android:hint="@string/inputHint.examCreate.students"
-                    android:editable="false"
-                    android:focusable="false"
-                    android:onClick="studentsIn_onClick" />
+                <LinearLayout
+                    style="@style/inputContainerList_error">
+                    <android.widget.EditText
+                        style="@style/labeledInput"
+                        android:id="@+id/examStudentsIn"
+                        android:hint="@string/inputHint.examCreate.students"
+                        android:editable="false"
+                        android:focusable="false"
+                        android:onClick="studentsIn_onClick" />
+                    <TextView
+                        style="@style/errorOutput"
+                        android:id="@+id/examStudentsIn_errorOut"/>
+                </LinearLayout>
             </LinearLayout>
 
 
@@ -118,18 +150,11 @@
                     style="@style/imageLabelMultiline"
                     android:src="@drawable/ic_assignment_24dp" />
 
-                <RelativeLayout
+                <LinearLayout
                     style="@style/labeledInputMultiline"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="24dp"
-                        android:id="@+id/emptyQuestionsLabel"
-                        android:text="@string/output.examCreate.emptyQuestions"
-                        android:gravity="center_vertical"
-                        android:textSize="16sp" />
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/questionsRecyclerView"
@@ -138,7 +163,11 @@
                         android:background="@color/primary_grey">
                     </android.support.v7.widget.RecyclerView>
 
-                </RelativeLayout>
+                    <TextView
+                        style="@style/errorOutput"
+                        android:id="@+id/questionsRecyclerView_errorOut"/>
+
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
@@ -147,21 +176,18 @@
 
     <!-- * Floating action buttons * -->
     <LinearLayout
-        style="@style/fabContainer">
-        <RelativeLayout
-            style="@style/fabItem_small">
-            <ImageButton
-                style="@style/fabItemImageButton"
-                android:src="@drawable/ic_done_24dp"
-                android:onClick="confirmFAB_onClick"/>
-        </RelativeLayout>
+        style="@style/FABList">
 
-        <RelativeLayout
-            style="@style/fabItem_normal">
-            <ImageButton
-                style="@style/fabItemImageButton"
-                android:src="@drawable/ic_add_24dp"
-                android:onClick="addQuestionFAB_onClick"/>
-        </RelativeLayout>
+        <ImageButton
+            style="@style/FABItem_small"
+            android:src="@drawable/ic_add_24dp"
+            android:onClick="addQuestionFAB_onClick"/>
+
+        <ImageButton
+            style="@style/FABItem_normal"
+            android:src="@drawable/ic_done_24dp"
+            android:onClick="confirmFAB_onClick" />
+
     </LinearLayout>
+
 </RelativeLayout>

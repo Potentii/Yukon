@@ -1,6 +1,5 @@
 package com.sharman.yukon.view.activities.util.recycler;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,6 +25,8 @@ public class QuestionsCreatingRVAdapter extends RecyclerView.Adapter<QuestionsCr
     private OnQuestionsCreatingRVItemClickListener onQuestionsCreatingRVItemClickListener;
     private OnQuestionsCreatingRVItemClickListener onQuestionsCreatingRVREmoveListener;
     private Context context;
+
+    private String invalidText = "";
 
     public QuestionsCreatingRVAdapter(Context context, List<QuestionsCreatingRVInfo> questionsCreatingRVInfoList, OnQuestionsCreatingRVItemClickListener onQuestionsCreatingRVItemClickListener, OnQuestionsCreatingRVItemClickListener onQuestionsCreatingRVREmoveListener) {
         layoutInflater = LayoutInflater.from(context);
@@ -70,12 +71,6 @@ public class QuestionsCreatingRVAdapter extends RecyclerView.Adapter<QuestionsCr
     }
 
 
-    @Override
-    public boolean isValid() {
-        return questionsCreatingRVInfoList != null && questionsCreatingRVInfoList.size() != 0;
-    }
-
-
     // *ViewHolder:
     public class ViewHolder extends RecyclerView.ViewHolder{
         private ImageView answerTypeImg;
@@ -106,5 +101,30 @@ public class QuestionsCreatingRVAdapter extends RecyclerView.Adapter<QuestionsCr
                 }
             });
         }
+    }
+
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Validatable methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    @Override
+    public boolean isValid() {
+        if(questionsCreatingRVInfoList == null || questionsCreatingRVInfoList.size()==0){
+            try {
+                invalidText = context.getResources().getString(R.string.output_invalidField_questionsCreateRV_empty);
+            } catch (NullPointerException e){
+                e.printStackTrace();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String getInvalidText() {
+        return invalidText;
     }
 }

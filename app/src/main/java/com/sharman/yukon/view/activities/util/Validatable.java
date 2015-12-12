@@ -5,4 +5,5 @@ package com.sharman.yukon.view.activities.util;
  */
 public interface Validatable {
     public boolean isValid();
+    public String getInvalidText();
 }

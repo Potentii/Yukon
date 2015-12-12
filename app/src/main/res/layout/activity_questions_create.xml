@@ -22,16 +22,22 @@
             style="@style/toolbar">
 
             <!-- Question title -->
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                style="@style/toolbarInput"
-                android:id="@+id/questionTitleIn"
-                android:hint="@string/inputHint.questionCreate.title"
-                android:inputType="textMultiLine"
-                android:gravity="top"
-                android:lines="4"
-                android:maxLines="8" />
+            <LinearLayout
+                style="@style/inputContainerList_error">
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    style="@style/toolbarInput"
+                    android:id="@+id/questionTitleIn"
+                    android:hint="@string/inputHint.questionCreate.title"
+                    android:inputType="textMultiLine"
+                    android:gravity="top"
+                    android:lines="4"
+                    android:maxLines="8" />
+                <TextView
+                    style="@style/errorOutput"
+                    android:id="@+id/questionTitleIn_errorOut"/>
+            </LinearLayout>
         </Toolbar>
     </LinearLayout>
 
@@ -51,11 +57,17 @@
                     style="@style/imageLabel"
                     android:src="@drawable/ic_assessment_24dp" />
 
-                <EditText
-                    style="@style/labeledInput"
-                    android:id="@+id/questionWeightIn"
-                    android:hint="@string/inputHint.questionCreate.weight"
-                    android:inputType="numberDecimal" />
+                <LinearLayout
+                    style="@style/inputContainerList_error">
+                    <EditText
+                        style="@style/labeledInput"
+                        android:id="@+id/questionWeightIn"
+                        android:hint="@string/inputHint.questionCreate.weight"
+                        android:inputType="numberDecimal" />
+                    <TextView
+                        style="@style/errorOutput"
+                        android:id="@+id/questionWeightIn_errorOut"/>
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -80,13 +92,19 @@
                     style="@style/imageLabel"
                     android:src="@drawable/ic_list_24dp" />
 
-                <android.widget.EditText
-                    style="@style/labeledInput"
-                    android:id="@+id/questionAlternativesIn"
-                    android:hint="@string/inputHint.questionCreate.alternatives"
-                    android:editable="false"
-                    android:onClick="questionAlternativesIn_onCLick"
-                    android:focusable="false" />
+                <LinearLayout
+                    style="@style/inputContainerList_error">
+                    <android.widget.EditText
+                        style="@style/labeledInput"
+                        android:id="@+id/questionAlternativesIn"
+                        android:hint="@string/inputHint.questionCreate.alternatives"
+                        android:editable="false"
+                        android:onClick="questionAlternativesIn_onCLick"
+                        android:focusable="false" />
+                    <TextView
+                        style="@style/errorOutput"
+                        android:id="@+id/questionAlternativesIn_errorOut"/>
+                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>
@@ -95,14 +113,13 @@
 
     <!-- * Floating action buttons * -->
     <LinearLayout
-        style="@style/fabContainer">
-        <RelativeLayout
-            style="@style/fabItem_normal">
-            <ImageButton
-                style="@style/fabItemImageButton"
-                android:src="@drawable/ic_done_24dp"
-                android:onClick="confirmFAB_onClick"/>
-        </RelativeLayout>
+        style="@style/FABList">
+
+        <ImageButton
+            style="@style/FABItem_normal"
+            android:src="@drawable/ic_done_24dp"
+            android:onClick="confirmFAB_onClick"/>
+
     </LinearLayout>
 
 

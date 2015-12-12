@@ -3,10 +3,9 @@ package com.sharman.yukon.view.activities.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.sharman.yukon.R;
@@ -54,6 +52,11 @@ public class AlternativeAnswerDialog extends DialogFragment implements Validatab
     private EMultipleAnswerType eMultipleAnswerType;
     @Nonnull
     private DialogCallback dialogCallback;
+
+    private Context context;
+
+    private String invalidText = "";
+
 
 
     @Override
@@ -186,6 +189,19 @@ public class AlternativeAnswerDialog extends DialogFragment implements Validatab
     }
 
 
+    public void cleanAnswer(){
+        try{
+            List<AnswerAlternativePair> answerAlternativePairListClean = new ArrayList<>();
+            for (CompoundButton compoundButton : compoundButtonList) {
+                compoundButton.setChecked(false);
+                answerAlternativePairListClean.add(new AnswerAlternativePair(compoundButton.isChecked(), compoundButton.getText().toString()));
+            }
+            answerAlternativePairList = new ArrayList<>(answerAlternativePairListClean);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 
     /*
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
@@ -208,111 +224,17 @@ public class AlternativeAnswerDialog extends DialogFragment implements Validatab
         this.answerAlternativePairList = new ArrayList<>(answerAlternativePairList);
     }
 
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
 
 
     /*
-    private void addAnswerRow(boolean isSelected, String text, final boolean lastRow){
-        final View answerRow;
-
-        switch (eMultipleAnswerType){
-        case MULTIPLE_CHOICE:
-            answerRow = layoutInflater.inflate(R.layout.row_multiple_choice_answer_create, null);
-            break;
-        case SINGLE_CHOICE:
-            answerRow = layoutInflater.inflate(R.layout.row_single_choice_answer_create, null);
-            break;
-        default:
-            answerRow = layoutInflater.inflate(R.layout.row_single_choice_answer_create, null);
-            break;
-        }
-
-        final CompoundButton answerIn = (CompoundButton) answerRow.findViewById(R.id.answerIn);
-        answerIn.setChecked(isSelected);
-        if(lastRow){
-            answerIn.setChecked(false);
-            answerIn.setVisibility(View.INVISIBLE);
-        }
-
-
-
-        EditText alternativeIn = (EditText) answerRow.findViewById(R.id.alternativeIn);
-        alternativeIn.setText(text);
-        alternativeIn.addTextChangedListener(new TextWatcher() {
-            private boolean hasCreatedView = !lastRow;
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int count) {
-                if (!hasCreatedView && charSequence.length() > 0) {
-                    addAnswerRow(false, "", true);
-                    answerIn.setVisibility(View.VISIBLE);
-                    hasCreatedView = true;
-                } else if (hasCreatedView && charSequence.length() == 0) {
-                    hasCreatedView = false;
-                    answerIn.setChecked(false);
-                    answerIn.setVisibility(View.INVISIBLE);
-                    removeAnswerRow(answerRow);
-                }
-            }
-        });
-        answerDiv.addView(answerRow);
-        answerRowList.add(answerRow);
-    }
-
-
-    private void removeAnswerRow(View answerRow){
-        answerDiv.removeView(answerRow);
-        answerRowList.remove(answerRow);
-    }
-    private void removeAllAnswerRow(){
-        answerDiv.removeAllViews();
-        answerRowList.clear();
-    }
-
-
-
-    public void radioButton_onClick(View view){
-        for(int i=0; i<answerRowList.size(); i++){
-            RadioButton radioButton = (RadioButton) answerRowList.get(i).findViewById(R.id.answerIn);
-            if(!radioButton.equals((RadioButton)view)){
-                radioButton.setChecked(false);
-            }
-        }
-    }
-
-
-
-    public EMultipleAnswerType getEMultipleAnswerType() {
-        return eMultipleAnswerType;
-    }
-    public void setEMultipleAnswerType(EMultipleAnswerType eMultipleAnswerType) {
-        if(this.eMultipleAnswerType != null && !this.eMultipleAnswerType.equals(eMultipleAnswerType)){
-
-            for(int i=0; i< answerAlternativePairList.size(); i++){
-                answerAlternativePairList.get(i).setCorrect(false);
-            }
-        }
-
-        this.eMultipleAnswerType = eMultipleAnswerType;
-    }
-
-    public void setDialogCallback(DialogCallback dialogCallback) {
-        this.dialogCallback = dialogCallback;
-    }
-
-    public List<AnswerAlternativePair> getAnswerAlternativePairList() {
-        return answerAlternativePairList;
-    }
-
-*/
-
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Validatable methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     @Override
     public boolean isValid() {
         boolean hasAnswer = false;
@@ -323,7 +245,29 @@ public class AlternativeAnswerDialog extends DialogFragment implements Validatab
             }
         }
 
-        return hasAnswer && answerAlternativePairList.size() != 0;
+        if(answerAlternativePairList.size() == 0){
+            try {
+                invalidText = context.getResources().getString(R.string.output_invalidField_alternativeAnswer_empty);
+            } catch (NullPointerException e){
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        if(!hasAnswer){
+            try {
+                invalidText = context.getResources().getString(R.string.output_invalidField_alternativeAnswer_noAnswers);
+            } catch (NullPointerException e){
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        return true;
     }
 
+    @Override
+    public String getInvalidText() {
+        return invalidText;
+    }
 }

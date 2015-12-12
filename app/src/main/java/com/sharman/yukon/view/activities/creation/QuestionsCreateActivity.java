@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sharman.yukon.R;
@@ -42,11 +43,15 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity {
 
     private AlternativeAnswerDialog alternativeAnswerDialog;
 
+    private View alternativesField;
     private EditText questionTitleIn;
     private EditText questionWeightIn;
     private Spinner answerTypeSpinner;
     private EditText questionAlternativesIn;
-    private View alternativesField;
+
+    private TextView questionTitleIn_errorOut;
+    private TextView questionWeightIn_errorOut;
+    private TextView questionAlternativesIn_errorOut;
 
     private FormValidator formValidator;
 
@@ -66,17 +71,22 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity {
         answerTypeSpinner = (Spinner) findViewById(R.id.answerTypeSpinner);
         questionAlternativesIn = (EditText) findViewById(R.id.questionAlternativesIn);
 
+        questionTitleIn_errorOut = (TextView) findViewById(R.id.questionTitleIn_errorOut);
+        questionWeightIn_errorOut = (TextView) findViewById(R.id.questionWeightIn_errorOut);
+        questionAlternativesIn_errorOut = (TextView) findViewById(R.id.questionAlternativesIn_errorOut);
+
 
 
         // *Validator:
-        formValidator = new FormValidator()
-                .addField(questionTitleIn, EnumSet.of(FormValidator.EValidation.REQUIRED))
-                .addField(questionWeightIn, EnumSet.of(FormValidator.EValidation.REQUIRED, FormValidator.EValidation.FLOAT));
+        formValidator = new FormValidator(this)
+                .addField(questionTitleIn, questionTitleIn_errorOut, EnumSet.of(FormValidator.EValidation.REQUIRED))
+                .addField(questionWeightIn, questionWeightIn_errorOut, EnumSet.of(FormValidator.EValidation.REQUIRED, FormValidator.EValidation.FLOAT));
 
 
 
         // *Dialogs:
         alternativeAnswerDialog = new AlternativeAnswerDialog();
+        alternativeAnswerDialog.setContext(this);
         alternativeAnswerDialog.setAnswerAlternativePairList(answerAlternativePairList);
         alternativeAnswerDialog.setDialogCallback(new DialogCallback() {
             @Override
@@ -170,7 +180,10 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity {
         answerTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                EMultipleAnswerType lastEMultipleAnswerType = eMultipleAnswerType;
+
                 // FIXME fix this logic:
+                // *Setting the AnswerType:
                 if(i==0){
                     eMultipleAnswerType = null;
                 } else if(i==1){
@@ -181,6 +194,14 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity {
                     eMultipleAnswerType = null;
                 }
 
+
+                // *Cleaning the selected answers:
+                if(lastEMultipleAnswerType != eMultipleAnswerType) {
+                    alternativeAnswerDialog.cleanAnswer();
+                }
+
+
+                // *Hidding the alternatives field:
                 if(eMultipleAnswerType == null){
                     alternativesField.setVisibility(View.INVISIBLE);
                     // *Remove from validation process:
@@ -188,7 +209,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity {
                 } else{
                     alternativesField.setVisibility(View.VISIBLE);
                     // *Add to validation process:
-                    formValidator.addComplexField(alternativeAnswerDialog);
+                    formValidator.addComplexField(alternativeAnswerDialog, questionAlternativesIn, questionAlternativesIn_errorOut);
                 }
             }
 
@@ -205,6 +226,7 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity {
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
     public void confirmFAB_onClick(View view){
+        formValidator.doVisualValidation();
         if(!formValidator.isValid()){
             new AndroidUtil(this).showToast(R.string.toast_invalidFields, Toast.LENGTH_LONG);
             return;
@@ -294,16 +316,17 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity {
 
 
     public void questionAlternativesIn_onCLick(View view){
-
-
         alternativeAnswerDialog.setAnswerAlternativePairList(answerAlternativePairList);
         alternativeAnswerDialog.seteMultipleAnswerType(eMultipleAnswerType);
         alternativeAnswerDialog.show(getFragmentManager(), "alternative_answer_dialog");
     }
 
 
-
-
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Class methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     private void questionAlternativesIn_formatTxt(){
         if(answerAlternativePairList.size() == 0){
             questionAlternativesIn.setText("");
@@ -313,244 +336,4 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity {
             questionAlternativesIn.setText(answerAlternativePairList.size() + " " + getResources().getString(R.string.input_questionCreate_alternativesSelected_plural));
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * Class methods:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
-    /**
-     * Updates the exam object, adding the question to its question array
-     */
-    /*
-    public void updateExam(){
-        AnswerBox answerBox;
-
-        if(eMultipleAnswerType == null) {
-            answerBox = new AnswerBox();
-        } else{
-            List<AnswerAlternativePair> answerAlternativePairList = alternativeAnswerDialog.getAnswerAlternativePairList();
-            String[] alternativeArray = new String[answerAlternativePairList.size()];
-
-            for(int i=0; i<alternativeArray.length; i++){
-                alternativeArray[i] = answerAlternativePairList.get(i).getAlternative();
-            }
-
-            answerBox = new AnswerBox(alternativeArray, eMultipleAnswerType);
-        }
-
-        Question question = new Question(
-                questionTitleIn.getText().toString(),
-                Double.parseDouble(questionWeightIn.getText().toString()),
-                answerBox);
-
-        Question[] questionArrayOLD = exam.getQuestionArray();
-        Question[] questionArrayNEW = new Question[questionArrayOLD.length + 1];
-
-        for(int i=0; i<questionArrayOLD.length; i++){
-            questionArrayNEW[i] = questionArrayOLD[i];
-        }
-
-        questionArrayNEW[questionArrayNEW.length - 1] = question;
-
-        try {
-            exam.setQuestionArray(questionArrayNEW);
-        } catch (JSONException e){
-            e.printStackTrace();
-        }
-    }
-    */
-
-
-
-    /**
-     * Updates the teacherAnswers object, adding the answer to its answer array
-     */
-    /*
-    public void updateTeacherAnswers(){
-
-        List<AnswerAlternativePair> answerAlternativePairList = alternativeAnswerDialog.getAnswerAlternativePairList();
-        Answer answer;
-
-        if(eMultipleAnswerType == null){
-            answer = new Answer(new String[]{});
-        } else {
-            switch (eMultipleAnswerType) {
-                default:
-                case SINGLE_CHOICE:
-                    int indexCorrect = -1;
-                    for (int i = 0; i < answerAlternativePairList.size(); i++) {
-                        if (answerAlternativePairList.get(i).isCorrect()) {
-                            indexCorrect = i;
-                        }
-                    }
-
-                    answer = new Answer(Answer.convertIntArray_AlphabetArray(new int[]{indexCorrect}));
-                    break;
-
-                case MULTIPLE_CHOICE:
-                    int indexCorrectCount = 0;
-                    for (int i = 0; i < answerAlternativePairList.size(); i++) {
-                        if (answerAlternativePairList.get(i).isCorrect()) {
-                            indexCorrectCount++;
-                        }
-                    }
-
-                    int[] indexCorrectArray = new int[indexCorrectCount];
-                    int index = 0;
-                    for (int i = 0; i < answerAlternativePairList.size(); i++) {
-                        if (answerAlternativePairList.get(i).isCorrect()) {
-                            indexCorrectArray[index] = i;
-                            index++;
-                        }
-                    }
-
-                    answer = new Answer(Answer.convertIntArray_AlphabetArray(indexCorrectArray));
-                    break;
-            }
-        }
-
-        WeightTypeAnswerStruct weightTypeAnswerStruct = new WeightTypeAnswerStruct(
-                Double.parseDouble(questionWeightIn.getText().toString()),
-                eMultipleAnswerType,
-                answer);
-
-
-        WeightTypeAnswerStruct[] weightTypeAnswerStructArrayOLD = teacherAnswers.getWeightTypeAnswerStructArray();
-        WeightTypeAnswerStruct[] weightTypeAnswerStructArrayNEW = new WeightTypeAnswerStruct[weightTypeAnswerStructArrayOLD.length+1];
-
-        for(int i=0; i<weightTypeAnswerStructArrayOLD.length; i++){
-            weightTypeAnswerStructArrayNEW[i] = weightTypeAnswerStructArrayOLD[i];
-        }
-
-        weightTypeAnswerStructArrayNEW[weightTypeAnswerStructArrayNEW.length-1] = weightTypeAnswerStruct;
-
-        try {
-            teacherAnswers.setWeightTypeAnswerStructArray(weightTypeAnswerStructArrayNEW);
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
-    }
-    */
-
-
-
-
-
-
-
-
-
-
-
-    // TODO tenho que colocar esses metodos dos radios em outro lugar
-    /*
-
-    public void radioButton_onClick(View view){
-        alternativeAnswerDialog.radioButton_onClick(view);
-    }
-
-    public void questionAlternativesIn_onCLick(View view){
-        alternativeAnswerDialog.setEMultipleAnswerType(eMultipleAnswerType);
-        alternativeAnswerDialog.show(getFragmentManager(), "alternatives_dialog");
-    }
-    */
-
-
-    /*
-    public void addQuestionBtn_onClick(View view){
-        if(!formValidator.isValid()){
-            new AndroidUtil(this).showToast(R.string.toast_invalidFields, Toast.LENGTH_LONG);
-            return;
-        }
-
-        updateExam();
-        updateTeacherAnswers();
-
-        Intent addQuestionIntent = new Intent(this, QuestionsCreateActivity.class);
-        addQuestionIntent.putExtra("exam", exam.toString());
-        addQuestionIntent.putExtra("teacherAnswers", teacherAnswers.toString());
-        startActivity(addQuestionIntent);
-    }
-
-    public void questionCreateShareActionButton_onClick() {
-        if(!formValidator.isValid()){
-            new AndroidUtil(this).showToast(R.string.toast_invalidFields, Toast.LENGTH_LONG);
-            return;
-        }
-
-        updateExam();
-        updateTeacherAnswers();
-
-        Intent examCreateConfirmIntent = new Intent(this, ExamCreateConfirmActivity.class);
-        examCreateConfirmIntent.putExtra("exam", exam.toString());
-        examCreateConfirmIntent.putExtra("teacherAnswers", teacherAnswers.toString());
-        startActivity(examCreateConfirmIntent);
-    }
-
-    */
-
-
-    /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * ActionBar methods:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_question_create, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.questionCreateShareActionButton:
-                questionCreateShareActionButton_onClick();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-    */
 }

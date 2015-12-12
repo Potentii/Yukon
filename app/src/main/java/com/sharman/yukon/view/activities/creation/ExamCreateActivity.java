@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.api.services.plus.model.Person;
@@ -69,7 +67,6 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
     public static final String TEACHER_ANSWERS_INTENT_KEY = "teacherAnswers";
     public static final String STUDENTS_ID_ARRAY_INTENT_KEY = "studentsIdArray";
 
-
     public static final int ADD_QUESTION_REQUEST = 1010;
     public static final int EDIT_QUESTION_REQUEST = 2020;
 
@@ -85,13 +82,22 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
     private DeliveryDateDialog deliveryDateDialog;
     private StudentPickerDialog studentPickerDialog;
 
+
     private EditText examTitleIn;
     private EditText examDescriptionIn;
     private EditText examSubjectIn;
     private EditText examDeliveryDateIn;
     private EditText examStudentsIn;
 
+    private TextView examTitleIn_errorOut;
+    private TextView examDescriptionIn_errorOut;
+    private TextView examSubjectIn_errorOut;
+    private TextView examDeliveryDateIn_errorOut;
+    private TextView examStudentsIn_errorOut;
+    private TextView questionsRecyclerView_errorOut;
+
     private FormValidator formValidator;
+
 
     // *Exam creation data
     private String teacherId;
@@ -144,9 +150,6 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
     }
 
 
-    // TODO when add or edit questions (or simple when call notifyDataSetChanged), validate the registered questions looking for empty questions and unanswered questions (do a visual validation)
-
-    // TODO validate the daterPicker verifying if the date occurred in the past
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,11 +166,6 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
             teacherAnswers = new TeacherAnswers(getIntent().getExtras().getString(TEACHER_ANSWERS_INTENT_KEY));
             idList = new ArrayList<>(Arrays.asList(getIntent().getExtras().getStringArray(STUDENTS_ID_ARRAY_INTENT_KEY)));
             teacherId = exam.getTeacherId();
-
-
-            // TODO auto fill nos campos com os dados do exam, idlist, e questions (nos editText deles)
-
-
 
             Question[] questionArray = exam.getQuestionArray();
             WeightTypeAnswerStruct[] weightTypeAnswerStructArray = teacherAnswers.getWeightTypeAnswerStructArray();
@@ -230,6 +228,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
 
         // *Dialogs:
         deliveryDateDialog = new DeliveryDateDialog();
+        deliveryDateDialog.setContext(this);
         deliveryDateDialog.setDialogCallback(new DialogCallback() {
             @Override
             public void onPositive() {
@@ -244,6 +243,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
         });
 
         studentPickerDialog = new StudentPickerDialog();
+        studentPickerDialog.setContext(this);
         studentPickerDialog.setIdList(idList);
         studentPickerDialog.setDialogCallback(new DialogCallback() {
             @Override
@@ -269,18 +269,25 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
         examSubjectIn = (EditText) findViewById(R.id.examSubjectIn);
         examDeliveryDateIn = (EditText) findViewById(R.id.examDeliveryDateIn);
         examStudentsIn = (EditText) findViewById(R.id.examStudentsIn);
-        examDeliveryDateIn = (EditText) findViewById(R.id.examDeliveryDateIn);
+
+        examTitleIn_errorOut = (TextView) findViewById(R.id.examTitleIn_errorOut);
+        examDescriptionIn_errorOut = (TextView) findViewById(R.id.examDescriptionIn_errorOut);
+        examSubjectIn_errorOut = (TextView) findViewById(R.id.examSubjectIn_errorOut);
+        examDeliveryDateIn_errorOut = (TextView) findViewById(R.id.examDeliveryDateIn_errorOut);
+        examStudentsIn_errorOut = (TextView) findViewById(R.id.examStudentsIn_errorOut);
+        questionsRecyclerView_errorOut = (TextView) findViewById(R.id.questionsRecyclerView_errorOut);
 
 
 
         // *Validator:
-        formValidator = new FormValidator()
-                .addField(examTitleIn, EnumSet.of(FormValidator.EValidation.REQUIRED))
-                .addField(examDescriptionIn, EnumSet.of(FormValidator.EValidation.REQUIRED))
-                .addField(examSubjectIn, EnumSet.of(FormValidator.EValidation.REQUIRED))
-                .addComplexField(deliveryDateDialog)
-                .addComplexField(studentPickerDialog)
-                .addComplexField(questionsCreatingRVAdapter);
+        formValidator = new FormValidator(this)
+                .addField(examTitleIn, examTitleIn_errorOut, EnumSet.of(FormValidator.EValidation.REQUIRED))
+                .addField(examDescriptionIn, examDescriptionIn_errorOut, EnumSet.of(FormValidator.EValidation.REQUIRED))
+                .addField(examSubjectIn, examSubjectIn_errorOut, EnumSet.of(FormValidator.EValidation.REQUIRED))
+                .addComplexField(deliveryDateDialog, examDeliveryDateIn, examDeliveryDateIn_errorOut)
+                .addComplexField(studentPickerDialog, examStudentsIn, examStudentsIn_errorOut)
+                .addComplexField(questionsCreatingRVAdapter, null, questionsRecyclerView_errorOut);
+
 
 
         // *Auto fill:
@@ -304,8 +311,13 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
         }
     }
 
-    private void deliveryDateIn_format(){
-        examDeliveryDateIn.setText(new SimpleDateFormat("dd/MM/yyyy").format(deliveryDateDialog.getDate()));
+    private void deliveryDateIn_format() {
+        Date date = deliveryDateDialog.getDate();
+        if (date == null) {
+            examDeliveryDateIn.setText("");
+        } else{
+            examDeliveryDateIn.setText(new SimpleDateFormat("dd/MM/yyyy").format(date));
+        }
     }
 
 
@@ -414,8 +426,15 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
                 alertDialog.setDialogCallback(new DialogCallback() {
                     @Override
                     public void onPositive() {
+                        // *Removing the question:
                         questionsCreatingRVInfoList.remove(questionsCreatingRVInfo);
-                        // TODO atualizar os indexes da lista
+
+                        // *Updating the indexes of the questions:
+                        for (int i = 0; i < questionsCreatingRVInfoList.size(); i++) {
+                            questionsCreatingRVInfoList.get(i).setQuestionIndex(i);
+                        }
+
+                        // *Update the recyclerView:
                         questionsRecyclerView.getAdapter().notifyDataSetChanged();
                     }
 
@@ -435,6 +454,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
 
 
     public void confirmFAB_onClick(View view){
+        formValidator.doVisualValidation();
         if(!formValidator.isValid()){
             new AndroidUtil(this).showToast(R.string.toast_invalidFields, Toast.LENGTH_LONG);
             return;
@@ -466,25 +486,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
         teacherAnswers = new TeacherAnswers(wtaArray);
 
 
-
-        // ----------------------------------------------| ONLY FOR DEBUG |----------------------------------------------
-        System.out.println("\nQuestions: ");
-        for (int i = 0; i < questionsCreatingRVInfoList.size(); i++) {
-            System.out.println("Question index [" + i + "]");
-            System.out.println(questionsCreatingRVInfoList.get(i).getQuestion().toString());
-            System.out.println(questionsCreatingRVInfoList.get(i).getWeightTypeAnswerStruct().toString());
-        }
-
-        System.out.println("\nStudents: ");
-        for (int i = 0; i < idList.size(); i++) {
-            System.out.println("Student index [" + i + "]");
-            System.out.println(idList.get(i));
-        }
-        // ----------------------------------------------| ONLY FOR DEBUG |----------------------------------------------
-
-
         create(teacherId, idList, exam, teacherAnswers);
-
     }
 
 

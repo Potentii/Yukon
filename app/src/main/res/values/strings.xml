@@ -39,6 +39,21 @@
 
     <string name="output.examCreate.emptyQuestions">None questions added</string>
 
+    <string name="output.defaultInvalidField">Invalid field</string>
+    <string name="output.defaultInvalidField.required">It should not be left empty</string>
+    <string name="output.defaultInvalidField.integer">It should contain numbers</string>
+    <string name="output.defaultInvalidField.float">It should contain decimal numbers</string>
+
+    <string name="output.invalidField.datePicker.dateInPast">Date occurs in the past</string>
+    <string name="output.invalidField.datePicker.empty">Date not selected</string>
+
+    <string name="output.invalidField.alternativeAnswer.noAnswers">None alternative set as \"correct\"</string>
+    <string name="output.invalidField.alternativeAnswer.empty">None alternatives created</string>
+
+    <string name="output.invalidField.studentPicker.empty">None students selected</string>
+
+    <string name="output.invalidField.questionsCreateRV.empty">None questions created</string>
+
     <!-- * List labels * -->
     <string name="listLabel.main.my">Created by me</string>
     <string name="listLabel.main.shared">Exams</string>

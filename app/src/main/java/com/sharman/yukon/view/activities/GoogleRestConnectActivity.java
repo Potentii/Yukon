@@ -105,14 +105,17 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
         }
     }
 
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        removeProgressFragment();
+    }
 
     /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * Credential methods:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
+         *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+         *  * Credential methods:
+         *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+         */
     protected GoogleAccountCredential generateCredential(){
         String accountName;
 
@@ -553,6 +556,21 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
         }
     }
 
+
+    private void removeProgressFragment(){
+        if(progressFragment==null){
+            return;
+        }
+        try {
+            getFragmentManager().beginTransaction()
+                    .remove(progressFragment)
+                    .commit();
+        } catch (Exception e){
+            progressFragment = null;
+        }
+    }
+
+
     /**
      * Shows the Progress Fragment, and creates a new one if it's necessary
      */
@@ -566,6 +584,7 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
                 if(!progressFragment.isInstantiated()) {
                     instantiateProgressFragment();
                 }
+
 
                 try {
                     getFragmentManager().beginTransaction()
@@ -604,6 +623,7 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
             }
         });
     }
+
 
     protected void setProgressMessage(int messageId){
         if(progressFragment != null){
