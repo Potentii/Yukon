@@ -22,6 +22,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.sharman.yukon.R;
 import com.sharman.yukon.io.plus.PlusIOHandler;
 import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
+import com.sharman.yukon.io.plus.callback.PhotoURLCallback;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -196,7 +197,7 @@ public class AndroidUtil {
         }
 
         ResourceCache resourceCache = new ResourceCache(activity);
-        resourceCache.getResource_GPlusProfilePhoto(userId, new GetResourceCacheCallback<Bitmap>() {
+        resourceCache.getResource_GPlusProfilePhoto(userId, new GetResourceCacheCallback<Bitmap, String>() {
             @Override
             public void onFound(final Bitmap resource) {
                 activity.runOnUiThread(new Runnable() {
@@ -208,13 +209,13 @@ public class AndroidUtil {
             }
 
             @Override
-            public void onNotFound(final RegisterResourceCacheCallback<Bitmap> registerResourceCacheCallback) {
+            public void onNotFound(final RegisterResourceCacheCallback<Bitmap, String> registerResourceCacheCallback) {
 
                 new PlusIOHandler(credential).readPersonImg(userId, new PersonImgReadCallback() {
                     @Override
-                    public void onSuccess(Bitmap bitmap) {
+                    public void onSuccess(Bitmap bitmap, String bitmapURL) {
                         // *Save this image on cache:
-                        registerResourceCacheCallback.register(bitmap);
+                        registerResourceCacheCallback.register(bitmap, bitmapURL);
 
                         // *Apply the found photo:
                         onFound(bitmap);
@@ -226,6 +227,27 @@ public class AndroidUtil {
                         onFound(null);
                     }
                 });
+            }
+
+            @Override
+            public void onValidationRequested(final ValidateResourceCacheCallback<String> validateResourceCacheCallback) {
+                new PlusIOHandler(credential).getImgURL(userId, new PhotoURLCallback() {
+                    @Override
+                    public void onSuccess(String photoURL) {
+                        validateResourceCacheCallback.validate(photoURL);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+
+            @Override
+            public void onValidatedCache(Bitmap validatedResource) {
+                // *Apply the validated photo:
+                onFound(validatedResource);
             }
         });
     }

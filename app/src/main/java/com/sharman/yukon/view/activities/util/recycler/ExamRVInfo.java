@@ -13,6 +13,7 @@ public class ExamRVInfo {
     private String examSubject;
     private Date examDeliveryDate;
     private String configs;
+    // TODO change configs to Exam or Exam metadata
 
 
     public ExamRVInfo(String teacherId, String examTitle, String examSubject, Date examDeliveryDate, String configs) {

@@ -22,12 +22,14 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.sharman.yukon.R;
 import com.sharman.yukon.io.plus.PlusIOHandler;
 import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
+import com.sharman.yukon.io.plus.callback.PhotoURLCallback;
 import com.sharman.yukon.model.YukonAccount;
 import com.sharman.yukon.model.YukonAccountKeeper;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.GetResourceCacheCallback;
 import com.sharman.yukon.view.activities.util.RegisterResourceCacheCallback;
 import com.sharman.yukon.view.activities.util.ResourceCache;
+import com.sharman.yukon.view.activities.util.ValidateResourceCacheCallback;
 
 public class MainNavigationDrawerFragment extends Fragment {
     private ActionBarDrawerToggle mDrawerToggle;
@@ -123,27 +125,24 @@ public class MainNavigationDrawerFragment extends Fragment {
 
 
             // *Try to get the user's G+ cover from cache, download otherwise:
-            new ResourceCache(activity).getResource_GPlusProfileCover(mainAccount.getUserId(), new GetResourceCacheCallback<Bitmap>() {
+            new ResourceCache(activity).getResource_GPlusProfileCover(mainAccount.getUserId(), new GetResourceCacheCallback<Bitmap, String>() {
                 @Override
-                public void onFound(final Bitmap resource) {
+                public void onFound(final Bitmap cachedResource) {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mainAccountCoverImg.setImageBitmap(resource);
+                            mainAccountCoverImg.setImageBitmap(cachedResource);
                         }
                     });
                 }
 
                 @Override
-                public void onNotFound(final RegisterResourceCacheCallback<Bitmap> registerResourceCacheCallback) {
+                public void onNotFound(final RegisterResourceCacheCallback<Bitmap, String> registerResourceCacheCallback) {
                     new PlusIOHandler(credential).readPersonCoverImg(mainAccount.getUserId(), new PersonImgReadCallback() {
                         @Override
-                        public void onSuccess(Bitmap bitmap) {
+                        public void onSuccess(Bitmap bitmap, String bitmapURL) {
                             // *Save this image on cache:
-                            registerResourceCacheCallback.register(bitmap);
-
-                            // *Apply the found photo:
-                            onFound(bitmap);
+                            registerResourceCacheCallback.register(bitmap, bitmapURL);
                         }
 
                         @Override
@@ -152,6 +151,29 @@ public class MainNavigationDrawerFragment extends Fragment {
                         }
                     });
                 }
+
+                @Override
+                public void onValidationRequested(final ValidateResourceCacheCallback<String> validateResourceCacheCallback) {
+                    new PlusIOHandler(credential).getCoverURL(mainAccount.getUserId(), new PhotoURLCallback() {
+                        @Override
+                        public void onSuccess(String photoURL) {
+                            validateResourceCacheCallback.validate(photoURL);
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            // TODO error
+                        }
+                    });
+                }
+
+                @Override
+                public void onValidatedCache(Bitmap validatedResource) {
+                    // *Apply the validated photo:
+                    onFound(validatedResource);
+                }
+
+
             });
 
 

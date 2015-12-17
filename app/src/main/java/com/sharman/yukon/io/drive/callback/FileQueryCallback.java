@@ -9,4 +9,5 @@ import java.util.List;
  */
 public interface FileQueryCallback {
     public void onResult(List<File> driveFileList);
+    public void onFailure(Exception e);
 }

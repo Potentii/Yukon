@@ -59,7 +59,7 @@ public class StudentRVAdapter extends RecyclerView.Adapter<StudentRVAdapter.View
             DriveIOHandler driveIOHandler = new DriveIOHandler(credential);
             driveIOHandler.readFile(currentStudentRVInfo.getStudentGradeFileId(), new FileReadCallback() {
                 @Override
-                public void onSuccess(final String content) {
+                public void onSuccess(final String content, Long lastModifiedDate) {
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

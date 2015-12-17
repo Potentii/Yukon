@@ -90,7 +90,7 @@ public class ExamManagingStudentsActivity extends GoogleRestConnectActivity impl
             if(teacherAnswersStr == null) {
                 new DriveIOHandler(getCredential()).readFile(teacherConfigs.getCorrectAnswersFileId(), new FileReadCallback() {
                     @Override
-                    public void onSuccess(String content) {
+                    public void onSuccess(String content, Long lastModifiedDate) {
                         teacherAnswersStr = content;
                     }
 

@@ -3,8 +3,6 @@ package com.sharman.yukon.view.activities.managing;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -58,7 +56,7 @@ public class ExamManagingActivity extends GoogleRestConnectActivity {
         setProgressMessage("Loading data");
         driveIOHandler.readFile(teacherConfigs.getExamFileId(), new FileReadCallback() {
             @Override
-            public void onSuccess(String content) {
+            public void onSuccess(String content, Long lastModifiedDate) {
                 stopProgressFragment();
                 try {
                     final Exam exam = new Exam(content);

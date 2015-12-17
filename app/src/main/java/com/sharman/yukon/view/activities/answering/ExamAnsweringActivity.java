@@ -71,7 +71,7 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
         setProgressMessage("Loading exam");
         driveIOHandler.readFile(examFileId, new FileReadCallback() {
             @Override
-            public void onSuccess(String content) {
+            public void onSuccess(String content, Long lastModifiedDate) {
                 try {
                     exam = new Exam(content);
 
@@ -99,12 +99,12 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
                     setProgressMessage("Loading grade");
                     driveIOHandler.readFile(gradeFileId, new FileReadCallback() {
                         @Override
-                        public void onSuccess(String content) {
+                        public void onSuccess(String content, Long lastModifiedDate) {
 
                             setProgressMessage("Loading answers");
                             driveIOHandler.readFile(gradeFileId, new FileReadCallback() {
                                 @Override
-                                public void onSuccess(String content) {
+                                public void onSuccess(String content, Long lastModifiedDate) {
                                     stopProgressFragment();
                                     // TODO mostrar respostas do aluno caso ele ja respondeu
                                     // TODO e não permitir que ele responda o exam
