@@ -1,12 +1,13 @@
-package com.sharman.yukon.view.activities;
+package com.sharman.yukon.view.activities.main;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+
 import com.sharman.yukon.R;
+import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 
 public class DisconnectedActivity extends GoogleRestConnectActivity {

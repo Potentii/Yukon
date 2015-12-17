@@ -11,7 +11,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="com.sharman.yukon.view.activities.MainActivity">
+            tools:context="com.sharman.yukon.view.activities.main.MainActivity">
 
 
 
@@ -125,6 +125,6 @@
             android:layout_gravity="start"
             app:layout="@layout/fragment_main_navigation_drawer"
             tools:layout="@layout/fragment_main_navigation_drawer"
-            android:name="com.sharman.yukon.view.activities.MainNavigationDrawerFragment"/>
+            android:name="com.sharman.yukon.view.activities.main.MainNavigationDrawerFragment"/>
             -->
 </android.support.v4.widget.DrawerLayout>

@@ -34,7 +34,7 @@ import com.sharman.yukon.model.StudentConfigs;
 import com.sharman.yukon.model.TeacherAnswers;
 import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
-import com.sharman.yukon.view.activities.TeacherMainActivity;
+import com.sharman.yukon.view.activities.main.TeacherMainActivity;
 import com.sharman.yukon.view.activities.dialog.StudentPickerDialog;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.DialogCallback;
@@ -157,7 +157,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                                             studentConfigsFileIdArray[i] = studentConfigFilePairArray[i].getConfigFileId();
                                         }
 
-                                        TeacherConfigs teacherConfigs = new TeacherConfigs(studentConfigsFileIdArray, correctAnswersFileId, examFileId, exam.getTitle(), exam.getDeliverDate(), exam.getSubject(), exam.getTeacherId());
+                                        TeacherConfigs teacherConfigs = new TeacherConfigs(studentConfigsFileIdArray, correctAnswersFileId, examFileId);
 
                                         new DriveIOHandler(getCredential()).editFile(teacherConfigsFileId, null, null, teacherConfigs.toString(), new FileEditCallback() {
                                             @Override
@@ -236,7 +236,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
 
                     plusIOHandler.readPersonImg(person, new PersonImgReadCallback() {
                         @Override
-                        public void onSuccess(final Bitmap bitmap) {
+                        public void onSuccess(final Bitmap bitmap, String bitmapURL) {
                             stopProgressFragment();
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -499,7 +499,7 @@ public class ExamCreateConfirmActivity extends GoogleRestConnectActivity impleme
                         new DriveIOHandler(getCredential()).createFile(studentFolderId, "Grade", studentConfigFilePair.getUserId() + "'s grade", EMimeType.JSON.getMimeType(), grade.toString(), new FileCreateCallback() {
                             @Override
                             public void onSuccess(final String gradeFileId) {
-                                StudentConfigs studentConfigs = new StudentConfigs(gradeFileId, answersFileId, examFileId, studentConfigFilePair.getUserId(), exam.getTitle(), exam.getDeliverDate(), exam.getSubject(), exam.getTeacherId());
+                                StudentConfigs studentConfigs = new StudentConfigs(gradeFileId, answersFileId, examFileId, studentConfigFilePair.getUserId());
                                 stepByStepEvent_studentFilesAndSharing.registerStep(EStudentFilesAndSharingCreationStep.GRADE_FILE_CREATION.getName(), true);
 
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *

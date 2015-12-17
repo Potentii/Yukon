@@ -100,7 +100,7 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
         setProgressMessage(R.string.progress_examManagingStudentInspect_loadingGrade);
         driveIOHandler.readFile(gradeFileId, new FileReadCallback() {
             @Override
-            public void onSuccess(final String content) {
+            public void onSuccess(final String content, Long lastModifiedDate) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -119,7 +119,7 @@ public class ExamManagingStudentInspectActivity extends GoogleRestConnectActivit
                             setProgressMessage(R.string.progress_examManagingStudentInspect_loadingAnswers);
                             driveIOHandler.readFile(studentAnswerFileId, new FileReadCallback() {
                                 @Override
-                                public void onSuccess(String content) {
+                                public void onSuccess(String content, Long lastModifiedDate) {
                                     stopProgressFragment();
                                     try {
                                         studentAnswers = new StudentAnswers(content);

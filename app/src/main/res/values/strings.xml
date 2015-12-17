@@ -147,7 +147,7 @@
     -->
     <string name="toast.requiredFields">There are fields empty</string>
     <string name="toast.invalidFields">There are invalid fields</string>
-    <string name="toast.examsNotLoaded">Not all exams loaded</string>
+    <string name="toast.examsNotLoaded">Not all exams loaded properly</string>
     <string name="toast.somethingWentWrong">Something went wrong, try again</string>
 
     <string name="toast.examAnsweringConfirm.answerSent">Answer sent, good luck</string>

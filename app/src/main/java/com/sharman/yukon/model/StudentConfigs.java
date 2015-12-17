@@ -21,12 +21,12 @@ public class StudentConfigs extends JSONObject {
         GRADE_FILE_ID("gradeFileId"),
         ANSWERS_FILE_ID("answersFileId"),
         EXAM_FILE_ID("examFileId"),
-        STUDENT("student"),
+        STUDENT("student")/*,
 
         EXAM_TITLE_CACHE("examTitleCache"),
         EXAM_DELIVERY_DATE_CACHE("examDeliveryDateCache"),
         EXAM_SUBJECT_CACHE("examSubjectCache"),
-        TEACHER_ID_CACHE("teacherIdCache");
+        TEACHER_ID_CACHE("teacherIdCache")*/;
 
         private String key;
         private StudentConfigsJSONKeys(String key){
@@ -43,7 +43,7 @@ public class StudentConfigs extends JSONObject {
      *  * Constructor:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public StudentConfigs(String gradeFileId, String answersFileId, String examFileId, String student, String examTitleCache, Date examDeliveryDateCache, String examSubjectCache, String teacherIdCache){
+    public StudentConfigs(String gradeFileId, String answersFileId, String examFileId, String student/*, String examTitleCache, Date examDeliveryDateCache, String examSubjectCache, String teacherIdCache*/){
         super();
         try {
             this.setGradeFileId(gradeFileId);
@@ -51,10 +51,12 @@ public class StudentConfigs extends JSONObject {
             this.setExamFileId(examFileId);
             this.setStudent(student);
 
+            /*
             this.setExamTitleCache(examTitleCache);
             this.setExamDeliveryDateCache(examDeliveryDateCache);
             this.setExamSubjectCache(examSubjectCache);
             this.setTeacherIdCache(teacherIdCache);
+            */
         } catch (JSONException e){
             e.printStackTrace();
         }
@@ -101,7 +103,7 @@ public class StudentConfigs extends JSONObject {
         super.putOpt(StudentConfigsJSONKeys.STUDENT.getKey(), student);
     }
 
-
+    /*
     // *ExamTitleCache
     public String getExamTitleCache(){
         return super.optString(StudentConfigsJSONKeys.EXAM_TITLE_CACHE.getKey());
@@ -139,4 +141,5 @@ public class StudentConfigs extends JSONObject {
     public void setTeacherIdCache(String teacherIdCache) throws JSONException{
         super.putOpt(StudentConfigsJSONKeys.TEACHER_ID_CACHE.getKey(), teacherIdCache);
     }
+    */
 }
