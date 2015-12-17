@@ -1,4 +1,4 @@
-package com.sharman.yukon.view.activities;
+package com.sharman.yukon.view.activities.main;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,7 +36,7 @@ public class StudentMainActivity extends MainActivity {
             @Override
             public void onClick(ExamRVInfo examRVInfo) {
                 Intent examAnsweringIntent = new Intent(getApplicationContext(), ExamAnsweringActivity.class);
-                examAnsweringIntent.putExtra("studentConfigs", examRVInfo.getConfigs());
+                examAnsweringIntent.putExtra("studentConfigs", examRVInfo.getConfigFileId());
                 startActivity(examAnsweringIntent);
             }
         });

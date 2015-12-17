@@ -34,7 +34,7 @@ import com.sharman.yukon.model.StudentConfigs;
 import com.sharman.yukon.model.TeacherAnswers;
 import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
-import com.sharman.yukon.view.activities.TeacherMainActivity;
+import com.sharman.yukon.view.activities.main.TeacherMainActivity;
 import com.sharman.yukon.view.activities.dialog.StudentPickerDialog;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.DialogCallback;

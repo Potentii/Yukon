@@ -2,8 +2,6 @@ package com.sharman.yukon.view.activities;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -24,6 +22,7 @@ import com.sharman.yukon.io.plus.PlusIOHandler;
 import com.sharman.yukon.io.plus.callback.PersonReadCallback;
 import com.sharman.yukon.model.YukonAccount;
 import com.sharman.yukon.model.YukonAccountKeeper;
+import com.sharman.yukon.view.activities.main.DisconnectedActivity;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 
 import org.json.JSONException;
@@ -252,7 +251,7 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
     private boolean addingAccount = false;
 
 
-    protected void switchAccount(@Nonnull String accountEmail){
+    public void switchAccount(@Nonnull String accountEmail){
         onAccountChoose(accountEmail);
     }
 

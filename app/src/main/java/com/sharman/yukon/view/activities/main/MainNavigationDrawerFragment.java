@@ -1,4 +1,4 @@
-package com.sharman.yukon.view.activities;
+package com.sharman.yukon.view.activities.main;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -25,6 +25,7 @@ import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
 import com.sharman.yukon.io.plus.callback.PhotoURLCallback;
 import com.sharman.yukon.model.YukonAccount;
 import com.sharman.yukon.model.YukonAccountKeeper;
+import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 import com.sharman.yukon.view.activities.util.GetResourceCacheCallback;
 import com.sharman.yukon.view.activities.util.RegisterResourceCacheCallback;

@@ -1,7 +1,5 @@
 package com.sharman.yukon.view.activities.util.recycler;
 
-import com.sharman.yukon.model.Exam;
-
 import java.util.Date;
 
 /**
@@ -12,16 +10,15 @@ public class ExamRVInfo {
     private String examTitle;
     private String examSubject;
     private Date examDeliveryDate;
-    private String configs;
-    // TODO change configs to Exam or Exam metadata
+    private String configFileId;
 
 
-    public ExamRVInfo(String teacherId, String examTitle, String examSubject, Date examDeliveryDate, String configs) {
+    public ExamRVInfo(String teacherId, String examTitle, String examSubject, Date examDeliveryDate, String configFileId) {
         this.teacherId = teacherId;
         this.examTitle = examTitle;
         this.examSubject = examSubject;
         this.examDeliveryDate = examDeliveryDate;
-        this.configs = configs;
+        this.configFileId = configFileId;
     }
 
 
@@ -49,10 +46,10 @@ public class ExamRVInfo {
     public void setExamDeliveryDate(Date examDeliveryDate) {
         this.examDeliveryDate = examDeliveryDate;
     }
-    public String getConfigs() {
-        return configs;
+    public String getConfigFileId() {
+        return configFileId;
     }
-    public void setConfigs(String configs) {
-        this.configs = configs;
+    public void setConfigFileId(String configFileId) {
+        this.configFileId = configFileId;
     }
 }

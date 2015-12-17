@@ -33,8 +33,8 @@ public class ResourceCache {
     private Activity activity;
 
 
-    
-    public ResourceCache(Activity activity){
+
+    public ResourceCache(@Nonnull Activity activity){
         this.activity = activity;
     }
 

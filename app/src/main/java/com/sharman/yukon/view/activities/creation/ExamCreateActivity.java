@@ -31,7 +31,7 @@ import com.sharman.yukon.model.TeacherAnswers;
 import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.model.WeightTypeAnswerStruct;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
-import com.sharman.yukon.view.activities.TeacherMainActivity;
+import com.sharman.yukon.view.activities.main.TeacherMainActivity;
 import com.sharman.yukon.view.activities.dialog.AlertDialog;
 import com.sharman.yukon.view.activities.dialog.DeliveryDateDialog;
 import com.sharman.yukon.view.activities.dialog.StudentPickerDialog;

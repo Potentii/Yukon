@@ -20,8 +20,7 @@ import com.sharman.yukon.model.Answer;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.StudentAnswers;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
-import com.sharman.yukon.view.activities.MainActivity;
-import com.sharman.yukon.view.activities.StudentMainActivity;
+import com.sharman.yukon.view.activities.main.StudentMainActivity;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
 
 import org.json.JSONException;

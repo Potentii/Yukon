@@ -1,4 +1,4 @@
-package com.sharman.yukon.view.activities;
+package com.sharman.yukon.view.activities.main;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,6 +16,7 @@ import com.sharman.yukon.io.drive.callback.FileReadCallback;
 import com.sharman.yukon.io.drive.callback.LastModifiedDateCallback;
 import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.YukonAccountKeeper;
+import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
 import com.sharman.yukon.view.activities.creation.ExamCreateActivity;
 import com.sharman.yukon.view.activities.dialog.AlertDialog;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
@@ -42,6 +43,7 @@ public abstract class MainActivity extends GoogleRestConnectActivity {
     protected ExamRVAdapter examRVAdapter;
     protected RecyclerView examRecyclerView;
     protected Vector<ExamRVInfo> examRVInfoVector;
+    private String[] configIdArray;
 
     protected StepByStepEvent stepByStepEvent_loadingExams;
 
@@ -143,6 +145,7 @@ public abstract class MainActivity extends GoogleRestConnectActivity {
     private void updateExamList() {
         final Activity activity = this;
         examRVInfoVector.clear();
+        configIdArray = new String[0];
 
         final DriveIOHandler driveIOHandler = new DriveIOHandler(getCredential());
         driveIOHandler.queryFiles(examsQueryString, new FileQueryCallback() {
@@ -152,7 +155,7 @@ public abstract class MainActivity extends GoogleRestConnectActivity {
 
 
                 // *Setting configId array and examSet indexes:
-                String[] configIdArray = new String[driveFileList.size()];
+                configIdArray = new String[driveFileList.size()];
                 Set<String> loadingExamsSet = new HashSet<String>();
                 for (int i = 0; i < driveFileList.size(); i++) {
                     configIdArray[i] = driveFileList.get(i).getId();
@@ -313,7 +316,7 @@ public abstract class MainActivity extends GoogleRestConnectActivity {
                             exam.getTitle(),
                             exam.getSubject(),
                             exam.getDeliverDate(),
-                            validatedResource));
+                            configIdArray[index]));
 
                     stepByStepEvent_loadingExams.registerStep(String.valueOf(index), true);
                 } catch (JSONException e) {
