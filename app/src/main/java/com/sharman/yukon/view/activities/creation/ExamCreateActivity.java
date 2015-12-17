@@ -31,7 +31,7 @@ import com.sharman.yukon.model.TeacherAnswers;
 import com.sharman.yukon.model.TeacherConfigs;
 import com.sharman.yukon.model.WeightTypeAnswerStruct;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
-import com.sharman.yukon.view.activities.TeacherMainActivity;
+import com.sharman.yukon.view.activities.main.TeacherMainActivity;
 import com.sharman.yukon.view.activities.dialog.AlertDialog;
 import com.sharman.yukon.view.activities.dialog.DeliveryDateDialog;
 import com.sharman.yukon.view.activities.dialog.StudentPickerDialog;
@@ -606,7 +606,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
                                             studentConfigsFileIdArray[i] = studentConfigFilePairArray[i].getConfigFileId();
                                         }
 
-                                        TeacherConfigs teacherConfigs = new TeacherConfigs(studentConfigsFileIdArray, correctAnswersFileId, examFileId, exam.getTitle(), exam.getDeliverDate(), exam.getSubject(), exam.getTeacherId());
+                                        TeacherConfigs teacherConfigs = new TeacherConfigs(studentConfigsFileIdArray, correctAnswersFileId, examFileId);
 
                                         new DriveIOHandler(getCredential()).editFile(teacherConfigsFileId, null, null, teacherConfigs.toString(), new FileEditCallback() {
                                             @Override
@@ -831,7 +831,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
                         new DriveIOHandler(getCredential()).createFile(studentFolderId, "Grade", studentConfigFilePair.getUserId() + "'s grade", EMimeType.JSON.getMimeType(), grade.toString(), new FileCreateCallback() {
                             @Override
                             public void onSuccess(final String gradeFileId) {
-                                StudentConfigs studentConfigs = new StudentConfigs(gradeFileId, answersFileId, examFileId, studentConfigFilePair.getUserId(), exam.getTitle(), exam.getDeliverDate(), exam.getSubject(), exam.getTeacherId());
+                                StudentConfigs studentConfigs = new StudentConfigs(gradeFileId, answersFileId, examFileId, studentConfigFilePair.getUserId());
                                 stepByStepEvent_studentFilesAndSharing.registerStep(EStudentFilesAndSharingCreationStep.GRADE_FILE_CREATION.getName(), true);
 
                                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
@@ -958,31 +958,37 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
         }
         System.out.print("]");
 
-        AlertDialog alertDialog = new AlertDialog();
-        alertDialog.setTitleTxt("The exam could not be created");
-        alertDialog.setContentTxt("Do you want to try again, or discard this exam?");
-        alertDialog.setPositiveBtnTxt("Try again");
-        alertDialog.setNeutralBtnTxt("Exit, but save as draft");
-        alertDialog.setNegativeBtnTxt("Discard");
-        alertDialog.setDialogCallback(new DialogCallback() {
-            @Override
-            public void onPositive() {
-                loadTeacherInfo();
-            }
 
+        runOnUiThread(new Runnable() {
             @Override
-            public void onNegative() {
-                Intent intent = new Intent(getApplicationContext(), TeacherMainActivity.class);
-                startActivity(intent);
-                finish();
-            }
+            public void run() {
+                AlertDialog alertDialog = new AlertDialog();
+                alertDialog.setTitleTxt("The exam could not be created");
+                alertDialog.setContentTxt("Do you want to try again, or discard this exam?");
+                alertDialog.setPositiveBtnTxt("Try again");
+                alertDialog.setNeutralBtnTxt("Exit, but save as draft");
+                alertDialog.setNegativeBtnTxt("Discard");
+                alertDialog.setDialogCallback(new DialogCallback() {
+                    @Override
+                    public void onPositive() {
+                        loadTeacherInfo();
+                    }
 
-            @Override
-            public void onNeutral() {
-                // TODO save as draft
+                    @Override
+                    public void onNegative() {
+                        Intent intent = new Intent(getApplicationContext(), TeacherMainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
+                    @Override
+                    public void onNeutral() {
+                        // TODO save as draft
+                    }
+                });
+
+                alertDialog.show(getFragmentManager(), "alert_dialog_cant_load_information");
             }
         });
-
-        alertDialog.show(getFragmentManager(), "alert_dialog_cant_load_information");
     }
 }

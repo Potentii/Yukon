@@ -70,8 +70,9 @@ public final class PlusIOHandler {
             @Override
             public void run() {
                 try {
-                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(person.getImage().getUrl()).getContent());
-                    personImgReadCallback.onSuccess(bitmap);
+                    String bitmapURL = person.getImage().getUrl();
+                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(bitmapURL).getContent());
+                    personImgReadCallback.onSuccess(bitmap, bitmapURL);
                 } catch(NullPointerException | IOException e) {
                     e.printStackTrace();
                     personImgReadCallback.onFailure(e.getMessage());
@@ -90,8 +91,9 @@ public final class PlusIOHandler {
 
                 try {
                     Person person = service.people().get(userId).execute();
-                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(person.getImage().getUrl()).getContent());
-                    personImgReadCallback.onSuccess(bitmap);
+                    String bitmapURL = person.getImage().getUrl();
+                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(bitmapURL).getContent());
+                    personImgReadCallback.onSuccess(bitmap, bitmapURL);
                 } catch(NullPointerException | IOException e) {
                     e.printStackTrace();
                     personImgReadCallback.onFailure(e.getMessage());
@@ -107,8 +109,9 @@ public final class PlusIOHandler {
             @Override
             public void run() {
                 try {
-                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(person.getCover().getCoverPhoto().getUrl()).getContent());
-                    personImgReadCallback.onSuccess(bitmap);
+                    String bitmapURL = person.getCover().getCoverPhoto().getUrl();
+                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(bitmapURL).getContent());
+                    personImgReadCallback.onSuccess(bitmap, bitmapURL);
                 } catch(NullPointerException | IOException e) {
                     e.printStackTrace();
                     personImgReadCallback.onFailure(e.getMessage());
@@ -125,8 +128,9 @@ public final class PlusIOHandler {
 
                 try {
                     Person person = service.people().get(userId).execute();
-                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(person.getCover().getCoverPhoto().getUrl()).getContent());
-                    personImgReadCallback.onSuccess(bitmap);
+                    String bitmapURL = person.getCover().getCoverPhoto().getUrl();
+                    Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(bitmapURL).getContent());
+                    personImgReadCallback.onSuccess(bitmap, bitmapURL);
                 } catch(NullPointerException | IOException e) {
                     e.printStackTrace();
                     personImgReadCallback.onFailure(e.getMessage());
@@ -137,7 +141,7 @@ public final class PlusIOHandler {
 
 
 
-    public void listPersonContacts(final String userId, final PersonContactsListCallback personContactsListCallback){
+    public void listPersonContacts(@Nonnull final String userId, @Nonnull final PersonContactsListCallback personContactsListCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -159,6 +163,35 @@ public final class PlusIOHandler {
                 personContactsListCallback.onResult(personList);
             }
         }).start();
+    }
+
+
+    public void getCoverURL(@Nonnull final String userId, @Nonnull final PhotoURLCallback photoURLCallback){
+        readPerson(userId, new PersonReadCallback() {
+            @Override
+            public void onSuccess(Person person) {
+                photoURLCallback.onSuccess(person.getCover().getCoverPhoto().getUrl());
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
+                photoURLCallback.onFailure(exception);
+            }
+        });
+    }
+
+    public void getImgURL(@Nonnull final String userId, @Nonnull final PhotoURLCallback photoURLCallback){
+        readPerson(userId, new PersonReadCallback() {
+            @Override
+            public void onSuccess(Person person) {
+                photoURLCallback.onSuccess(person.getImage().getUrl());
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
+                photoURLCallback.onFailure(exception);
+            }
+        });
     }
 
 }

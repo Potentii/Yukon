@@ -125,7 +125,8 @@ public final class DriveIOHandler {
                 try {
                     File file = service.files().get(fileId).execute();
                     String content = readFile(service, file);
-                    fileReadCallback.onSuccess(content);
+                    Long lastModifiedDate = getLastModifiedDate(file);
+                    fileReadCallback.onSuccess(content, lastModifiedDate);
                 } catch (IOException e) {
                     e.printStackTrace();
                     fileReadCallback.onFailure(e);
@@ -146,7 +147,8 @@ public final class DriveIOHandler {
 
                 try {
                     String content = readFile(service, file);
-                    fileReadCallback.onSuccess(content);
+                    Long lastModifiedDate = getLastModifiedDate(file);
+                    fileReadCallback.onSuccess(content, lastModifiedDate);
                 } catch (IOException e) {
                     e.printStackTrace();
                     fileReadCallback.onFailure(e);
@@ -182,12 +184,10 @@ public final class DriveIOHandler {
                     fileQueryCallback.onResult(driveFileList);
                 }  catch (SocketTimeoutException e){
                     e.printStackTrace();
-                    fileQueryCallback.onResult(null);
-                    return;
+                    fileQueryCallback.onFailure(e);
                 } catch (IOException e){
                     e.printStackTrace();
-                    fileQueryCallback.onResult(driveFileList);
-                    return;
+                    fileQueryCallback.onFailure(e);
                 }
             }
         }).start();
@@ -443,6 +443,33 @@ public final class DriveIOHandler {
                 multipleFilesReadCallback.onSuccess(contentArray);
             }
         }).start();
+    }
+
+
+    public void getLastModifiedDate(@NonNull final String fileId, @NonNull final LastModifiedDateCallback lastModifiedDateCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // *Get the Drive service instance:
+                com.google.api.services.drive.Drive service = getDriveService();
+
+                try {
+                    File file = service.files().get(fileId).execute();
+                    lastModifiedDateCallback.onSuccess(getLastModifiedDate(file));
+                } catch (IOException | NullPointerException e) {
+                    e.printStackTrace();
+                    lastModifiedDateCallback.onFailure(e);
+                }
+            }
+        }).start();
+    }
+
+    public Long getLastModifiedDate(@NonNull final File file){
+        try {
+            return file.getModifiedDate().getValue();
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
 

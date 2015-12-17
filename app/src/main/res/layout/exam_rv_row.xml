@@ -45,18 +45,18 @@
                 android:textColor="@color/primary_grey_dark"
                 android:id="@+id/examSubjectSpan"
                 android:singleLine="true"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:alpha="0.8"
+                android:alpha="0.6"
                 android:textSize="16sp"
                 android:textColor="@color/primary_grey_dark"
                 android:gravity="end"
                 android:id="@+id/examDeliverDateSpan"
                 android:singleLine="true"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
         </LinearLayout>
     </LinearLayout>
 

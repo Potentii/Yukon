@@ -26,7 +26,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".view.activities.DisconnectedActivity"
+            android:name=".view.activities.main.DisconnectedActivity"
             android:label="@string/activityTitle.disconnected"
             android:screenOrientation="nosensor">
             <intent-filter>
@@ -37,13 +37,13 @@
         </activity>
 
         <activity
-            android:name=".view.activities.TeacherMainActivity"
+            android:name=".view.activities.main.TeacherMainActivity"
             android:label="@string/activityTitle.main"
             android:screenOrientation="nosensor" >
         </activity>
 
         <activity
-            android:name=".view.activities.StudentMainActivity"
+            android:name=".view.activities.main.StudentMainActivity"
             android:label="@string/activityTitle.main"
             android:screenOrientation="nosensor" >
         </activity>
@@ -54,7 +54,7 @@
         <activity
             android:name=".view.activities.creation.ExamCreateActivity"
             android:label="@string/activityTitle.examCreate"
-            android:parentActivityName=".view.activities.TeacherMainActivity"
+            android:parentActivityName=".view.activities.main.TeacherMainActivity"
             android:screenOrientation="nosensor" >
         </activity>
 
@@ -70,7 +70,7 @@
         <activity
             android:name=".view.activities.answering.ExamAnsweringActivity"
             android:label="@string/activityTitle.examAnswering"
-            android:parentActivityName=".view.activities.StudentMainActivity"
+            android:parentActivityName=".view.activities.main.StudentMainActivity"
             android:screenOrientation="nosensor" >
         </activity>
 
@@ -92,7 +92,7 @@
         <activity
             android:name=".view.activities.managing.ExamManagingActivity"
             android:label="@string/activityTitle.examManaging"
-            android:parentActivityName=".view.activities.TeacherMainActivity"
+            android:parentActivityName=".view.activities.main.TeacherMainActivity"
             android:screenOrientation="nosensor" >
         </activity>
 
