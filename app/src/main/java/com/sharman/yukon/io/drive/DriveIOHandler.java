@@ -355,7 +355,7 @@ public final class DriveIOHandler {
 
                             service.permissions()
                                     .update(fileId, permissionList.get(i).getId(), newPermission)
-                                    .queue(batch, callback);;
+                                    .queue(batch, callback);
                         }
                     }
 
@@ -364,6 +364,48 @@ public final class DriveIOHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                     fileShareEditCallback.onFailure(e.getMessage());
+                }
+            }
+        }).start();
+    }
+
+
+
+    public void queryUserPermission(@NonNull final String fileId, @NonNull final String userEmail, @NonNull final UserPermissionQueryCallback userPermissionQueryCallback){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                // *Get the Drive service instance:
+                Drive service = getDriveService();
+
+
+                try {
+                    // *Retrieve the permission list for this file:
+                    List<Permission> permissionList = service.permissions().list(fileId).execute().getItems();
+
+                    List<Integer> indexesFound = new ArrayList<Integer>();
+                    Permission[] permissionFoundArray;
+
+
+                    // *Searches for permissions with the user "userEMail":
+                    for(int i=0; i<permissionList.size(); i++){
+                        if(permissionList.get(i).getEmailAddress().equals(userEmail)){
+                            indexesFound.add(i);
+                        }
+                    }
+
+
+                    permissionFoundArray = new Permission[indexesFound.size()];
+                    for (int i = 0; i < indexesFound.size(); i++) {
+                        permissionFoundArray[i] = permissionList.get(indexesFound.get(i));
+                    }
+
+
+                    userPermissionQueryCallback.onSuccess(permissionFoundArray);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    userPermissionQueryCallback.onFailure(e);
                 }
             }
         }).start();

@@ -41,9 +41,8 @@ import com.sharman.yukon.view.activities.util.FinishStepByStepEventCallback;
 import com.sharman.yukon.view.activities.util.FormValidator;
 import com.sharman.yukon.view.activities.util.StepByStepEvent;
 import com.sharman.yukon.view.activities.util.StudentConfigFilePair;
-import com.sharman.yukon.view.activities.util.recycler.OnQuestionsCreatingRVItemClickListener;
-import com.sharman.yukon.view.activities.util.recycler.QuestionsCreatingRVAdapter;
-import com.sharman.yukon.view.activities.util.recycler.QuestionsCreatingRVInfo;
+import com.sharman.yukon.view.activities.util.recycler.QuestionCreationRVAdapter;
+import com.sharman.yukon.view.activities.util.recycler.QuestionCreationRVInfo;
 
 import org.json.JSONException;
 
@@ -72,9 +71,10 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
 
     private Exam exam;
     private TeacherAnswers teacherAnswers;
+    private int questionQty;
 
-    private List<QuestionsCreatingRVInfo> questionsCreatingRVInfoList;
-    private QuestionsCreatingRVAdapter questionsCreatingRVAdapter;
+    private List<QuestionCreationRVInfo> questionCreationRVInfoList;
+    private QuestionCreationRVAdapter questionCreationRVAdapter;
     private RecyclerView questionsRecyclerView;
 
     private List<String> idList;
@@ -172,14 +172,14 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
 
             if(questionArray.length == weightTypeAnswerStructArray.length){
                 for (int i = 0; i < questionArray.length; i++) {
-                    questionsCreatingRVInfoList.add(new QuestionsCreatingRVInfo(i, questionArray[i], weightTypeAnswerStructArray[i]));
+                    questionCreationRVInfoList.add(new QuestionCreationRVInfo(i, questionArray[i], weightTypeAnswerStructArray[i]));
                 }
             } else{
                 exam = null;
                 teacherAnswers = null;
             }
 
-            if(exam != null && teacherAnswers != null && idList != null && questionsCreatingRVInfoList != null){
+            if(exam != null && teacherAnswers != null && idList != null && questionCreationRVInfoList != null){
                 gotEverything = true;
             }
         } catch (Exception e){}
@@ -190,7 +190,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
         if(!gotEverything){
             exam = new Exam("", "", new Date(), null, "", new Question[0]);
             teacherAnswers = new TeacherAnswers(new WeightTypeAnswerStruct[0]);
-            questionsCreatingRVInfoList = new ArrayList<>();
+            questionCreationRVInfoList = new ArrayList<>();
             idList = new ArrayList<>();
             teacherId = null;
         }
@@ -206,23 +206,21 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
 
         // *Recycler view:
         questionsRecyclerView = (RecyclerView) findViewById(R.id.questionsRecyclerView);
-        questionsCreatingRVAdapter = new QuestionsCreatingRVAdapter(this, questionsCreatingRVInfoList, new OnQuestionsCreatingRVItemClickListener() {
+        questionCreationRVAdapter = new QuestionCreationRVAdapter(this, questionCreationRVInfoList) {
             @Override
-            public void onClick(QuestionsCreatingRVInfo questionsCreatingRVInfo) {
-                // *On item click:
-                editQuestion(questionsCreatingRVInfo);
+            protected void onItemClick(QuestionCreationRVInfo questionCreationRVInfo) {
+                editQuestion(questionCreationRVInfo);
             }
-        }, new OnQuestionsCreatingRVItemClickListener() {
+
             @Override
-            public void onClick(QuestionsCreatingRVInfo questionsCreatingRVInfo) {
-                // *On remove btn click:
-                askToRemoveQuestion(questionsCreatingRVInfo);
+            protected void onItemRemove(QuestionCreationRVInfo questionCreationRVInfo) {
+                askToRemoveQuestion(questionCreationRVInfo);
             }
-        });
+        };
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questionsRecyclerView.setLayoutManager(linearLayoutManager);
-        questionsRecyclerView.setAdapter(questionsCreatingRVAdapter);
+        questionsRecyclerView.setAdapter(questionCreationRVAdapter);
 
 
 
@@ -286,7 +284,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
                 .addField(examSubjectIn, examSubjectIn_errorOut, EnumSet.of(FormValidator.EValidation.REQUIRED))
                 .addComplexField(deliveryDateDialog, examDeliveryDateIn, examDeliveryDateIn_errorOut)
                 .addComplexField(studentPickerDialog, examStudentsIn, examStudentsIn_errorOut)
-                .addComplexField(questionsCreatingRVAdapter, null, questionsRecyclerView_errorOut);
+                .addComplexField(questionCreationRVAdapter, null, questionsRecyclerView_errorOut);
 
 
 
@@ -296,7 +294,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
         examSubjectIn.setText(exam.getSubject());
         deliveryDateIn_format();
         studentsIn_format();
-        questionsRecyclerView.getAdapter().notifyDataSetChanged();
+        questionCreationRVAdapter.update();
     }
 
 
@@ -339,8 +337,8 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
                     int questionIndex = data.getExtras().getInt(QuestionsCreateActivity.QUESTION_INDEX_INTENT_KEY);
 
                     // *Updating the recycler and de RVInfo list:
-                    questionsCreatingRVInfoList.add(new QuestionsCreatingRVInfo(questionIndex, question, weightTypeAnswerStruct));
-                    questionsRecyclerView.getAdapter().notifyDataSetChanged();
+                    questionCreationRVInfoList.add(new QuestionCreationRVInfo(questionIndex, question, weightTypeAnswerStruct));
+                    questionCreationRVAdapter.update();
                     //TODO nao está mostrando, talvez seja o bug do tamanho com os recyclerview
 
                 } catch (JSONException e){
@@ -358,9 +356,9 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
                     int questionIndex = data.getExtras().getInt(QuestionsCreateActivity.QUESTION_INDEX_INTENT_KEY);
 
                     // *Updating the recycler and de RVInfo list:
-                    questionsCreatingRVInfoList.remove(questionIndex);
-                    questionsCreatingRVInfoList.add(questionIndex, new QuestionsCreatingRVInfo(questionIndex, question, weightTypeAnswerStruct));
-                    questionsRecyclerView.getAdapter().notifyDataSetChanged();
+                    questionCreationRVInfoList.remove(questionIndex);
+                    questionCreationRVInfoList.add(questionIndex, new QuestionCreationRVInfo(questionIndex, question, weightTypeAnswerStruct));
+                    questionCreationRVAdapter.update();
                 } catch (JSONException e){
                     e.printStackTrace();
                 }
@@ -392,27 +390,27 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
     public void addQuestionFAB_onClick(View view){
         Intent addQuestionIntent = new Intent(this, QuestionsCreateActivity.class)
                 .putExtra(REQUEST_CODE_INTENT_KEY, ADD_QUESTION_REQUEST)
-                .putExtra(QUESTION_INDEX_INTENT_KEY, questionsCreatingRVInfoList.size());
+                .putExtra(QUESTION_INDEX_INTENT_KEY, questionCreationRVInfoList.size());
         startActivityForResult(addQuestionIntent, ADD_QUESTION_REQUEST);
     }
 
 
-    private void editQuestion(final QuestionsCreatingRVInfo questionsCreatingRVInfo){
+    private void editQuestion(final QuestionCreationRVInfo questionCreationRVInfo){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Intent editQuestionIntent = new Intent(getApplicationContext(), QuestionsCreateActivity.class)
                         .putExtra(REQUEST_CODE_INTENT_KEY, EDIT_QUESTION_REQUEST)
-                        .putExtra(QUESTION_INDEX_INTENT_KEY, questionsCreatingRVInfo.getQuestionIndex())
-                        .putExtra(QUESTION_INTENT_KEY, questionsCreatingRVInfo.getQuestion().toString())
-                        .putExtra(WTA_STRUCT_INTENT_KEY, questionsCreatingRVInfo.getWeightTypeAnswerStruct().toString());
+                        .putExtra(QUESTION_INDEX_INTENT_KEY, questionCreationRVInfo.getIndex())
+                        .putExtra(QUESTION_INTENT_KEY, questionCreationRVInfo.getQuestion().toString())
+                        .putExtra(WTA_STRUCT_INTENT_KEY, questionCreationRVInfo.getWeightTypeAnswerStruct().toString());
                 startActivityForResult(editQuestionIntent, EDIT_QUESTION_REQUEST);
             }
         });
     }
 
 
-    private void askToRemoveQuestion(final QuestionsCreatingRVInfo questionsCreatingRVInfo){
+    private void askToRemoveQuestion(final QuestionCreationRVInfo questionCreationRVInfo){
         // TODO CHANGE THIS: remove the question and show a snackbar with the UNDO command
 
         runOnUiThread(new Runnable() {
@@ -420,22 +418,22 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
             public void run() {
                 AlertDialog alertDialog = new AlertDialog();
                 alertDialog.setTitleTxt("Remove question");
-                alertDialog.setContentTxt("Sure you want to remove question " + (questionsCreatingRVInfo.getQuestionIndex() + 1) + " from exam?");
+                alertDialog.setContentTxt("Sure you want to remove question " + (questionCreationRVInfo.getIndex() + 1) + " from exam?");
                 alertDialog.setPositiveBtnTxt("Yes");
                 alertDialog.setNegativeBtnTxt("No");
                 alertDialog.setDialogCallback(new DialogCallback() {
                     @Override
                     public void onPositive() {
                         // *Removing the question:
-                        questionsCreatingRVInfoList.remove(questionsCreatingRVInfo);
+                        questionCreationRVInfoList.remove(questionCreationRVInfo);
 
                         // *Updating the indexes of the questions:
-                        for (int i = 0; i < questionsCreatingRVInfoList.size(); i++) {
-                            questionsCreatingRVInfoList.get(i).setQuestionIndex(i);
+                        for (int i = 0; i < questionCreationRVInfoList.size(); i++) {
+                            questionCreationRVInfoList.get(i).setIndex(i);
                         }
 
                         // *Update the recyclerView:
-                        questionsRecyclerView.getAdapter().notifyDataSetChanged();
+                        questionCreationRVAdapter.update();
                     }
 
                     @Override
@@ -466,12 +464,15 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
 
 
         // *Building the WTA and Question array:
-        Question[] questionArray = new Question[questionsCreatingRVInfoList.size()];
-        WeightTypeAnswerStruct[] wtaArray = new WeightTypeAnswerStruct[questionsCreatingRVInfoList.size()];
-        for (int i = 0; i < questionsCreatingRVInfoList.size(); i++) {
-            questionArray[i] = questionsCreatingRVInfoList.get(i).getQuestion();
-            wtaArray[i] = questionsCreatingRVInfoList.get(i).getWeightTypeAnswerStruct();
+        Question[] questionArray = new Question[questionCreationRVInfoList.size()];
+        WeightTypeAnswerStruct[] wtaArray = new WeightTypeAnswerStruct[questionCreationRVInfoList.size()];
+        for (int i = 0; i < questionCreationRVInfoList.size(); i++) {
+            questionArray[i] = questionCreationRVInfoList.get(i).getQuestion();
+            wtaArray[i] = questionCreationRVInfoList.get(i).getWeightTypeAnswerStruct();
         }
+
+
+        questionQty = questionArray.length;
 
 
         // *Putting them on a new Exam and TeacherAnswer object:
@@ -815,7 +816,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
         new DriveIOHandler(getCredential()).createFolder(parentFolderId, "Student[" + studentConfigFilePair.getUserId() + "]", "", new FolderCreateCallback() {
             @Override
             public void onSuccess(final String studentFolderId) {
-                StudentAnswers studentAnswers = new StudentAnswers(new Answer[]{});
+                StudentAnswers studentAnswers = new StudentAnswers(new Answer[questionQty]);
                 stepByStepEvent_studentFilesAndSharing.registerStep(EStudentFilesAndSharingCreationStep.STUDENT_FOLDER_CREATION.getName(), true);
 
                 // * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- * ---------- *
@@ -931,7 +932,7 @@ public class ExamCreateActivity extends GoogleRestConnectActivity {
     private void onCreationSuccess(){
         stopProgressFragment();
         System.out.println(">> Creation Success");
-        new AndroidUtil(this).showToast(R.string.toast_examCreateConfirm_examCreated, Toast.LENGTH_SHORT);
+        new AndroidUtil(this).showToast(R.string.toast_examCreate_examCreated, Toast.LENGTH_SHORT);
         final Activity activity = this;
 
         runOnUiThread(new Runnable() {

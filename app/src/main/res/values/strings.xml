@@ -10,11 +10,9 @@
     <string name="activityTitle.main">Exams</string>
     <string name="activityTitle.examCreate"></string>
     <string name="activityTitle.questionCreate">Question</string>
-    <string name="activityTitle.examCreateConfirm"></string>
 
     <string name="activityTitle.examAnswering"></string>
-    <string name="activityTitle.questionAnswering">Question</string>
-    <string name="activityTitle.examAnsweringConfirm">Review</string>
+    <string name="activityTitle.questionAnswering"></string>
 
     <string name="activityTitle.examManaging"></string>
     <string name="activityTitle.examManagingStudents">Students</string>
@@ -39,11 +37,15 @@
 
     <string name="output.examCreate.emptyQuestions">None questions added</string>
 
+    <string name="output.examAnswering.questionNotAnsweredYet">-- Not answered yet --</string>
+
+    <!-- * Validation simple * -->
     <string name="output.defaultInvalidField">Invalid field</string>
     <string name="output.defaultInvalidField.required">It should not be left empty</string>
     <string name="output.defaultInvalidField.integer">It should contain numbers</string>
     <string name="output.defaultInvalidField.float">It should contain decimal numbers</string>
 
+    <!-- * Validation complex * -->
     <string name="output.invalidField.datePicker.dateInPast">Date occurs in the past</string>
     <string name="output.invalidField.datePicker.empty">Date not selected</string>
 
@@ -54,9 +56,12 @@
 
     <string name="output.invalidField.questionsCreateRV.empty">None questions created</string>
 
+    <string name="output.invalidField.questionAnswering.notAnswered">You must answer this question</string>
+
+    <string name="output.invalidField.questionAnsweringRV.unansweredQuestions">There are some unanswered questions</string>
+
+
     <!-- * List labels * -->
-    <string name="listLabel.main.my">Created by me</string>
-    <string name="listLabel.main.shared">Exams</string>
     <string name="listLabel.main">Exams</string>
 
     <!-- * Dialog title * -->
@@ -77,19 +82,19 @@
     <string name="inputHint.examCreate.description">Description</string>
     <string name="inputHint.examCreate.subject">Subject</string>
     <string name="inputHint.examCreate.deliveryDate">Delivery date</string>
+    <string name="inputHint.examCreate.students">Students</string>
 
     <string name="inputHint.questionCreate.title">Question</string>
     <string name="inputHint.questionCreate.weight">Weight</string>
     <string name="inputHint.questionCreate.alternatives">Alternatives</string>
 
-    <string name="inputHint.questionCreate.alternativeDialog.answerRow">Type a possible answer</string>
-
-    <string name="inputHint.examCreate.students">Students</string>
-
+    <string name="inputHint.alternativeDialog.answerRow">Type a possible answer</string>
     <string name="inputHint.studentPickerDialog.student">Student e-mail</string>
 
+    <!-- * Output only * -->
     <string name="input.questionCreate.alternativesSelected.singular">alternative</string>
     <string name="input.questionCreate.alternativesSelected.plural">alternatives</string>
+
 
 
     <!--
@@ -99,30 +104,45 @@
     -->
     <string name="button.examManagingStudentInspect.acceptGrade">Accept grade</string>
 
-    <!-- * Action buttons * -->
-    <string name="actionButton.examCreate.next">Add questions</string>
-    <string name="actionButton.questionCreate.share">Finish</string>
-    <string name="actionButton.examCreateConfirm.finish">Share exam</string>
+    <!-- TODO -->
+    <!-- * Content description * -->
 
-    <string name="actionButton.examAnswering.start">Start the exam</string>
-    <string name="actionButton.examAnsweringConfirm.send">Send to teacher</string>
 
-    <!-- * Dialog Buttons * -->
+
+    <!--
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    *   * Dialog
+    *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+    -->
+    <!-- * General * -->
     <string name="dialog.confirm">Confirm</string>
     <string name="dialog.cancel">Cancel</string>
     <string name="dialog.ok">OK</string>
+    <string name="dialog.yes">yes</string>
+    <string name="dialog.no">no</string>
 
+    <!-- * Context * -->
     <string name="dialog.answerCorrection.needsCorrection.correct">it\'s correct</string>
     <string name="dialog.answerCorrection.needsCorrection.incorrect">Incorrect</string>
+
+    <!-- * Alert dialog titles * -->
+    <string name="alertDialog.title.loadingFailed">Loading failed</string>
+    <string name="alertDialog.title.sendingFailed">Sending failed</string>
+
+    <!-- * Alert dialog content * -->
+    <string name="alertDialog.content.tryAgain">Want to try again?</string>
+
+
 
     <!--
     *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
     *   * Spinner
     *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
     -->
-    <string name="spinner.answerType.dissertative">Dissertative</string>
+    <string name="spinner.answerType.dissertative">Dissertation</string>
     <string name="spinner.answerType.singleChoice">Single choice</string>
     <string name="spinner.answerType.multipleChoice">Multiple choice</string>
+
 
 
     <!--
@@ -145,15 +165,24 @@
     *   * Toast
     *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
     -->
+    <!-- * General * -->
     <string name="toast.requiredFields">There are fields empty</string>
     <string name="toast.invalidFields">There are invalid fields</string>
     <string name="toast.examsNotLoaded">Not all exams loaded properly</string>
     <string name="toast.somethingWentWrong">Something went wrong, try again</string>
+    <string name="toast.infoNotLoadedYet">Info not loaded yet</string>
 
-    <string name="toast.examAnsweringConfirm.answerSent">Answer sent, good luck</string>
-    <string name="toast.examCreateConfirm.examCreated">Exam created</string>
+    <!-- * Context * -->
+    <string name="toast.examCreate.examCreated">Exam created</string>
+
+    <string name="toast.examAnswering.answerNotAllowed">You can\'t answer this exam anymore</string>
+    <string name="toast.examAnswering.answerSent">Answer sent, good luck</string>
+    <string name="toast.examAnswering.answerAllQuestions">You must answer all the questions</string>
+    <string name="toast.examAnswering.answerLoadFail">Answers couldn\'t be loaded properly</string>
+
     <string name="toast.examManagingStudentInspect.gradeUpdated">Grade updated</string>
     <string name="toast.examManagingStudent.allStudentsLoaded">All students loaded</string>
+
 
 
     <!--
@@ -161,20 +190,14 @@
     *   * Progress
     *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
     -->
+    <!-- * General * -->
+    <string name="progress.loadingData">Loading data</string>
+
+    <!-- * Context * -->
     <string name="progress.examManagingStudentInspect.loadingGrade">Loading student\'s grade</string>
     <string name="progress.examManagingStudentInspect.loadingAnswers">Loading student\'s answers</string>
     <string name="progress.examManagingStudentInspect.updatingGrade">Updating student\'s grade</string>
     <string name="progress.examManagingStudent.loadingStudents">Loading students</string>
-    <string name="progress.examAnsweringConfirm.sendingAnswers">Sending your answers</string>
+    <string name="progress.examAnswering.sendingAnswers">Sending your answers</string>
     <string name="progress.main.loadingExams">Loading exams</string>
-
-
-
-    <string name="action_settings">Settings</string>
-
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_teacher_main">TeacherMainActivity</string>
-    <string name="title_activity_student_main">StudentMainActivity</string>
-
 </resources>

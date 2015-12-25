@@ -35,13 +35,16 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity {
     public static final String WTA_STRUCT_INTENT_KEY = "weightTypeAnswerStruct";
     public static final String QUESTION_INDEX_INTENT_KEY = "questionIndex";
 
+
     private Question question;
     private WeightTypeAnswerStruct weightTypeAnswerStruct;
     private EMultipleAnswerType eMultipleAnswerType;
     private List<AnswerAlternativePair> answerAlternativePairList = new ArrayList<>();
     private int questionIndex;
 
+
     private AlternativeAnswerDialog alternativeAnswerDialog;
+
 
     private View alternativesField;
     private EditText questionTitleIn;
@@ -49,9 +52,11 @@ public class QuestionsCreateActivity extends GoogleRestConnectActivity {
     private Spinner answerTypeSpinner;
     private EditText questionAlternativesIn;
 
+
     private TextView questionTitleIn_errorOut;
     private TextView questionWeightIn_errorOut;
     private TextView questionAlternativesIn_errorOut;
+
 
     private FormValidator formValidator;
 

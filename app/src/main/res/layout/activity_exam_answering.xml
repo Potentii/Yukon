@@ -12,11 +12,6 @@
         android:id="@+id/appBarContainer"
         style="@style/appBarContainer" >
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/actionToolbar"
-            style="@style/actionToolbar">
-        </android.support.v7.widget.Toolbar>
-
         <Toolbar
             android:id="@+id/toolbar"
             style="@style/toolbar">
@@ -37,6 +32,9 @@
         <LinearLayout
             style="@style/inputListLinearLayout">
 
+
+
+            <!-- * Student grade * -->
             <LinearLayout
                 style="@style/inputContainer">
 
@@ -51,6 +49,8 @@
             </LinearLayout>
 
 
+
+            <!-- * Exam description * -->
             <LinearLayout
                 style="@style/inputContainer">
 
@@ -63,6 +63,45 @@
                     android:id="@+id/descriptionOut"/>
 
             </LinearLayout>
+
+
+
+            <!-- * Exam questions * -->
+            <LinearLayout
+                style="@style/inputContainer">
+
+                <ImageView
+                    style="@style/imageLabelMultiline"
+                    android:src="@drawable/ic_description_24dp" />
+
+                <LinearLayout
+                    style="@style/inputContainerList_error">
+
+                    <android.support.v7.widget.RecyclerView
+                        style="@style/labeledSpanMultiline"
+                        android:id="@+id/questionRV">
+                    </android.support.v7.widget.RecyclerView>
+                    <TextView
+                        style="@style/errorOutput"
+                        android:id="@+id/questionRV_errorOut"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
         </LinearLayout>
     </ScrollView>
+
+
+    <!-- * Floating action buttons * -->
+    <LinearLayout
+        style="@style/FABList">
+
+        <ImageButton
+            style="@style/FABItem_normal"
+            android:src="@drawable/ic_send_24dp"
+            android:onClick="sendFAB_onClick" />
+
+    </LinearLayout>
+
 </RelativeLayout>

@@ -13,15 +13,6 @@
         tools:context="com.sharman.yukon.view.activities.main.StudentMainActivity"
         android:id="@+id/rootLayout">
 
-        <!--
-        <fragment
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.sharman.yukon.view.activities.ProgressFragment"
-            android:id="@+id/progressFragment"
-            tools:layout="@layout/fragment_progress" />
-            -->
-
 
         <!-- * App Bar * -->
         <LinearLayout
@@ -40,6 +31,8 @@
                     android:scaleType="fitStart"/>
             </android.support.v7.widget.Toolbar>
         </LinearLayout>
+
+
 
         <LinearLayout
             android:orientation="vertical"

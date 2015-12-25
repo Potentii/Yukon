@@ -157,15 +157,26 @@
                     android:orientation="vertical">
 
                     <android.support.v7.widget.RecyclerView
-                        android:id="@+id/questionsRecyclerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:background="@color/primary_grey">
+                        style="@style/labeledSpanMultiline"
+                        android:id="@+id/questionsRecyclerView">
                     </android.support.v7.widget.RecyclerView>
 
                     <TextView
                         style="@style/errorOutput"
                         android:id="@+id/questionsRecyclerView_errorOut"/>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:clipToPadding="false"
+                        android:padding="16dp">
+
+                        <ImageButton
+                            style="@style/FABItem_small"
+                            android:src="@drawable/ic_add_24dp"
+                            android:onClick="addQuestionFAB_onClick"/>
+                    </RelativeLayout>
 
                 </LinearLayout>
             </LinearLayout>
@@ -177,11 +188,6 @@
     <!-- * Floating action buttons * -->
     <LinearLayout
         style="@style/FABList">
-
-        <ImageButton
-            style="@style/FABItem_small"
-            android:src="@drawable/ic_add_24dp"
-            android:onClick="addQuestionFAB_onClick"/>
 
         <ImageButton
             style="@style/FABItem_normal"
