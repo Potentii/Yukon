@@ -1,54 +1,56 @@
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.sharman.yukon.view.activities.ProgressFragment"
-    android:background="#77f7f7f7">
+    android:gravity="center"
+    android:padding="@dimen/activity_horizontal_margin"
+    android:orientation="vertical"
+    android:background="#bbf7f7f7">
 
+        <ProgressBar
+            android:layout_width="@dimen/progressBar.size"
+            android:layout_height="@dimen/progressBar.size"
+            android:layout_marginBottom="32dp"
+            android:id="@+id/progressBar"
+            android:indeterminate="true" />
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true">
-
-        <LinearLayout
-            android:orientation="horizontal"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ProgressBar
-                android:layout_width="0dp"
-                android:layout_height="@dimen/progressBar.size"
-                android:id="@+id/progressBar"
-                android:layout_weight="1"
-                android:indeterminate="true" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:id="@+id/messageOut"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
-                android:singleLine="true" />
-        </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp">
-
-            <TextView
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:id="@+id/messageDetailOut"
-                android:layout_gravity="center_vertical"
-                android:gravity="center_horizontal"
-                android:singleLine="true" />
-        </RelativeLayout>
-    </LinearLayout>
+                android:layout_centerVertical="true"
+                android:gravity="center">
 
-</RelativeLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="@color/primary_grey_dark"
+                    android:id="@+id/messageOut"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="kjdfh skdjh dsjkhf ksdjfh"
+                    android:textAlignment="gravity"
+                    android:layout_marginBottom="16dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@color/primary_grey_dark_faded"
+                    android:id="@+id/messageDetailOut"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="kjdfh skdjh dsjkhf ksdjfh"
+                    android:textAlignment="gravity"
+                    android:layout_marginBottom="16dp"/>
+            </LinearLayout>
+        </ScrollView>
+
+</LinearLayout>

@@ -94,25 +94,31 @@ public abstract class MainActivity extends GoogleRestConnectActivity {
 
         activity = this;
 
+        startProgressFragment();
+        setProgressMessage(R.string.progress_main_loadingExams);
+        updateExamList();
+    }
+
+    @Override
+    protected void onConnect() {
+        super.onConnect();
+        activity = this;
+
         try {
             updateMainAccountInfo();
 
         } catch (NullPointerException e){
             e.printStackTrace();
         }
-
-        startProgressFragment();
-        setProgressMessage(R.string.progress_main_loadingExams);
-        updateExamList();
     }
 
 
 
     /*
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     *  * Main account info callback methods:
-     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
-     */
+         *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+         *  * Main account info callback methods:
+         *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+         */
     @Override
     protected void onMainAccountInfoUpdateSuccess(YukonAccountKeeper yukonAccountKeeper){
         super.onMainAccountInfoUpdateSuccess(yukonAccountKeeper);

@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/alternativeIn"
-        android:hint="@string/inputHint.questionCreate.alternativeDialog.answerRow"
+        android:hint="@string/inputHint.alternativeDialog.answerRow"
         android:layout_margin="16dp"
         android:gravity="top"
         android:imeOptions="actionDone"
