@@ -49,4 +49,34 @@ public class CompoundButtonController {
         compoundButtonList.remove(compoundButton);
     }
 
+
+    public boolean isChecked(){
+        for (CompoundButton compoundButton : compoundButtonList) {
+            if(compoundButton.isChecked()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int[] getCheckedIndexes(){
+        int checkedIndexCount = 0;
+        for (int i = 0; i < compoundButtonList.size(); i++) {
+            if(compoundButtonList.get(i).isChecked()){
+                checkedIndexCount++;
+            }
+        }
+
+        int[] checkedIndexArray = new int[checkedIndexCount];
+        int index = 0;
+        for (int i = 0; i < compoundButtonList.size(); i++) {
+            if(compoundButtonList.get(i).isChecked()){
+                checkedIndexArray[index] = i;
+                index++;
+            }
+        }
+
+        return checkedIndexArray;
+    }
+
 }

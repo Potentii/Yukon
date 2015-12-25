@@ -9,8 +9,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.view.View;
@@ -23,6 +21,7 @@ import com.sharman.yukon.R;
 import com.sharman.yukon.io.plus.PlusIOHandler;
 import com.sharman.yukon.io.plus.callback.PersonImgReadCallback;
 import com.sharman.yukon.io.plus.callback.PhotoURLCallback;
+import com.sharman.yukon.view.activities.dialog.AlertDialog;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -30,17 +29,33 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Created by poten on 31/10/2015.
  */
 public class AndroidUtil {
     private Activity activity;
 
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Constructor:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     public AndroidUtil(Activity activity){
         this.activity = activity;
     }
 
 
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Query methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     /**
      * Queries for contacts of the user's phone.
      * @return A list of {@link StudentContact} containing the contacts' Name, E-mail, and Image URI
@@ -89,6 +104,12 @@ public class AndroidUtil {
     }
 
 
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Toast methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     /**
      * Displays a {@link android.widget.Toast} on the UI Thread.
      * @param text The text of the toast
@@ -113,6 +134,11 @@ public class AndroidUtil {
 
 
 
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * URI methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     public Bitmap getBitmapFromURI(Uri uri) {
         InputStream input = null;
 
@@ -130,12 +156,17 @@ public class AndroidUtil {
 
 
 
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Format person image methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     /**
      * Sets the {@code bitmap} to the given {@code imageView}, and format it on a circular shape.
      * @param imageView the {@link ImageView} that will be formatted.
      * @param bitmap the {@link Bitmap} that will be displayed, if it's null will be replaced with a default one.
      */
-    public void formatPersonImageView(@NonNull final ImageView imageView, @Nullable final Bitmap bitmap){
+    public void formatPersonImageView(@Nonnull final ImageView imageView, @Nullable final Bitmap bitmap){
         try {
             // *Try to format the image:
             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(activity.getResources(), bitmap);
@@ -149,30 +180,7 @@ public class AndroidUtil {
         }
     }
 
-
-    /*
-    public void formatPersonImageView_AndroidContacts(@NonNull final ImageView imageView, @Nullable final String imageUri){
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // *Try to get the image:
-                    Bitmap bitmap = getBitmapFromURI(Uri.parse(imageUri));
-                    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(activity.getResources(), bitmap);
-                    roundedBitmapDrawable.setCornerRadius(Math.max(bitmap.getWidth(), bitmap.getHeight()) / 2.0f);
-                    roundedBitmapDrawable.setAntiAlias(true);
-                    imageView.setImageDrawable(roundedBitmapDrawable);
-                } catch (Exception e){
-                    // *Loading default person picture:
-                    Drawable drawable = activity.getResources().getDrawable(R.drawable.default_person_rounded);
-                    imageView.setImageDrawable(drawable);
-                }
-            }
-        });
-    }
-    */
-
-    public void formatPersonImageView_AndroidContacts(@NonNull final ImageView imageView, @Nullable final String imageUri){
+    public void formatPersonImageView_AndroidContacts(@Nonnull final ImageView imageView, @Nullable final String imageUri){
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -188,8 +196,7 @@ public class AndroidUtil {
         });
     }
 
-
-    public void formatPersonImageView_GPlus(@NonNull final ImageView imageView, @NonNull final GoogleAccountCredential credential, @Nullable final String userId){
+    public void formatPersonImageView_GPlus(@Nonnull final ImageView imageView, @Nonnull final GoogleAccountCredential credential, @Nullable final String userId){
         if(userId == null || userId.trim().isEmpty()){
             // *Apply the default photo:
             formatPersonImageView(imageView, null);
@@ -254,8 +261,12 @@ public class AndroidUtil {
 
 
 
-
-    public void fillInfoPhotoToolbar_GPlusImage(@NonNull final View toolbar, @NonNull final GoogleAccountCredential credential, @NonNull final String userId, final String primaryInfoText, final String secondaryInfoText, final String tertiaryInfoText){
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Info photo toolbar methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    public void fillInfoPhotoToolbar_GPlusImage(@Nonnull final View toolbar, @Nonnull final GoogleAccountCredential credential, @Nonnull final String userId, final String primaryInfoText, final String secondaryInfoText, final String tertiaryInfoText){
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -263,14 +274,14 @@ public class AndroidUtil {
                     final ImageView infoImg = (ImageView) toolbar.findViewById(R.id.infoImg);
                     formatPersonImageView_GPlus(infoImg, credential, userId);
                     fillInfoPhotoToolbar(toolbar, primaryInfoText, secondaryInfoText, tertiaryInfoText);
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
     }
 
-    public void fillInfoPhotoToolbar_AndroidContactsImage(@NonNull final View toolbar, final String photoUri, final String primaryInfoText, final String secondaryInfoText, final String tertiaryInfoText){
+    public void fillInfoPhotoToolbar_AndroidContactsImage(@Nonnull final View toolbar, final String photoUri, final String primaryInfoText, final String secondaryInfoText, final String tertiaryInfoText){
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -285,8 +296,7 @@ public class AndroidUtil {
         });
     }
 
-
-    private void fillInfoPhotoToolbar(@NonNull View toolbar, String primaryInfoText, String secondaryInfoText, String tertiaryInfoText){
+    private void fillInfoPhotoToolbar(@Nonnull View toolbar, String primaryInfoText, String secondaryInfoText, String tertiaryInfoText){
         final TextView primaryInfoOut     = (TextView)  toolbar.findViewById(R.id.primaryInfoOut);
         final TextView secondaryInfoOut   = (TextView)  toolbar.findViewById(R.id.secondaryInfoOut);
         final TextView tertiaryInfoOut    = (TextView)  toolbar.findViewById(R.id.tertiaryInfoOut);
@@ -298,7 +308,66 @@ public class AndroidUtil {
 
 
 
-    public void writeToSharedPreferences(@NonNull String file, @NonNull String key, String value){
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Alert dialog methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    public void showAlertDialog(@Nullable final Integer titleDrwId, @Nullable final Integer titleTxtId, @Nullable final Integer contentTxtId, @Nullable final Integer positiveBtnTxtId, @Nullable final Integer neutralBtnTxtId, @Nullable final Integer negativeBtnTxtId, @Nonnull final DialogCallback dialogCallback) {
+        Drawable titleDrw = null;
+        String titleTxt = null;
+        String contentTxt = null;
+        String positiveBtnTxt = null;
+        String neutralBtnTxt = null;
+        String negativeBtnTxt = null;
+
+        if(titleDrwId != null) {
+            titleDrw = activity.getResources().getDrawable(titleDrwId);
+        }
+        if(titleTxtId != null) {
+            titleTxt = activity.getResources().getString(titleTxtId);
+        }
+        if(contentTxtId != null) {
+            contentTxt = activity.getResources().getString(contentTxtId);
+        }
+        if(positiveBtnTxtId != null) {
+            positiveBtnTxt = activity.getResources().getString(positiveBtnTxtId);
+        }
+        if(neutralBtnTxtId != null) {
+            neutralBtnTxt = activity.getResources().getString(neutralBtnTxtId);
+        }
+        if(negativeBtnTxtId != null) {
+            negativeBtnTxt = activity.getResources().getString(negativeBtnTxtId);
+        }
+
+        showAlertDialog(titleDrw, titleTxt, contentTxt, positiveBtnTxt, neutralBtnTxt, negativeBtnTxt, dialogCallback);
+    }
+
+    public void showAlertDialog(@Nullable final Drawable titleDrw, @Nullable final String titleTxt, @Nullable final String contentTxt, @Nullable final String positiveBtnTxt, @Nullable final String neutralBtnTxt, @Nullable final String negativeBtnTxt, @Nonnull final DialogCallback dialogCallback){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog alertDialog = new AlertDialog();
+                alertDialog.setTitleDrw(titleDrw);
+                alertDialog.setTitleTxt(titleTxt);
+                alertDialog.setContentTxt(contentTxt);
+                alertDialog.setPositiveBtnTxt(positiveBtnTxt);
+                alertDialog.setNeutralBtnTxt(neutralBtnTxt);
+                alertDialog.setNegativeBtnTxt(negativeBtnTxt);
+                alertDialog.setDialogCallback(dialogCallback);
+                alertDialog.show(activity.getFragmentManager(), "alert_dialog");
+            }
+        });
+    }
+
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Shared preferences methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    public void writeToSharedPreferences(@Nonnull String file, @Nonnull String key, String value){
         SharedPreferences sharedPreferences = activity.getSharedPreferences(file, activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(key, value);
@@ -306,7 +375,7 @@ public class AndroidUtil {
     }
 
     @Nullable
-    public String readFromSharedPreferences(@NonNull String file, @NonNull String key, @Nullable String defaultValue){
+    public String readFromSharedPreferences(@Nonnull String file, @Nonnull String key, @Nullable String defaultValue){
         SharedPreferences sharedPreferences = activity.getSharedPreferences(file, activity.MODE_PRIVATE);
         return sharedPreferences.getString(key, defaultValue);
     }

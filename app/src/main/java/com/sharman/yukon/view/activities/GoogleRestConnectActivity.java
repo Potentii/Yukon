@@ -88,7 +88,6 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
         try {
             Toolbar actionToolbar = (Toolbar) findViewById(R.id.actionToolbar);
             setSupportActionBar(actionToolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         } catch (NullPointerException e){
             System.err.println("No actionBar");
         }
@@ -669,7 +668,17 @@ public abstract class GoogleRestConnectActivity extends AppCompatActivity {
 
     @Nullable
     public ActionBar getActionToolbar(){
-        return getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar == null){
+            try {
+                Toolbar actionToolbar = (Toolbar) findViewById(R.id.actionToolbar);
+                setSupportActionBar(actionToolbar);
+                actionBar = getSupportActionBar();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return actionBar;
     }
 
     public Activity getActivity(){

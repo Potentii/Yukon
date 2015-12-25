@@ -36,7 +36,7 @@ public class StudentMainActivity extends MainActivity {
             @Override
             public void onClick(ExamRVInfo examRVInfo) {
                 Intent examAnsweringIntent = new Intent(getApplicationContext(), ExamAnsweringActivity.class);
-                examAnsweringIntent.putExtra("studentConfigs", examRVInfo.getConfigFileId());
+                examAnsweringIntent.putExtra(ExamAnsweringActivity.STUDENT_CONFIGS_FILE_ID_INTENT_KEY, examRVInfo.getConfigFileId());
                 startActivity(examAnsweringIntent);
             }
         });

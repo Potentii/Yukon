@@ -1,245 +1,276 @@
 package com.sharman.yukon.view.activities.answering;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sharman.yukon.R;
 import com.sharman.yukon.model.Answer;
-import com.sharman.yukon.model.AnswerBox;
-import com.sharman.yukon.model.Exam;
 import com.sharman.yukon.model.Question;
-import com.sharman.yukon.model.StudentAnswers;
 import com.sharman.yukon.model.util.EMultipleAnswerType;
 import com.sharman.yukon.view.activities.GoogleRestConnectActivity;
+import com.sharman.yukon.view.activities.util.AndroidUtil;
+import com.sharman.yukon.view.activities.util.CompoundButtonController;
+import com.sharman.yukon.view.activities.util.FormValidator;
+import com.sharman.yukon.view.activities.util.Validatable;
 
 import org.json.JSONException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.DecimalFormat;
 
-public class QuestionAnsweringActivity extends GoogleRestConnectActivity {
-    private String studentAnswerFileId;
+public class QuestionAnsweringActivity extends GoogleRestConnectActivity implements Validatable {
+    public final static int ANSWER_QUESTION_REQUEST = 55;
 
-    private Exam exam;
-    private StudentAnswers studentAnswers;
+    public final static String REQUEST_CODE_INTENT_KEY = "requestCode";
+    public final static String EXAM_TITLE_INTENT_KEY = "examTitle";
+    public final static String QUESTION_INDEX_INTENT_KEY = "questionIndex";
+    public final static String QUESTION_INTENT_KEY = "question";
+    public final static String ANSWER_INTENT_KEY = "answer";
 
-    private int questionIndex;
+
+    private static int ROW_REMOVE_BTN_ID = R.id.removeBtn;
+    private static int ROW_COMPOUND_BTN_ID = R.id.compoundBtn;
+    private static int ROW_SINGLE_CHOICE_LAYOUT = R.layout.row_alternative_single_creating;
+    private static int ROW_MULTIPLE_CHOICE_LAYOUT = R.layout.row_alternative_multiple_creating;
+
+
+    private String examTitle;
+    private int index;
     private Question question;
-    private List<View> answerViewList;
+    private Answer answer;
+    private EMultipleAnswerType eMultipleAnswerType;
+
+
+    private TextView questionTextOut;
+    private TextView questionNumberOut;
+    private EditText textAnswerIn;
+    private LinearLayout rowContainer;
+    private TextView answerIn_errorOut;
+
+
+    private LayoutInflater layoutInflater;
+    private CompoundButtonController compoundButtonController;
+    private FormValidator formValidator;
+
+
+    private String invalidText = "";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_answering);
 
-        answerViewList = new ArrayList<>();
+        // *Initializing objects:
+        layoutInflater = getLayoutInflater();
+        compoundButtonController = new CompoundButtonController();
+        formValidator = new FormValidator(this);
 
-        try {
-            questionIndex = getIntent().getExtras().getInt("questionIndex");
-            exam = new Exam(getIntent().getExtras().getString("exam"));
-            studentAnswerFileId = getIntent().getExtras().getString("studentAnswerFileId");
 
+        // *Getting Views from XML:
+        questionTextOut = (TextView) findViewById(R.id.questionTextOut);
+        questionNumberOut = (TextView) findViewById(R.id.questionNumberOut);
+        textAnswerIn = (EditText) findViewById(R.id.textAnswerIn);
+        rowContainer = (LinearLayout) findViewById(R.id.rowContainer);
+        answerIn_errorOut = (TextView) findViewById(R.id.answerIn_errorOut);
+
+
+        // *Setting the formValidator fields:
+        formValidator.addComplexField(this, null, answerIn_errorOut);
+
+
+        // *Intent data:
+        int requestCode = getIntent().getExtras().getInt(REQUEST_CODE_INTENT_KEY);
+
+        if(requestCode == ANSWER_QUESTION_REQUEST){
             try {
-                studentAnswers = new StudentAnswers(getIntent().getExtras().getString("studentAnswers"));
-            } catch (NullPointerException | JSONException e){
-                studentAnswers = new StudentAnswers(new Answer[]{});
+                examTitle = getIntent().getExtras().getString(EXAM_TITLE_INTENT_KEY);
+                index = getIntent().getExtras().getInt(QUESTION_INDEX_INTENT_KEY);
+                question = new Question(getIntent().getExtras().getString(QUESTION_INTENT_KEY));
+                try{
+                    answer = new Answer(getIntent().getExtras().getString(ANSWER_INTENT_KEY));
+                }catch (JSONException | NullPointerException e) {
+                    answer = null;
+                }
+            } catch (JSONException | NullPointerException e) {
+                e.printStackTrace();
+                // ERROR: back to previous activity
+                new AndroidUtil(this).showToast(R.string.toast_somethingWentWrong, Toast.LENGTH_SHORT);
+                backToPreviousActivity();
+                return;
             }
-
-            question = exam.getQuestionArray()[questionIndex];
-
-
-
-
-            //TODO change the button icon if it is the last question
-
-            // *Setting the weight, question title, and alternatives:
-            TextView weightOut = (TextView) findViewById(R.id.weightOut);
-            TextView titleOut = (TextView) findViewById(R.id.titleOut);
-
-            weightOut.setText("(" + question.getWeight() + ")");
-            titleOut.setText(question.getTitle());
-            buildAnswerDiv();
-
-        } catch (NullPointerException | JSONException | ArrayIndexOutOfBoundsException e){
-            // TODO error
-            e.printStackTrace();
+        } else{
+            // ERROR: back to previous activity
+            new AndroidUtil(this).showToast(R.string.toast_somethingWentWrong, Toast.LENGTH_SHORT);
+            backToPreviousActivity();
+            return;
         }
-    }
 
-    @Override
-    protected void onConnectOnce() {
-        super.onConnectOnce();
 
+        // *Displaying information:
         try {
-            // *Setting the title of the actionBar:
-            getActionToolbar().setTitle(getResources().getString(R.string.activityTitle_questionAnswering) + " " + (questionIndex+1) + "/" + exam.getQuestionArray().length);
+            getActionToolbar().setTitle(examTitle);
         } catch (NullPointerException e){
             e.printStackTrace();
         }
-    }
-
-    private void buildAnswerDiv(){
-        AnswerBox answerBox = question.getAnswerBox();
-        RadioGroup container = (RadioGroup) findViewById(R.id.answerDiv);
-
-        answerViewList.clear();
-        container.removeAllViews();
-
-        if(answerBox.getEMultipleAnswerType() != null){
-            CompoundButton row;
-
-            String[] titleArray = answerBox.getTitleArray();
-            for(int i=0; i<titleArray.length; i++){
-
-                switch (answerBox.getEMultipleAnswerType()){
-                    case SINGLE_CHOICE:
-                        row = (RadioButton) getLayoutInflater().inflate(R.layout.row_single_choice_answer_answering, null);
-                        break;
-                    case MULTIPLE_CHOICE:
-                        row = (CheckBox) getLayoutInflater().inflate(R.layout.row_multiple_choice_answer_answering, null);
-                        break;
-                    default:
-                        row = (RadioButton) getLayoutInflater().inflate(R.layout.row_single_choice_answer_answering, null);
-                        break;
-                }
-
-                container.addView(row);
-                answerViewList.add(row);
-                row.setId(i);
-                row.setText(titleArray[i]);
-            }
-        } else{
-            EditText row;
-            row = (EditText) getLayoutInflater().inflate(R.layout.row_dissertative_answer_answering, null);
-            container.addView(row);
-            answerViewList.add(row);
-        }
-    }
+        questionNumberOut.setText(String.valueOf(index+1));
+        questionTextOut.setText("[" + new DecimalFormat("#.00").format(question.getWeight()) + "] " + question.getTitle());
+        textAnswerIn.setVisibility(View.GONE);
 
 
-
-    private void updateStudentAnswers(){
-        EMultipleAnswerType eMultipleAnswerType = question.getAnswerBox().getEMultipleAnswerType();
-        Answer answer;
+        // *Building answer box:
+        eMultipleAnswerType = question.getAnswerBox().getEMultipleAnswerType();
+        String[] alternativeTitleArray = question.getAnswerBox().getTitleArray();
 
         if(eMultipleAnswerType == null){
-            answer = new Answer(new String[]{((EditText) answerViewList.get(0)).getText().toString()});
-        } else {
-            switch (eMultipleAnswerType) {
-                default:
-                case SINGLE_CHOICE:
+            // *Text answer:
+            textAnswerIn.setVisibility(View.VISIBLE);
+            if(answer != null && answer.getAnswerArray().length != 0){
+                // *Already answered
+                textAnswerIn.setText(answer.getAnswerArray()[0]);
+            }
+        } else{
+            // *Choice answer:
+            int[] answerIndexArray = new int[0];
 
-                    int indexSelected = -1;
-                    for(int i=0; i<answerViewList.size(); i++){
-                        CompoundButton compoundButton = (RadioButton) answerViewList.get(i);
-                        if(compoundButton.isChecked()){
-                            indexSelected = i;
-                            break;
-                        }
+            if(answer != null && answer.getAnswerArray().length != 0){
+                // *Already answered
+                String[] answerAlphabetArray = answer.getAnswerArray();
+                if(answerAlphabetArray.length <= alternativeTitleArray.length){
+                    answerIndexArray = Answer.convertAlphabetArray_IntArray(answerAlphabetArray);
+                }
+            }
+
+            for (int i = 0; i < alternativeTitleArray.length; i++) {
+                boolean checked = false;
+
+                for (int index : answerIndexArray) {
+                    if(index == i){
+                        checked = true;
                     }
+                }
 
-                    answer = new Answer(Answer.convertIntArray_AlphabetArray(new int[]{indexSelected}));
-                    break;
-
-                case MULTIPLE_CHOICE:
-                    int indexSelectedCount = 0;
-                    for(int i=0; i<answerViewList.size(); i++){
-                        CompoundButton compoundButton = (CheckBox) answerViewList.get(i);
-                        if(compoundButton.isChecked()){
-                            indexSelectedCount++;
-                        }
-                    }
-
-                    int indexSelectedArray[] = new int[indexSelectedCount];
-                    int index = 0;
-                    for(int i=0; i<answerViewList.size(); i++){
-                        CompoundButton compoundButton = (CheckBox) answerViewList.get(i);
-                        if(compoundButton.isChecked()){
-                            indexSelectedArray[index] = i;
-                            index++;
-                        }
-                    }
-
-                    answer = new Answer(Answer.convertIntArray_AlphabetArray(indexSelectedArray));
-                    break;
+                addRow(eMultipleAnswerType, alternativeTitleArray[i], checked);
             }
         }
-
-
-        Answer[] answerArrayOLD = studentAnswers.getAnswerArray();
-        Answer[] answerArrayNEW = new Answer[answerArrayOLD.length+1];
-
-        for(int i=0; i<answerArrayOLD.length; i++){
-            answerArrayNEW[i] = answerArrayOLD[i];
-        }
-
-        answerArrayNEW[answerArrayNEW.length-1] = answer;
-
-        try {
-            studentAnswers.setAnswerArray(answerArrayNEW);
-
-            System.out.println("STUDENT_ANSWERS: " + studentAnswers.toString());
-        } catch (JSONException e){
-            e.printStackTrace();
-        }
     }
 
 
 
-    // *Action of the "Next" button:
-    public void questionAnsweringNextButton_onClick(View view){
-        // *If it was the last question:
-        if(exam.getQuestionArray().length == questionIndex+1){
-            updateStudentAnswers();
-            Intent examAnsweringIntent = new Intent(this, ExamAnsweringConfirmActivity.class);
-            examAnsweringIntent.putExtra("studentAnswers", studentAnswers.toString());
-            examAnsweringIntent.putExtra("studentAnswerFileId", studentAnswerFileId);
-            examAnsweringIntent.putExtra("exam", exam.toString());
-            startActivity(examAnsweringIntent);
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Class methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    private void addRow(EMultipleAnswerType eMultipleAnswerType, String title, boolean answer){
+        final View row;
+
+        // *Setting the row xml:
+        if(eMultipleAnswerType == EMultipleAnswerType.SINGLE_CHOICE){
+            row = layoutInflater.inflate(ROW_SINGLE_CHOICE_LAYOUT, null);
         } else {
-            updateStudentAnswers();
-            Intent questionAnsweringIntent = new Intent(this, QuestionAnsweringActivity.class);
-            questionAnsweringIntent.putExtra("questionIndex", questionIndex+1);
-            questionAnsweringIntent.putExtra("studentAnswers", studentAnswers.toString());
-            questionAnsweringIntent.putExtra("studentAnswerFileId", studentAnswerFileId);
-            questionAnsweringIntent.putExtra("exam", exam.toString());
-            startActivity(questionAnsweringIntent);
+            row = layoutInflater.inflate(ROW_MULTIPLE_CHOICE_LAYOUT, null);
         }
+
+        // *Hiding removeBtn:
+        ImageButton removeBtn = (ImageButton) row.findViewById(ROW_REMOVE_BTN_ID);
+        removeBtn.setVisibility(View.GONE);
+
+        // *RadioButton listener:
+        final CompoundButton compoundButton = (CompoundButton) row.findViewById(ROW_COMPOUND_BTN_ID);
+        compoundButtonController.addCompoundButton(compoundButton);
+
+        // *Fill the text and check state of the row:
+        compoundButton.setText(title);
+        compoundButton.setChecked(answer);
+
+        rowContainer.addView(row);
+    }
+
+
+    private void backToPreviousActivity(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent();
+                if (getParent() == null) {
+                    setResult(Activity.RESULT_CANCELED, intent);
+                } else {
+                    getParent().setResult(Activity.RESULT_CANCELED, intent);
+                }
+                finish();
+            }
+        });
     }
 
 
 
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Listener methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    public void confirmFAB_onClick(View view){
+        formValidator.doVisualValidation();
+        if(!formValidator.isValid()){
+            new AndroidUtil(this).showToast(R.string.toast_invalidFields, Toast.LENGTH_LONG);
+            return;
+        }
+
+
+        // *Building the new Answer object:
+        String[] answerArray;
+        if(eMultipleAnswerType == null){
+            answerArray = new String[]{ textAnswerIn.getText().toString() };
+        } else{
+            answerArray = Answer.convertIntArray_AlphabetArray(compoundButtonController.getCheckedIndexes());
+        }
+        answer = new Answer(answerArray);
+
+
+        // *Sending the OK result intent:
+        Intent resultIntent = new Intent()
+                .putExtra(QUESTION_INDEX_INTENT_KEY, index)
+                .putExtra(ANSWER_INTENT_KEY, answer.toString());
+        if (getParent() == null) {
+            setResult(Activity.RESULT_OK, resultIntent);
+        } else {
+            getParent().setResult(Activity.RESULT_OK, resultIntent);
+        }
+        finish();
+    }
 
 
 
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Validatable methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_question_answering, menu);
+    public boolean isValid() {
+        if((eMultipleAnswerType == null && textAnswerIn.getText().toString().trim().isEmpty()) || (eMultipleAnswerType != null && !compoundButtonController.isChecked())){
+            try {
+                invalidText = getResources().getString(R.string.output_invalidField_questionAnswering_notAnswered);
+            } catch (NullPointerException e){
+                e.printStackTrace();
+            }
+            return false;
+        }
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    public String getInvalidText() {
+        return invalidText;
     }
 }

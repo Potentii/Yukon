@@ -55,13 +55,15 @@
             android:name=".view.activities.creation.ExamCreateActivity"
             android:label="@string/activityTitle.examCreate"
             android:parentActivityName=".view.activities.main.TeacherMainActivity"
-            android:screenOrientation="nosensor" >
+            android:screenOrientation="nosensor"
+            android:windowSoftInputMode="stateHidden">
         </activity>
 
         <activity
             android:name=".view.activities.creation.QuestionsCreateActivity"
             android:label="@string/activityTitle.questionCreate"
-            android:screenOrientation="nosensor" >
+            android:screenOrientation="nosensor"
+            android:windowSoftInputMode="stateHidden">
         </activity>
 
 
@@ -79,13 +81,6 @@
             android:label="@string/activityTitle.questionAnswering"
             android:screenOrientation="nosensor" >
         </activity>
-
-        <activity
-            android:name=".view.activities.answering.ExamAnsweringConfirmActivity"
-            android:label="@string/activityTitle.examAnsweringConfirm"
-            android:screenOrientation="nosensor" >
-        </activity>
-
 
 
         <!-- * Exam Managing Activities * -->
