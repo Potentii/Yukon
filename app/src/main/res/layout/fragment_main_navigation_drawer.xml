@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary_grey"
-    tools:context="com.sharman.yukon.view.activities.main.MainNavigationDrawerFragment"
+    tools:activity="com.sharman.yukon.view.activities.main.MainNavigationDrawerFragment"
     android:elevation="@dimen/navigationDrawer.elevation">
 
 

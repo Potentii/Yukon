@@ -27,8 +27,7 @@
     *   * Output
     *   * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
     -->
-    <string name="output.grade.notSet.text">Not set</string>
-    <string name="output.grade.notSet.symbol">-</string>
+    <string name="output.grade.notSet.text">Grade not set</string>
 
     <string name="output.answerCorrection.studentAnswer">Student answer</string>
     <string name="output.answerCorrection.correctAnswer">Correct answer</string>
@@ -128,9 +127,10 @@
     <!-- * Alert dialog titles * -->
     <string name="alertDialog.title.loadingFailed">Loading failed</string>
     <string name="alertDialog.title.sendingFailed">Sending failed</string>
+    <string name="alertDialog.title.examManagingStudentInspect.recoveryFailed">Recovery failed</string>
 
     <!-- * Alert dialog content * -->
-    <string name="alertDialog.content.tryAgain">Want to try again?</string>
+    <string name="alertDialog.content.tryAgain">Do you want to try again?</string>
 
 
 

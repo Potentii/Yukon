@@ -76,7 +76,7 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
     private List<QuestionAnsweringRVInfo> questionAnsweringRVInfoList;
 
 
-
+    // TODO update this to use the QID on the answers
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -398,7 +398,8 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
                         .putExtra(QuestionAnsweringActivity.QUESTION_INTENT_KEY, questionAnsweringRVInfo.getQuestion().toString());
                 try {
                     editQuestionIntent.putExtra(QuestionAnsweringActivity.ANSWER_INTENT_KEY, questionAnsweringRVInfo.getAnswer().toString());
-                }catch (NullPointerException e){}
+                } catch (NullPointerException e) {
+                }
                 startActivityForResult(editQuestionIntent, QuestionAnsweringActivity.ANSWER_QUESTION_REQUEST);
             }
         });
@@ -443,8 +444,10 @@ public class ExamAnsweringActivity extends GoogleRestConnectActivity {
                         e.printStackTrace();
                         new AndroidUtil(this).showToast(R.string.toast_somethingWentWrong, Toast.LENGTH_SHORT);
                     }
-                } else{
-
+                } else if(resultCode == Activity.RESULT_CANCELED){
+                    // *Do nothing
+                }else{
+                    new AndroidUtil(this).showToast(R.string.toast_somethingWentWrong, Toast.LENGTH_SHORT);
                 }
                 break;
         }

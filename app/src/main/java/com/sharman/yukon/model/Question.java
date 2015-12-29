@@ -13,6 +13,7 @@ public class Question extends JSONObject{
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
     protected enum QuestionJSONKeys{
+        QID("QID"),
         TITLE("title"),
         WEIGHT("weight"),
         ANSWER_BOX("answerBox");
@@ -32,9 +33,10 @@ public class Question extends JSONObject{
      *  * Constructor:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public Question(String title, double weight, AnswerBox answerBox){
+    public Question(long QID, String title, double weight, AnswerBox answerBox){
         super();
         try {
+            this.setQID(QID);
             this.setTitle(title);
             this.setWeight(weight);
             this.setAnswerBox(answerBox);
@@ -52,6 +54,14 @@ public class Question extends JSONObject{
      *  * Getters and Setters:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
+    // *QID:
+    public long getQID(){
+        return super.optLong(QuestionJSONKeys.QID.getKey());
+    }
+    public void setQID(long weight) throws JSONException{
+        super.putOpt(QuestionJSONKeys.QID.getKey(), weight);
+    }
+
     // *Title:
     public String getTitle(){
         return super.optString(QuestionJSONKeys.TITLE.getKey());

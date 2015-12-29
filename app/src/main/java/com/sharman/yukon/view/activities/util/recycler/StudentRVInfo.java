@@ -2,74 +2,74 @@ package com.sharman.yukon.view.activities.util.recycler;
 
 
 import com.sharman.yukon.model.Grade;
+import com.sharman.yukon.view.activities.util.StudentContact;
+
+import javax.annotation.Nonnull;
 
 /**
  * Created by poten on 24/10/2015.
  */
 public class StudentRVInfo{
+    @Nonnull
     private String studentGradeFileId;
+    @Nonnull
     private String studentAnswerFileId;
 
-    private String studentGradeStr;
-
-    private String studentEmail;
-    private String studentName;
-    private String studentImageUri;
-
+    @Nonnull
+    private Grade grade;
+    @Nonnull
+    private StudentContact studentContact;
 
 
-    public StudentRVInfo(String studentGradeFileId, String studentAnswerFileId, String studentEmail) {
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Constructor:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    public StudentRVInfo(@Nonnull String studentGradeFileId, @Nonnull String studentAnswerFileId, @Nonnull Grade grade, @Nonnull StudentContact studentContact) {
         this.studentGradeFileId = studentGradeFileId;
         this.studentAnswerFileId = studentAnswerFileId;
-        this.studentEmail = studentEmail;
-
-        // *If it's not set yet:
-        this.studentGradeStr = null;
-        this.studentName = null;
-        this.studentImageUri = null;
+        this.grade = grade;
+        this.studentContact = studentContact;
     }
 
 
 
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Getters and setters:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    @Nonnull
     public String getStudentGradeFileId() {
         return studentGradeFileId;
     }
-    public void setStudentGradeFileId(String studentGradeFileId) {
+    public void setStudentGradeFileId(@Nonnull String studentGradeFileId) {
         this.studentGradeFileId = studentGradeFileId;
     }
 
+    @Nonnull
     public String getStudentAnswerFileId() {
         return studentAnswerFileId;
     }
-    public void setStudentAnswerFileId(String studentAnswerFileId) {
+    public void setStudentAnswerFileId(@Nonnull String studentAnswerFileId) {
         this.studentAnswerFileId = studentAnswerFileId;
     }
 
-    public String getStudentEmail() {
-        return studentEmail;
+    @Nonnull
+    public Grade getGrade() {
+        return grade;
     }
-    public void setStudentEmail(String studentEmail) {
-        this.studentEmail = studentEmail;
-    }
-
-    public String getStudentGradeStr() {
-        return studentGradeStr;
-    }
-    public void setStudentGradeStr(String studentGradeStr) {
-        this.studentGradeStr = studentGradeStr;
+    public void setGrade(@Nonnull Grade grade) {
+        this.grade = grade;
     }
 
-    public String getStudentName() {
-        return studentName;
+    @Nonnull
+    public StudentContact getStudentContact() {
+        return studentContact;
     }
-    public void setStudentName(String studentName) {
-        this.studentName = studentName;
-    }
-
-    public String getStudentImageUri() {
-        return studentImageUri;
-    }
-    public void setStudentImageUri(String studentImageUri) {
-        this.studentImageUri = studentImageUri;
+    public void setStudentContact(@Nonnull StudentContact studentContact) {
+        this.studentContact = studentContact;
     }
 }

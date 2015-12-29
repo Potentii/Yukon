@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
+
 /**
  * Created by poten on 20/10/2015.
  */
@@ -16,6 +18,7 @@ public class Answer extends JSONObject {
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
     protected enum AnswerJSONKeys{
+        QID("QID"),
         ANSWER_ARRAY("answerArray");
 
         private String key;
@@ -32,9 +35,10 @@ public class Answer extends JSONObject {
      *  * Constructor:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
-    public Answer(String[] answerArray){
+    public Answer(long QID, String[] answerArray){
         super();
         try {
+            this.setQID(QID);
             this.setAnswerArray(answerArray);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -63,7 +67,7 @@ public class Answer extends JSONObject {
 
 
     @Nullable
-    public Boolean compareAnswerTo(Answer otherAnswer){
+    public Boolean compareAnswerTo(@Nonnull Answer otherAnswer){
         String[] answerArrayTHIS = getAnswerArray();
         String[] answerArrayOTHER = otherAnswer.getAnswerArray();
 
@@ -156,6 +160,14 @@ public class Answer extends JSONObject {
      *  * Getters and Setters:
      *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
      */
+    // *QID:
+    public long getQID(){
+        return super.optLong(AnswerJSONKeys.QID.getKey());
+    }
+    public void setQID(long weight) throws JSONException{
+        super.putOpt(AnswerJSONKeys.QID.getKey(), weight);
+    }
+
     // *AnswerArray:
     public String[] getAnswerArray(){
         JSONArray titleJSONArray = super.optJSONArray(AnswerJSONKeys.ANSWER_ARRAY.getKey());

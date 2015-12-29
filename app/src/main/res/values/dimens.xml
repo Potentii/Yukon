@@ -18,6 +18,8 @@
 
     <dimen name="row.question.height">64dp</dimen>
 
+    <dimen name="row.student.managing.height">72dp</dimen>
+
     <dimen name="toolbar_info_photo_height">72dp</dimen>
 
     <dimen name="navigationDrawer.width">300dp</dimen>

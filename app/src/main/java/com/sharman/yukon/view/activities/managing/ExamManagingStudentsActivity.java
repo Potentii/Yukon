@@ -28,7 +28,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-
+@Deprecated
 public class ExamManagingStudentsActivity extends GoogleRestConnectActivity implements DialogCallback {
     final private Vector<StudentRVInfo> studentRVInfoVector = new Vector<>();
     private StudentRVAdapter studentRVAdapter;

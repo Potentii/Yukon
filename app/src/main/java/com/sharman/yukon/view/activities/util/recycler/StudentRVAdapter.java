@@ -1,5 +1,6 @@
 package com.sharman.yukon.view.activities.util.recycler;
 
+
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,171 +9,129 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.sharman.yukon.R;
-import com.sharman.yukon.io.drive.DriveIOHandler;
-import com.sharman.yukon.io.drive.callback.FileReadCallback;
-import com.sharman.yukon.model.Grade;
 import com.sharman.yukon.view.activities.util.AndroidUtil;
-import com.sharman.yukon.view.activities.util.StudentContact;
 
-import org.json.JSONException;
-
+import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Vector;
+
+import javax.annotation.Nonnull;
 
 /**
  * Created by poten on 24/10/2015.
  */
-public class StudentRVAdapter extends RecyclerView.Adapter<StudentRVAdapter.ViewHolder> {
+public abstract class StudentRVAdapter extends RecyclerView.Adapter<StudentRVAdapter.ViewHolder> {
     private final LayoutInflater layoutInflater;
-    private Vector<StudentRVInfo> studentRVInfoVector = new Vector<>();
-    private List<StudentContact> studentContactList;
-    private OnStudentRVItemClickListener onStudentRVItemClickListener;
-    private GoogleAccountCredential credential;
-    final private Activity activity;
+    private final Activity activity;
 
-    public StudentRVAdapter(Activity activity, GoogleAccountCredential credential, Vector<StudentRVInfo> studentRVInfoVector, List<StudentContact> studentContactList, OnStudentRVItemClickListener onStudentRVItemClickListener) {
+    private RecyclerView recyclerView;
+
+    @Nonnull
+    private List<StudentRVInfo> studentRVInfoList;
+
+
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Constructor:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    public StudentRVAdapter(@Nonnull Activity activity, @Nonnull List<StudentRVInfo> studentRVInfoList) {
         layoutInflater = LayoutInflater.from(activity);
         this.activity = activity;
-        this.credential = credential;
-        this.studentRVInfoVector = studentRVInfoVector;
-        this.studentContactList = studentContactList;
-        this.onStudentRVItemClickListener = onStudentRVItemClickListener;
+        this.studentRVInfoList = studentRVInfoList;
     }
 
 
+
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * RecyclerView.Adapter methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int i) {
-        View view = layoutInflater.inflate(R.layout.recycler_student_row, parent, false);
-        ViewHolder viewHolder = new ViewHolder(view, onStudentRVItemClickListener);
-        return viewHolder;
+    public final ViewHolder onCreateViewHolder(ViewGroup parent, int i) {
+        return new ViewHolder(this.layoutInflater.inflate(R.layout.row_student_managing, parent, false));
     }
 
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
 
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, int i) {
-        final StudentRVInfo currentStudentRVInfo = studentRVInfoVector.get(i);
+    public final int getItemCount() {
+        return this.studentRVInfoList.size();
+    }
 
-        // *If the grade file isn't downloaded yet:
-        if(currentStudentRVInfo.getStudentGradeStr() == null){
-            DriveIOHandler driveIOHandler = new DriveIOHandler(credential);
-            driveIOHandler.readFile(currentStudentRVInfo.getStudentGradeFileId(), new FileReadCallback() {
-                @Override
-                public void onSuccess(final String content, Long lastModifiedDate) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Grade grade = new Grade(content);
-                                currentStudentRVInfo.setStudentGradeStr(content);
-                                viewHolder.setGrade(grade);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                }
+    @Override
+    public final void onBindViewHolder(final ViewHolder viewHolder, int i) {
+        final StudentRVInfo currentStudentRVInfo = studentRVInfoList.get(i);
 
-                @Override
-                public void onFailure(Exception exception) {
-                    // TODO error
-                    exception.printStackTrace();
-                }
-            });
+        new AndroidUtil(activity).formatPersonImageView_AndroidContacts(viewHolder.studentImg, currentStudentRVInfo.getStudentContact().getImageUri());
 
+        viewHolder.nameOut.setText(currentStudentRVInfo.getStudentContact().getName());
+        viewHolder.emailOut.setText(currentStudentRVInfo.getStudentContact().getId());
+
+        double gradeDouble = currentStudentRVInfo.getGrade().getGrade();
+        if(gradeDouble<0){
+            // *Grade not set yet
+            viewHolder.gradeOut.setText(activity.getResources().getString(R.string.output_grade_notSet_text));
         } else{
-            try {
-                Grade grade = new Grade(currentStudentRVInfo.getStudentGradeStr());
-                viewHolder.setGrade(grade);
-            }catch (JSONException e){
-                e.printStackTrace();
-            }
+            // *Grade set
+            viewHolder.gradeOut.setText(new DecimalFormat("#.00").format(gradeDouble));
         }
 
-
-        // *If the student image or photo was not loaded yet:
-        if(currentStudentRVInfo.getStudentName() == null || currentStudentRVInfo.getStudentImageUri() == null){
-            String id = currentStudentRVInfo.getStudentEmail();
-            StudentContact studentContactFound = null;
-
-            for(StudentContact studentContact : studentContactList){
-                if(id.equals(studentContact.getId())){
-                    studentContactFound = studentContact;
-                }
-            }
-
-
-            if(studentContactFound != null){
-                currentStudentRVInfo.setStudentName(studentContactFound.getName());
-                currentStudentRVInfo.setStudentImageUri(studentContactFound.getImageUri());
-            } else{
-                currentStudentRVInfo.setStudentName(currentStudentRVInfo.getStudentEmail());
-                currentStudentRVInfo.setStudentImageUri("");
-            }
-        }
-
-        viewHolder.studentNameOut.setText(currentStudentRVInfo.getStudentName());
-        viewHolder.studentEmailOut.setText(currentStudentRVInfo.getStudentEmail());
-
-        viewHolder.setImage(currentStudentRVInfo.getStudentImageUri());
 
         viewHolder.studentRVInfo = currentStudentRVInfo;
     }
 
 
-    @Override
-    public int getItemCount() {
-        return this.studentRVInfoVector.size();
-    }
 
-
-    // *ViewHolder:
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * ViewHolder:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
     public class ViewHolder extends RecyclerView.ViewHolder{
+        private TextView nameOut;
+        private TextView emailOut;
+        private TextView gradeOut;
         private ImageView studentImg;
-        private TextView studentNameOut;
-        private TextView studentEmailOut;
-        private TextView studentGradeOut;
 
         private StudentRVInfo studentRVInfo;
 
-        public ViewHolder(View itemView, final OnStudentRVItemClickListener onStudentRVItemClickListener) {
+        public ViewHolder(View itemView) {
             super(itemView);
 
-            studentImg      = (ImageView)itemView.findViewById(R.id.studentImg);
-            studentNameOut  = (TextView) itemView.findViewById(R.id.studentNameOut);
-            studentEmailOut = (TextView) itemView.findViewById(R.id.studentEmailOut);
-            studentGradeOut = (TextView) itemView.findViewById(R.id.studentGradeOut);
-
+            nameOut     = (TextView) itemView.findViewById(R.id.nameOut);
+            emailOut    = (TextView) itemView.findViewById(R.id.emailOut);
+            gradeOut    = (TextView) itemView.findViewById(R.id.gradeOut);
+            studentImg  = (ImageView) itemView.findViewById(R.id.studentImg);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onStudentRVItemClickListener.onClick(studentRVInfo);
+                    onItemClick(studentRVInfo);
                 }
             });
         }
+    }
 
 
-        public void setGrade(Grade grade){
-            if(grade != null) {
-                double gradeGrade = grade.getGrade();
-                if (gradeGrade < 0) {
 
-                    studentGradeOut.setText(activity.getResources().getString(R.string.output_grade_notSet_symbol));
-                } else {
-                    studentGradeOut.setText(Double.toString(grade.getGrade()));
-                }
-            } else{
-                studentGradeOut.setText(activity.getResources().getString(R.string.output_grade_notSet_symbol));
-            }
+    /*
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     *  * Class methods:
+     *  * ========== * ========== * ========== * ========== * ========== * ========== * ========== * ========== *
+     */
+    protected abstract void onItemClick(StudentRVInfo studentRVInfo);
+
+    public void update(){
+        super.notifyDataSetChanged();
+        if(recyclerView != null){
+            recyclerView.setMinimumHeight((int) (getItemCount() * activity.getResources().getDimension(R.dimen.row_student_managing_height)));
         }
-
-        public void setImage(String imageUri){
-            new AndroidUtil(activity).formatPersonImageView_AndroidContacts(studentImg, imageUri);
-        }
-
-
-
     }
 }
